@@ -11,7 +11,9 @@ Syntax and Formatting
 ```bash
 uv run ruff check
 ```
-
+```bash
+uv run ruff format .
+```
 Type problems and structural Flaws
 ```bash
 uv run mypy .
