@@ -1,11 +1,13 @@
 """
-Contains table reminders
+Contains tables reminders and completion log
 """
 
 from sqlalchemy import CheckConstraint, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 
 from db.base import Base
+
+import datetime as dt
 
 
 # item_id changed to task_id and event_id separately due to limitations with SQLAlchemy ORM
@@ -34,3 +36,15 @@ class Reminder(Base):
             name="one_reminder_target",
         ),
     )
+
+
+class CompletionLog(Base):
+    __tablename__ = "CompletionLogs"
+
+    log_id: Mapped[int] = mapped_column(primary_key=True)
+
+    task_id: Mapped[int] = mapped_column(
+        ForeignKey("FloatingTasks.task_id"), nullable=False
+    )
+
+    completed_date: Mapped[dt.date] = mapped_column(nullable=False)
