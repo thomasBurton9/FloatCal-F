@@ -21,3 +21,13 @@ uv run uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```bash
 npx expo start
 ```
+
+## Development
+
+### Naming Conventions
+
+All classes, objects and database models should use PascalCase
+
+All methods, variables and functions should use snake_case
+
+All constants should use UPPERCASE
