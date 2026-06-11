@@ -1,0 +1,38 @@
+"""
+Contains table FixedEvent
+"""
+
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column
+
+from db.base import Base
+
+import datetime as dt
+
+
+class FixedEvent(Base):
+    __tablename__ = "FixedEvents"
+
+    event_id: Mapped[int] = mapped_column(primary_key=True)
+
+    calendar_id: Mapped[int] = mapped_column(
+        ForeignKey("Calendars.calendar_id"), nullable=False
+    )
+
+    name: Mapped[str] = mapped_column(nullable=False)
+
+    date: Mapped[dt.date] = mapped_column(nullable=False)
+
+    start_time: Mapped[dt.time] = mapped_column(nullable=False)
+
+    end_time: Mapped[dt.time] = mapped_column(
+        nullable=False
+    )  # Potentially change to dt.datetime to allow for multiday events
+
+    notes: Mapped[str | None] = mapped_column(nullable=True)
+
+    recurrence_rule: Mapped[str] = (
+        mapped_column()
+    )  # Can be None, "Daily", "Weekly", "Fortnightly" etc - Maybe make this a constraint
+
+    reminder: Mapped[bool] = mapped_column(default=False)
