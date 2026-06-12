@@ -24,8 +24,8 @@ class Calendar(Base):
 
 class CalendarMember(Base):
     __tablename__ = "CalendarMembers"
-    __table_args__ = tuple(
-        UniqueConstraint("calendar_id", "user_id", name="unique_calendar_user")
+    __table_args__ = (
+        UniqueConstraint("calendar_id", "user_id", name="unique_calendar_user"),
     )  # Make sure that there are no duplicate memberships of a user in a calendar
 
     calendar_member_id: Mapped[int] = mapped_column(primary_key=True)

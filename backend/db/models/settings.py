@@ -5,7 +5,7 @@ Contains table Settings
 import datetime as dt
 from typing import Any
 
-from sqlalchemy import JSON, ForeignKey
+from sqlalchemy import JSON, ForeignKey, CheckConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 
 from db.base import Base
@@ -13,7 +13,11 @@ from db.base import Base
 
 class Setting(Base):
     __tablename__ = "Settings"
-
+    __table_args__ = (
+        CheckConstraint(
+            "buffer_minutes > 0 AND buffer_minutes <= 1440", name="valid_buffer_time"
+        ),  # Potentially limit buffer time further
+    )
     user_id: Mapped[int] = mapped_column(ForeignKey("Users.user_id"), primary_key=True)
 
     sleep_start: Mapped[dt.time] = mapped_column(default=dt.time(23, 0), nullable=False)
