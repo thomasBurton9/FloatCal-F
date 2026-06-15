@@ -5,6 +5,8 @@ __pycache__/
 ## Database
 
 *.db
+*-shm
+*-wal
 
 # Javascript
 

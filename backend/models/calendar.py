@@ -11,10 +11,14 @@ class Calendar:
         self.colour: str = colour
         self.created_by_user_id: int = created_by_user_id
 
+    # Implemented elsewhere -> services/calendar_service
     def get_items(self, date: dt.date) -> dict | None:
         raise NotImplementedError
 
     def add_item(self, calendar_item: dict):
+        raise NotImplementedError
+
+    def update_item(self, calendar_item: dict):
         raise NotImplementedError
 
     def remove_item(self, item_id: int, item_type: str):
