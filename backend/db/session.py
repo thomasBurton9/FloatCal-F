@@ -1,6 +1,7 @@
+from contextlib import contextmanager
 import os
 from pathlib import Path
-from typing import Generator
+from typing import Iterator
 
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
@@ -28,7 +29,8 @@ SessionLocal = sessionmaker(
 )
 
 
-def get_db() -> Generator[Session]:
+@contextmanager
+def get_db() -> Iterator[Session]:
     db = SessionLocal()
     try:
         yield db
