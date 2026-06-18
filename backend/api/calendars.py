@@ -44,19 +44,19 @@ def remove_item(calendar_id: int, item_id: int, item_type: ItemType):
     if not check_calendar_exists(calendar_id):
         raise HTTPException(404, "The calendar with that calendar_id does not exist")
     if item_type.item_type == "event":
-        if not check_event_exists(calendar_id, item_id):
+        if not check_event_exists(item_id, calendar_id):
             raise HTTPException(404, "The event with the specified id does not exist")
 
         remove_event(calendar_id, item_id)
     else:
-        if not check_task_exists(calendar_id, item_id):
+        if not check_task_exists(item_id, calendar_id):
             raise HTTPException(404, "The task with the specified id does not exist")
 
         remove_task(calendar_id, item_id)
 
 
 @router.post("/{calendar_id}/events")
-def add_calendar_event(calendar_id: int, event_data: CreateFixedEvent):
+def add_event(calendar_id: int, event_data: CreateFixedEvent):
     if not check_calendar_exists(calendar_id):
         raise HTTPException(404, "calendar_id does not exist")
     add_fixed_event(calendar_id, event_data)
@@ -73,7 +73,7 @@ def add_task(calendar_id: int, task_data: CreateFloatingTask):
 def update_event(calendar_id: int, event_id: int, event_data: UpdateFixedEvent):
     if not check_calendar_exists(calendar_id):
         raise HTTPException(404, "calendar_id does not exist")
-    if not check_event_exists(calendar_id, event_id):
+    if not check_event_exists(event_id, calendar_id):
         raise HTTPException(404, "The event with the specified id does not exist")
 
     try:
@@ -86,7 +86,7 @@ def update_event(calendar_id: int, event_id: int, event_data: UpdateFixedEvent):
 def update_task(calendar_id: int, task_id: int, task_data: UpdateFloatingTask):
     if not check_calendar_exists(calendar_id):
         raise HTTPException(404, "calendar_id does not exist")
-    if not check_task_exists(calendar_id, task_id):
+    if not check_task_exists(task_id, calendar_id):
         raise HTTPException(404, "The task with the specified id does not exist")
 
     update_floating_task(calendar_id, task_id, task_data)

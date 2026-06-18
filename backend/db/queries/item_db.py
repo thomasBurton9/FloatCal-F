@@ -7,25 +7,29 @@ from schemas.item_schemas import UpdateFixedEvent, UpdateFloatingTask
 
 
 # Assumes calendar_id exists - prior validation is required
-def check_event_exists(calendar_id: int, event_id: int):
-    event_exists_statement = (
-        select(FixedEvent.event_id)
-        .where(FixedEvent.calendar_id == calendar_id)
-        .where(FixedEvent.event_id == event_id)
+def check_event_exists(event_id: int, calendar_id: int | None = None):
+    event_exists_statement = select(FixedEvent.event_id).where(
+        FixedEvent.event_id == event_id
     )
 
+    if calendar_id:
+        event_exists_statement = event_exists_statement.where(
+            FixedEvent.calendar_id == calendar_id
+        )
     with get_db() as session:
         return session.execute(event_exists_statement).scalar() is not None
 
 
-def check_task_exists(calendar_id: int, task_id: int):
+def check_task_exists(task_id: int, calendar_id: int | None = None):
 
-    task_exists_statement = (
-        select(FloatingTask.task_id)
-        .where(FloatingTask.calendar_id == calendar_id)
-        .where(FloatingTask.task_id == task_id)
+    task_exists_statement = select(FloatingTask.task_id).where(
+        FloatingTask.task_id == task_id
     )
 
+    if calendar_id:
+        task_exists_statement = task_exists_statement.where(
+            FloatingTask.calendar_id == calendar_id
+        )
     with get_db() as session:
         return session.execute(task_exists_statement).scalar() is not None
 
@@ -114,3 +118,29 @@ def update_floating_task(calendar_id: int, task_id: int, task_data: UpdateFloati
             setattr(old_floating_task, field, value)
 
         session.commit()
+
+
+def get_event_info(event_id: int) -> FixedEvent:
+    event_info_statement = select(FixedEvent).where(FixedEvent.event_id == event_id)
+
+    with get_db() as session:
+        fixed_event: FixedEvent | None = session.execute(event_info_statement).scalar()
+
+        if fixed_event:
+            return fixed_event
+        else:
+            raise ValueError("Event with specified id does not exist")
+
+
+def get_task_info(task_id: int) -> FloatingTask:
+    task_info_statement = select(FloatingTask).where(FloatingTask.task_id == task_id)
+
+    with get_db() as session:
+        floating_task: FloatingTask | None = session.execute(
+            task_info_statement
+        ).scalar()
+
+        if floating_task:
+            return floating_task
+        else:
+            raise ValueError("Task with specified id does not exist")
