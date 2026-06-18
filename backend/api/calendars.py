@@ -16,9 +16,17 @@ from db.queries.item_db import (
     check_task_exists,
     remove_event,
     remove_task,
+    update_fixed_event,
+    update_floating_task,
 )
 from db.queries.user_db import check_user_exists
-from schemas.item_schemas import CreateFixedEvent, CreateFloatingTask, ItemType
+from schemas.item_schemas import (
+    CreateFixedEvent,
+    CreateFloatingTask,
+    ItemType,
+    UpdateFixedEvent,
+    UpdateFloatingTask,
+)
 
 router = APIRouter(prefix="/api")
 
@@ -59,6 +67,29 @@ def add_task(calendar_id: int, task_data: CreateFloatingTask):
     if not check_calendar_exists(calendar_id):
         raise HTTPException(404, "calendar_id does not exist")
     add_floating_task(calendar_id, task_data)
+
+
+@router.patch("/{calendar_id}/events/{event_id}")
+def update_event(calendar_id: int, event_id: int, event_data: UpdateFixedEvent):
+    if not check_calendar_exists(calendar_id):
+        raise HTTPException(404, "calendar_id does not exist")
+    if not check_event_exists(calendar_id, event_id):
+        raise HTTPException(404, "The event with the specified id does not exist")
+
+    try:
+        update_fixed_event(calendar_id, event_id, event_data)
+    except ValueError as e:
+        raise HTTPException(422, str(e))
+
+
+@router.patch("/{calendar_id}/tasks/{task_id}")
+def update_task(calendar_id: int, task_id: int, task_data: UpdateFloatingTask):
+    if not check_calendar_exists(calendar_id):
+        raise HTTPException(404, "calendar_id does not exist")
+    if not check_task_exists(calendar_id, task_id):
+        raise HTTPException(404, "The task with the specified id does not exist")
+
+    update_floating_task(calendar_id, task_id, task_data)
 
 
 @router.post("/add_member/{calendar_id}/{user_id}")

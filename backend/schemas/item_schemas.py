@@ -45,3 +45,35 @@ class CreateFloatingTask(BaseModel):
 
 class ItemType(BaseModel):
     item_type: Literal["event", "task"]
+
+
+# For updating, some fields can be left out, but can not be set to None/null
+# this includes name which cannot be None.
+# That is why name = None as the default, but does not accept None as a type
+# The comment at the end of each line is to prevent mypy from flagging it.
+class UpdateFixedEvent(BaseModel):
+    name: Annotated[str, Field(min_length=1, max_length=63)] = None  # type: ignore[assignment]
+    date: dt.date = None  # type: ignore[assignment]
+    notes: Annotated[str | None, Field(min_length=0, max_length=319)] = None
+    recurrence_rule: (
+        Literal["daily", "weekly", "fortnightly", "monthly", "yearly"] | None
+    ) = None
+    reminder: bool = None  # type: ignore[assignment]
+    start_time: dt.time = None  # type: ignore[assignment]
+    end_time: dt.time = None  # type: ignore[assignment]
+
+
+class UpdateFloatingTask(BaseModel):
+    name: Annotated[str, Field(min_length=1, max_length=63)] = None  # type: ignore[assignment]
+    date: dt.date = None  # type: ignore[assignment]
+    duration_minutes: Annotated[int, Field(ge=1, le=1440)] = None  # type: ignore[assignment]  # Potentially hardcode these (1<=x<=1440) in a config file to allow changing and keep them the same across folders/files
+    notes: Annotated[str | None, Field(min_length=0, max_length=319)] = None
+    recurrence_rule: (
+        Literal["daily", "weekly", "fortnightly", "monthly", "yearly"] | None
+    ) = None
+    reminder: bool = None  # type: ignore[assignment]
+    preferred_window: str | None = (
+        None  # Maybe somehow make sure that the preferred_window matches that of the user settings? Thought it might require going calendar_id -> created_by_user -> user_settings
+    )
+    scheduled_start: dt.time | None = None
+    manually_scheduled: bool = None  # type: ignore[assignment]
