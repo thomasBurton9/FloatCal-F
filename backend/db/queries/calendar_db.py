@@ -3,8 +3,8 @@ from typing import List, Sequence
 
 from sqlalchemy import select
 
+from db.models.calendars import Calendar, CalendarMember
 from db.models.items import FixedEvent, FloatingTask
-from db.models.calendars import Calendar
 from db.session import get_db
 from schemas.item_schemas import CreateFixedEvent, CreateFloatingTask
 
@@ -89,4 +89,25 @@ def add_floating_task(calendar_id: int, task_data: CreateFloatingTask):
         )
 
         session.add(new_floating_task)
+        session.commit()
+
+
+def check_member_in_calendar(calendar_id: int, user_id: int):
+    user_in_calendar_statement = (
+        select(CalendarMember.calendar_member_id)
+        .where(CalendarMember.calendar_id == calendar_id)
+        .where(CalendarMember.user_id == user_id)
+    )
+    with get_db() as session:
+        return session.execute(user_in_calendar_statement).scalar() is not None
+
+
+# Assumes data is already sanitised
+def add_member_to_calendar(calendar_id: int, user_id: int):
+    new_calendar_member_entry: CalendarMember = CalendarMember(
+        calendar_id=calendar_id, user_id=user_id
+    )
+
+    with get_db() as session:
+        session.add(new_calendar_member_entry)
         session.commit()

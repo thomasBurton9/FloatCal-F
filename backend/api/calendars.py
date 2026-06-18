@@ -1,11 +1,16 @@
-from fastapi import APIRouter, HTTPException
 import datetime as dt
+
+from fastapi import APIRouter, HTTPException
+
 from db.queries.calendar_db import (
     add_fixed_event,
     add_floating_task,
+    add_member_to_calendar,
     check_calendar_exists,
+    check_member_in_calendar,
     list_items_for_calendar_date,
 )
+from db.queries.user_db import check_user_exists
 from schemas.item_schemas import CreateFixedEvent, CreateFloatingTask
 
 router = APIRouter(prefix="/api")
@@ -31,3 +36,18 @@ def add_task(calendar_id: int, task_data: CreateFloatingTask):
     if not check_calendar_exists(calendar_id):
         raise HTTPException(404, "calendar_id does not exist")
     add_floating_task(calendar_id, task_data)
+
+
+@router.post("/add_member/{calendar_id}/{user_id}")
+def add_member(calendar_id: int, user_id: int):
+    # Check if user_id is not in calendar
+    if not check_calendar_exists(calendar_id):
+        raise HTTPException(404, "calendar_id does not exist")
+    if not check_user_exists(user_id):
+        raise HTTPException(404, "user_id does not exist")
+    if check_member_in_calendar(calendar_id, user_id):
+        raise HTTPException(
+            409, "User with the user_id is already in the Calendar with calendar_id"
+        )
+
+    add_member_to_calendar(calendar_id, user_id)
