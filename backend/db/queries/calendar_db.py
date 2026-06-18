@@ -1,7 +1,12 @@
+"""
+Assumes that data is already clean/validated by
+the time these functions are called
+"""
+
 import datetime as dt
 from typing import List, Sequence
 
-from sqlalchemy import select
+from sqlalchemy import delete, select
 
 from db.models.calendars import Calendar, CalendarMember
 from db.models.items import FixedEvent, FloatingTask
@@ -110,4 +115,17 @@ def add_member_to_calendar(calendar_id: int, user_id: int):
 
     with get_db() as session:
         session.add(new_calendar_member_entry)
+        session.commit()
+
+
+# Assumes data is already sanitised
+def remove_member_from_calendar(calendar_id: int, user_id: int):
+    with get_db() as session:
+        remove_member_statement = (
+            delete(CalendarMember)
+            .where(CalendarMember.calendar_id == calendar_id)
+            .where(CalendarMember.user_id == user_id)
+        )
+
+        session.execute(remove_member_statement)
         session.commit()

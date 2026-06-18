@@ -9,6 +9,7 @@ from db.queries.calendar_db import (
     check_calendar_exists,
     check_member_in_calendar,
     list_items_for_calendar_date,
+    remove_member_from_calendar,
 )
 from db.queries.user_db import check_user_exists
 from schemas.item_schemas import CreateFixedEvent, CreateFloatingTask
@@ -51,3 +52,17 @@ def add_member(calendar_id: int, user_id: int):
         )
 
     add_member_to_calendar(calendar_id, user_id)
+
+
+@router.post("/remove_member/{calendar_id}/{user_id}")
+def remove_member(calendar_id: int, user_id: int):
+    if not check_calendar_exists(calendar_id):
+        raise HTTPException(404, "calendar_id does not exist")
+    if not check_user_exists(user_id):
+        raise HTTPException(404, "user_id does not exist")
+    if not check_member_in_calendar(calendar_id, user_id):
+        raise HTTPException(
+            404, "User with the user_id is not in the Calendar with the calendar_id"
+        )
+
+    remove_member_from_calendar(calendar_id, user_id)
