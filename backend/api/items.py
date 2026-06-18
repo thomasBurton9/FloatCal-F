@@ -51,3 +51,22 @@ def get_calendar_of_item(
             return get_task_info(item_id).calendar_id
         except ValueError as e:
             raise HTTPException(422, str(e))
+
+
+# Potentially add explicit route in the future to only query calendar_id
+@router.get("/{item_id}/is_recurring")
+def is_item_recurring(item_id: int, item_type: Literal["event", "task"] = Query(...)):
+    if item_type == "event":
+        if not check_event_exists(item_id):
+            raise HTTPException(404, "The event with the specified id does not exist")
+        try:
+            return get_event_info(item_id).recurrence_rule is not None
+        except ValueError as e:
+            raise HTTPException(422, str(e))
+    else:
+        if not check_task_exists(item_id):
+            raise HTTPException(404, "The task with the specified id does not exist")
+        try:
+            return get_task_info(item_id).recurrence_rule is not None
+        except ValueError as e:
+            raise HTTPException(422, str(e))
