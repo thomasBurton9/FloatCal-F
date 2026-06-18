@@ -11,8 +11,14 @@ from db.queries.calendar_db import (
     list_items_for_calendar_date,
     remove_member_from_calendar,
 )
+from db.queries.item_db import (
+    check_event_exists,
+    check_task_exists,
+    remove_event,
+    remove_task,
+)
 from db.queries.user_db import check_user_exists
-from schemas.item_schemas import CreateFixedEvent, CreateFloatingTask
+from schemas.item_schemas import CreateFixedEvent, CreateFloatingTask, ItemType
 
 router = APIRouter(prefix="/api")
 
@@ -23,6 +29,22 @@ def get_calendar_items(calendar_id: int, date: dt.date):
     if not check_calendar_exists(calendar_id):
         raise HTTPException(404, "The calendar with that calendar_id does not exist")
     return list_items_for_calendar_date(calendar_id, date)
+
+
+@router.delete("/remove_item/{calendar_id}/{item_id}")
+def remove_item(calendar_id: int, item_id: int, item_type: ItemType):
+    if not check_calendar_exists(calendar_id):
+        raise HTTPException(404, "The calendar with that calendar_id does not exist")
+    if item_type.item_type == "event":
+        if not check_event_exists(calendar_id, item_id):
+            raise HTTPException(404, "The event with the specified id does not exist")
+
+        remove_event(calendar_id, item_id)
+    else:
+        if not check_task_exists(calendar_id, item_id):
+            raise HTTPException(404, "The task with the specified id does not exist")
+
+        remove_task(calendar_id, item_id)
 
 
 @router.post("/{calendar_id}/events")
@@ -54,7 +76,7 @@ def add_member(calendar_id: int, user_id: int):
     add_member_to_calendar(calendar_id, user_id)
 
 
-@router.post("/remove_member/{calendar_id}/{user_id}")
+@router.delete("/remove_member/{calendar_id}/{user_id}")
 def remove_member(calendar_id: int, user_id: int):
     if not check_calendar_exists(calendar_id):
         raise HTTPException(404, "calendar_id does not exist")

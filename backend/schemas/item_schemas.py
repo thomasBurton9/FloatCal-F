@@ -41,3 +41,7 @@ class CreateFloatingTask(BaseModel):
     )
     scheduled_start: dt.time | None
     manually_scheduled: bool = False
+
+
+class ItemType(BaseModel):
+    item_type: Literal["event", "task"]
