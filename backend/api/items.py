@@ -121,3 +121,18 @@ def get_scheduling_status(task_id: int) -> bool:
         raise HTTPException(404, "The task with the specified id does not exist")
     task: FloatingTask = get_task_info(task_id)
     return task.scheduled_start is not None
+
+
+# introduces issues when tasks go past midnight. Potentially migrate start_time to dt.datetime instead of dt.time
+@router.get("/{task_id}/scheduled_end")
+def get_scheduled_end(task_id: int) -> dt.time | None:
+    if not check_task_exists(task_id):
+        raise HTTPException(404, "The task with the specified id does not exist")
+    task: FloatingTask = get_task_info(task_id)
+    if task.scheduled_start is not None:
+        start_time: dt.datetime = dt.datetime.combine(task.date, task.scheduled_start)
+        duration: dt.timedelta = dt.timedelta(minutes=task.duration_minutes)
+        end_time: dt.time = (start_time + duration).time()
+
+        return end_time
+    return None
