@@ -9,6 +9,7 @@ from db.queries.item_db import (
     get_event_info,
     get_task_info,
 )
+from db.queries.reminder_db import get_event_reminders, get_task_reminders
 
 router = APIRouter(prefix="/api")
 
@@ -68,5 +69,24 @@ def is_item_recurring(item_id: int, item_type: Literal["event", "task"] = Query(
             raise HTTPException(404, "The task with the specified id does not exist")
         try:
             return get_task_info(item_id).recurrence_rule is not None
+        except ValueError as e:
+            raise HTTPException(422, str(e))
+
+
+# Maybe limit these to a date range in the future
+@router.get("/{item_id}/reminders")
+def get_item_reminders(item_id: int, item_type: Literal["event", "task"] = Query(...)):
+    if item_type == "event":
+        if not check_event_exists(item_id):
+            raise HTTPException(404, "The event with the specified id does not exist")
+        try:
+            return get_event_reminders(item_id)
+        except ValueError as e:
+            raise HTTPException(422, str(e))
+    else:
+        if not check_task_exists(item_id):
+            raise HTTPException(404, "The task with the specified id does not exist")
+        try:
+            return get_task_reminders(item_id)
         except ValueError as e:
             raise HTTPException(422, str(e))
