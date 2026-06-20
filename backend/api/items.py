@@ -1,8 +1,10 @@
+import datetime as dt
 from typing import Literal
 
 from fastapi import APIRouter, HTTPException, Query
 
 
+from db.models.items import FixedEvent
 from db.queries.item_db import (
     check_event_exists,
     check_task_exists,
@@ -90,3 +92,23 @@ def get_item_reminders(item_id: int, item_type: Literal["event", "task"] = Query
             return get_task_reminders(item_id)
         except ValueError as e:
             raise HTTPException(422, str(e))
+
+
+@router.get("/{event_id}/duration")
+def get_event_duration(event_id: int) -> float:
+    if not check_event_exists(event_id):
+        raise HTTPException(404, "The event with the specified id does not exist")
+    event: FixedEvent = get_event_info(event_id)
+
+    time_1: dt.timedelta = dt.timedelta(
+        hours=event.start_time.hour, minutes=event.start_time.minute
+    )
+    time_2: dt.timedelta = dt.timedelta(
+        hours=event.end_time.hour, minutes=event.end_time.minute
+    )
+
+    result: dt.timedelta = time_2 - time_1
+
+    minutes: float = result.total_seconds() // 60
+
+    return minutes
