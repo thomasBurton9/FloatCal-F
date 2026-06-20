@@ -4,7 +4,7 @@ from typing import Literal
 from fastapi import APIRouter, HTTPException, Query
 
 
-from db.models.items import FixedEvent
+from db.models.items import FixedEvent, FloatingTask
 from db.queries.item_db import (
     check_event_exists,
     check_task_exists,
@@ -112,3 +112,12 @@ def get_event_duration(event_id: int) -> float:
     minutes: float = result.total_seconds() // 60
 
     return minutes
+
+
+# Potentially introduce date here i.e. for recurring events if they're only scheduled on one date
+@router.get("/{task_id}/is_scheduled")
+def get_scheduling_status(task_id: int) -> bool:
+    if not check_task_exists(task_id):
+        raise HTTPException(404, "The task with the specified id does not exist")
+    task: FloatingTask = get_task_info(task_id)
+    return task.scheduled_start is not None
