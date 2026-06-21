@@ -1,17 +1,24 @@
 import datetime as dt
-from typing import Literal
+from typing import Literal, Sequence
 
 from fastapi import APIRouter, HTTPException, Query
 
 
 from db.models.items import FixedEvent, FloatingTask
+from db.models.reminders import CompletionLog
 from db.queries.item_db import (
     check_event_exists,
     check_task_exists,
     get_event_info,
     get_task_info,
 )
-from db.queries.reminder_db import get_event_reminders, get_task_reminders
+from db.queries.reminder_db import (
+    get_completion_logs,
+    get_event_reminders,
+    get_task_reminders,
+    mark_task_complete,
+    mark_task_incomplete,
+)
 
 router = APIRouter(prefix="/api")
 
@@ -136,3 +143,29 @@ def get_scheduled_end(task_id: int) -> dt.time | None:
 
         return end_time
     return None
+
+
+# Changed so it has to have a date instead of relying on default date if no date supplied
+# Also validating that the date is valid i.e. it is either the default date or one of the recurring dates.
+# Loop that in once recurrence logic is complete
+@router.put("/{task_id}/mark_complete")
+def mark_task_complete_api(task_id: int, date: dt.date = Query(...)):
+    if not check_task_exists(task_id):
+        raise HTTPException(404, "The task with the specified id does not exist")
+    completion_log_on_date: Sequence[CompletionLog] = get_completion_logs(task_id, date)
+    if completion_log_on_date:
+        raise HTTPException(422, "The specified task is already completed on that date")
+    mark_task_complete(task_id, date)
+
+
+# In the future potentially tighten and globalise wording such as 'incomplete'. Similar to fixed event, floating task
+@router.put("/{task_id}/mark_incomplete")
+def mark_task_incomplete_api(task_id: int, date: dt.date = Query(...)):
+    if not check_task_exists(task_id):
+        raise HTTPException(404, "The task with the specified id does not exist")
+    completion_log_on_date: Sequence[CompletionLog] = get_completion_logs(task_id, date)
+    if not completion_log_on_date:
+        raise HTTPException(
+            422, "The specified task is not already incomplete on that date"
+        )
+    mark_task_incomplete(task_id, date)

@@ -99,7 +99,10 @@ class FloatingTask(CalendarItem):
     def get_scheduled_end(self) -> dt.time | None:
         raise NotImplementedError
 
-    def mark_complete(self, on_date: dt.date | None = None):
+    def mark_complete(self, on_date: dt.date):
+        raise NotImplementedError
+
+    def mark_incomplete(self, on_date: dt.date):
         raise NotImplementedError
 
     def is_complete_on(self, on_date: dt.date | None = None) -> bool:
