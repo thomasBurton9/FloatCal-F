@@ -169,3 +169,12 @@ def mark_task_incomplete_api(task_id: int, date: dt.date = Query(...)):
             422, "The specified task is not already incomplete on that date"
         )
     mark_task_incomplete(task_id, date)
+
+
+@router.get("/{task_id}/is_complete")
+def is_task_complete_api(task_id: int, date: dt.date = Query(...)) -> bool:
+    if not check_task_exists(task_id):
+        raise HTTPException(404, "The task with the specified id does not exist")
+    completion_log_on_date: Sequence[CompletionLog] = get_completion_logs(task_id, date)
+
+    return len(completion_log_on_date) >= 1
