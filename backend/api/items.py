@@ -11,6 +11,7 @@ from db.queries.item_db import (
     check_task_exists,
     get_event_info,
     get_task_info,
+    manually_reschedule_task,
 )
 from db.queries.reminder_db import (
     get_completion_logs,
@@ -147,6 +148,16 @@ def get_scheduled_end_api(task_id: int) -> dt.time | None:
 
         return end_time
     return None
+
+
+@router.put("/{task_id}/manually_reschedule")
+def manually_reschedule_task_api(task_id: int, time: dt.time):
+    if not check_task_exists(task_id):
+        raise HTTPException(404, "The task with the specified id does not exist")
+    try:
+        manually_reschedule_task(task_id, time)
+    except ValueError as e:
+        raise HTTPException(422, str(e))
 
 
 # Changed so it has to have a date instead of relying on default date if no date supplied

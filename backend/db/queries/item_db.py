@@ -1,3 +1,5 @@
+import datetime as dt
+
 from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
@@ -97,6 +99,24 @@ def remove_task_session(calendar_id: int, task_id: int, session: Session):
     session.execute(delete_task_statement)
     session.execute(delete_reminder_statement)
     session.execute(delete_completion_statement)
+
+
+def manually_reschedule_task(task_id: int, time: dt.time):
+    get_floating_task_statement = select(FloatingTask).where(
+        FloatingTask.task_id == task_id
+    )
+
+    with get_db() as session:
+        old_floating_task: FloatingTask | None = session.execute(
+            get_floating_task_statement
+        ).scalar()
+        if old_floating_task is None:
+            raise ValueError("Floating task with specified id does not exist")
+
+        old_floating_task.manually_scheduled = True
+        old_floating_task.scheduled_start = time
+
+        session.commit()
 
 
 def update_fixed_event(calendar_id: int, event_id: int, event_data: UpdateFixedEvent):
