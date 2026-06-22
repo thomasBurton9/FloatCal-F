@@ -32,7 +32,7 @@ router = APIRouter(prefix="/api")
 
 
 @router.get("/{calendar_id}/items")
-def get_calendar_items(calendar_id: int, date: dt.date):
+def get_calendar_items_api(calendar_id: int, date: dt.date):
     # Maybe move all this logic into services/ to keep these functions clean
     if not check_calendar_exists(calendar_id):
         raise HTTPException(404, "The calendar with that calendar_id does not exist")
@@ -40,7 +40,7 @@ def get_calendar_items(calendar_id: int, date: dt.date):
 
 
 @router.delete("/remove_item/{calendar_id}/{item_id}")
-def remove_item(calendar_id: int, item_id: int, item_type: ItemType):
+def remove_item_api(calendar_id: int, item_id: int, item_type: ItemType):
     if not check_calendar_exists(calendar_id):
         raise HTTPException(404, "The calendar with that calendar_id does not exist")
     if item_type.item_type == "event":
@@ -56,21 +56,21 @@ def remove_item(calendar_id: int, item_id: int, item_type: ItemType):
 
 
 @router.post("/{calendar_id}/events")
-def add_event(calendar_id: int, event_data: CreateFixedEvent):
+def add_event_api(calendar_id: int, event_data: CreateFixedEvent):
     if not check_calendar_exists(calendar_id):
         raise HTTPException(404, "calendar_id does not exist")
     add_fixed_event(calendar_id, event_data)
 
 
 @router.post("/{calendar_id}/tasks")
-def add_task(calendar_id: int, task_data: CreateFloatingTask):
+def add_task_api(calendar_id: int, task_data: CreateFloatingTask):
     if not check_calendar_exists(calendar_id):
         raise HTTPException(404, "calendar_id does not exist")
     add_floating_task(calendar_id, task_data)
 
 
 @router.patch("/{calendar_id}/events/{event_id}")
-def update_event(calendar_id: int, event_id: int, event_data: UpdateFixedEvent):
+def update_event_api(calendar_id: int, event_id: int, event_data: UpdateFixedEvent):
     if not check_calendar_exists(calendar_id):
         raise HTTPException(404, "calendar_id does not exist")
     if not check_event_exists(event_id, calendar_id):
@@ -83,7 +83,7 @@ def update_event(calendar_id: int, event_id: int, event_data: UpdateFixedEvent):
 
 
 @router.patch("/{calendar_id}/tasks/{task_id}")
-def update_task(calendar_id: int, task_id: int, task_data: UpdateFloatingTask):
+def update_task_api(calendar_id: int, task_id: int, task_data: UpdateFloatingTask):
     if not check_calendar_exists(calendar_id):
         raise HTTPException(404, "calendar_id does not exist")
     if not check_task_exists(task_id, calendar_id):
@@ -93,7 +93,7 @@ def update_task(calendar_id: int, task_id: int, task_data: UpdateFloatingTask):
 
 
 @router.post("/add_member/{calendar_id}/{user_id}")
-def add_member(calendar_id: int, user_id: int):
+def add_member_api(calendar_id: int, user_id: int):
     # Check if user_id is not in calendar
     if not check_calendar_exists(calendar_id):
         raise HTTPException(404, "calendar_id does not exist")
@@ -108,7 +108,7 @@ def add_member(calendar_id: int, user_id: int):
 
 
 @router.delete("/remove_member/{calendar_id}/{user_id}")
-def remove_member(calendar_id: int, user_id: int):
+def remove_member_api(calendar_id: int, user_id: int):
     if not check_calendar_exists(calendar_id):
         raise HTTPException(404, "calendar_id does not exist")
     if not check_user_exists(user_id):

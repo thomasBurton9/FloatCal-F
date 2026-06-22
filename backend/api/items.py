@@ -25,7 +25,7 @@ router = APIRouter(prefix="/api")
 
 # Request in the form of /api/{item_id}/info?item_type=event
 @router.get("/{item_id}/info")
-def get_item_info(item_id: int, item_type: Literal["event", "task"] = Query(...)):
+def get_item_info_api(item_id: int, item_type: Literal["event", "task"] = Query(...)):
     if item_type == "event":
         if not check_event_exists(item_id):
             raise HTTPException(404, "The event with the specified id does not exist")
@@ -44,7 +44,7 @@ def get_item_info(item_id: int, item_type: Literal["event", "task"] = Query(...)
 
 # Potentially add explicit route in the future to only query calendar_id
 @router.get("/{item_id}/calendar")
-def get_calendar_of_item(
+def get_calendar_of_item_api(
     item_id: int, item_type: Literal["event", "task"] = Query(...)
 ):
     if item_type == "event":
@@ -65,7 +65,9 @@ def get_calendar_of_item(
 
 # Potentially add explicit route in the future to only query calendar_id
 @router.get("/{item_id}/is_recurring")
-def is_item_recurring(item_id: int, item_type: Literal["event", "task"] = Query(...)):
+def is_item_recurring_api(
+    item_id: int, item_type: Literal["event", "task"] = Query(...)
+):
     if item_type == "event":
         if not check_event_exists(item_id):
             raise HTTPException(404, "The event with the specified id does not exist")
@@ -84,7 +86,9 @@ def is_item_recurring(item_id: int, item_type: Literal["event", "task"] = Query(
 
 # Maybe limit these to a date range in the future
 @router.get("/{item_id}/reminders")
-def get_item_reminders(item_id: int, item_type: Literal["event", "task"] = Query(...)):
+def get_item_reminders_api(
+    item_id: int, item_type: Literal["event", "task"] = Query(...)
+):
     if item_type == "event":
         if not check_event_exists(item_id):
             raise HTTPException(404, "The event with the specified id does not exist")
@@ -102,7 +106,7 @@ def get_item_reminders(item_id: int, item_type: Literal["event", "task"] = Query
 
 
 @router.get("/{event_id}/duration")
-def get_event_duration(event_id: int) -> float:
+def get_event_duration_api(event_id: int) -> float:
     if not check_event_exists(event_id):
         raise HTTPException(404, "The event with the specified id does not exist")
     event: FixedEvent = get_event_info(event_id)
@@ -123,7 +127,7 @@ def get_event_duration(event_id: int) -> float:
 
 # Potentially introduce date here i.e. for recurring events if they're only scheduled on one date
 @router.get("/{task_id}/is_scheduled")
-def get_scheduling_status(task_id: int) -> bool:
+def get_scheduling_status_api(task_id: int) -> bool:
     if not check_task_exists(task_id):
         raise HTTPException(404, "The task with the specified id does not exist")
     task: FloatingTask = get_task_info(task_id)
@@ -132,7 +136,7 @@ def get_scheduling_status(task_id: int) -> bool:
 
 # introduces issues when tasks go past midnight. Potentially migrate start_time to dt.datetime instead of dt.time
 @router.get("/{task_id}/scheduled_end")
-def get_scheduled_end(task_id: int) -> dt.time | None:
+def get_scheduled_end_api(task_id: int) -> dt.time | None:
     if not check_task_exists(task_id):
         raise HTTPException(404, "The task with the specified id does not exist")
     task: FloatingTask = get_task_info(task_id)
