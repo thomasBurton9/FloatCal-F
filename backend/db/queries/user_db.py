@@ -41,7 +41,7 @@ def get_user_calendars(user_id: int):
         return calendars
 
 
-def create_user(data: CreateUser) -> bool:
+def create_user(data: CreateUser) -> int:
     users_with_email_statement = select(User).where(User.email == data.email)
 
     with get_db() as session:
@@ -50,7 +50,7 @@ def create_user(data: CreateUser) -> bool:
 
         password_hasher: PasswordHash = PasswordHash((Argon2Hasher(),))
         hashed_password: str = password_hasher.hash(data.password)
-
+        
         new_user: User = User(
             email=data.email,
             password_hash=hashed_password,
@@ -62,7 +62,7 @@ def create_user(data: CreateUser) -> bool:
         new_settings: Setting = Setting(user_id=new_user.user_id)
         session.add(new_settings)
         session.commit()
-        return True  # Indicate success
+        return new_user.user_id  # Indicate success
 
 
 def delete_user(user_id: int, data: DeleteUser) -> bool:
@@ -154,7 +154,7 @@ def delete_user(user_id: int, data: DeleteUser) -> bool:
         return True
 
 
-def authenticate_user(data: UserLogin) -> bool:
+def authenticate_user(data: UserLogin) -> int:
     users_with_email_statement = select(User).where(User.email == data.email)
     with get_db() as session:
         user: User | None = session.execute(users_with_email_statement).scalar()
@@ -166,4 +166,6 @@ def authenticate_user(data: UserLogin) -> bool:
 
         valid_password: bool = password_hasher.verify(data.password, user.password_hash)
 
-        return valid_password
+        if not valid_password:
+            raise ValueError("Invalid password")
+        return user.user_id

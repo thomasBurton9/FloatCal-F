@@ -14,8 +14,8 @@ router = APIRouter(prefix="/api")
 @router.post("/authentication/create_user")
 def create_user_api(data: CreateUser):
     try:
-        success: bool = create_user(data)
-        return success
+        user_id: int = create_user(data)
+        return user_id
     except ValueError as e:
         raise HTTPException(422, str(e))
 
@@ -37,7 +37,7 @@ def delete_user_api(user_id: int, data: DeleteUser):
 @router.post("/authentication/login")
 def authenticate_user_api(data: UserLogin):
     try:
-        success: bool = authenticate_user(data)
-        return success
+        user_id: int = authenticate_user(data)
+        return user_id
     except ValueError as e:
         raise HTTPException(422, str(e))
