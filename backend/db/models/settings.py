@@ -11,6 +11,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from db.base import Base
 
 
+# More validation checks are required
 class Setting(Base):
     __tablename__ = "Settings"
     __table_args__ = (
