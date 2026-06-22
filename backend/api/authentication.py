@@ -1,7 +1,12 @@
 from fastapi import APIRouter, HTTPException
 
-from db.queries.user_db import check_user_exists, create_user, delete_user
-from schemas.user_schemas import CreateUser, DeleteUser
+from db.queries.user_db import (
+    authenticate_user,
+    check_user_exists,
+    create_user,
+    delete_user,
+)
+from schemas.user_schemas import CreateUser, DeleteUser, UserLogin
 
 router = APIRouter(prefix="/api")
 
@@ -28,5 +33,11 @@ def delete_user_api(user_id: int, data: DeleteUser):
         raise HTTPException(422, str(e))
 
 
-def authenticate_user_api():
-    pass
+# Currently does not do much except validate the logic
+@router.post("/authentication/login")
+def authenticate_user_api(data: UserLogin):
+    try:
+        success: bool = authenticate_user(data)
+        return success
+    except ValueError as e:
+        raise HTTPException(422, str(e))

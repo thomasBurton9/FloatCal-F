@@ -10,7 +10,7 @@ from db.models.settings import Setting
 from db.models.users import User
 from db.queries.item_db import remove_event_session, remove_task_session
 from db.session import get_db
-from schemas.user_schemas import CreateUser, DeleteUser
+from schemas.user_schemas import CreateUser, DeleteUser, UserLogin
 
 
 def check_user_exists(user_id: int):
@@ -152,3 +152,18 @@ def delete_user(user_id: int, data: DeleteUser) -> bool:
         session.commit()
 
         return True
+
+
+def authenticate_user(data: UserLogin) -> bool:
+    users_with_email_statement = select(User).where(User.email == data.email)
+    with get_db() as session:
+        user: User | None = session.execute(users_with_email_statement).scalar()
+
+        if user is None:
+            raise ValueError("User with specified email does not exist")
+
+        password_hasher = PasswordHash((Argon2Hasher(),))
+
+        valid_password: bool = password_hasher.verify(data.password, user.password_hash)
+
+        return valid_password
