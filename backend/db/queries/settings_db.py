@@ -27,3 +27,13 @@ def update_settings(user_id: int, data: UpdateSettings):
             setattr(old_settings, field, value)
 
         session.commit()
+
+
+def get_settings(user_id: int) -> Setting:
+    get_settings_statement = select(Setting).where(Setting.user_id == user_id)
+
+    with get_db() as session:
+        settings = session.execute(get_settings_statement).scalar()
+        if not settings:
+            raise ValueError("Error: No settings table")
+        return settings
