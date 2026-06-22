@@ -11,6 +11,7 @@ from sqlalchemy import delete, select
 from db.models.calendars import Calendar, CalendarMember
 from db.models.items import FixedEvent, FloatingTask
 from db.session import get_db
+from schemas.calendar_schemas import CreateCalendar
 from schemas.item_schemas import CreateFixedEvent, CreateFloatingTask
 
 
@@ -128,4 +129,20 @@ def remove_member_from_calendar(calendar_id: int, user_id: int):
         )
 
         session.execute(remove_member_statement)
+        session.commit()
+
+
+def create_calendar(user_id: int, data: CreateCalendar):
+    new_calendar: Calendar = Calendar(
+        name=data.name, colour=data.colour, created_by_user_id=user_id
+    )
+
+    with get_db() as session:
+        session.add(new_calendar)
+        session.flush()
+        # Make sure new owner/creator has access to calendar
+        new_member: CalendarMember = CalendarMember(
+            calendar_id=new_calendar.calendar_id, user_id=user_id
+        )
+        session.add(new_member)
         session.commit()
