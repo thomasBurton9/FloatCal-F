@@ -146,3 +146,17 @@ def create_calendar(user_id: int, data: CreateCalendar):
         )
         session.add(new_member)
         session.commit()
+
+
+def get_calendar_info(calendar_id: int) -> Calendar:
+    if not check_calendar_exists(calendar_id):
+        raise ValueError("Calendar with specified id does not exist")
+    calendar_info_statement = select(Calendar).where(
+        Calendar.calendar_id == calendar_id
+    )
+
+    with get_db() as session:
+        calendar: Calendar | None = session.execute(calendar_info_statement).scalar()
+        if not calendar:
+            raise ValueError("Calendar with specified id does not exist")
+        return calendar

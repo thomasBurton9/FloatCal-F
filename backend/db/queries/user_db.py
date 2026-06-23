@@ -50,7 +50,7 @@ def create_user(data: CreateUser) -> int:
 
         password_hasher: PasswordHash = PasswordHash((Argon2Hasher(),))
         hashed_password: str = password_hasher.hash(data.password)
-        
+
         new_user: User = User(
             email=data.email,
             password_hash=hashed_password,

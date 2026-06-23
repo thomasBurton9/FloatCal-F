@@ -32,7 +32,7 @@ class Calendar:
 
     # Potentially make this function itself search the settings
     # and pass user_id instead
-    def get_free_gaps(self, date: dt.date, settings: dict) -> list[tuple]:
+    def get_free_gaps(self, date: dt.date) -> list[tuple]:
         raise NotImplementedError
 
     def schedule_floating_task(self, task_id: int, settings: dict):
