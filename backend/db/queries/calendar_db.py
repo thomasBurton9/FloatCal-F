@@ -1,8 +1,3 @@
-"""
-Assumes that data is already clean/validated by
-the time these functions are called
-"""
-
 import datetime as dt
 from typing import List, Sequence
 

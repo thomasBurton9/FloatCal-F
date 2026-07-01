@@ -1,7 +1,5 @@
 import datetime as dt
 
-from fastapi import APIRouter, HTTPException
-
 from db.queries.calendar_db import (
     add_fixed_event,
     add_floating_task,
@@ -20,6 +18,7 @@ from db.queries.item_db import (
     update_floating_task,
 )
 from db.queries.user_db import check_user_exists
+from fastapi import APIRouter, HTTPException
 from schemas.item_schemas import (
     CreateFixedEvent,
     CreateFloatingTask,

@@ -8,14 +8,6 @@ from db.queries.calendar_db import get_calendar_info, list_items_for_calendar_da
 from db.queries.settings_db import get_settings
 
 
-# There might be no point in these functions
-# api/ could call db/queries/ directly
-# For more complex functions it would make sense though
-def get_items(calendar_id: int, date: dt.date):
-    raise NotImplementedError
-    # return calendar_db.list_items_for_calendar_date(calendar_id, date)
-
-
 # Potentially add more checks for loop arounds and similar
 def add_time(time: dt.time, amount: int) -> dt.time:
     time_date = dt.datetime.combine(dt.datetime.today(), time)

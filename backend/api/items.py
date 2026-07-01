@@ -1,9 +1,6 @@
 import datetime as dt
 from typing import Literal, Sequence
 
-from fastapi import APIRouter, HTTPException, Query
-
-
 from db.models.items import FixedEvent, FloatingTask
 from db.models.reminders import CompletionLog
 from db.queries.item_db import (
@@ -20,6 +17,7 @@ from db.queries.reminder_db import (
     mark_task_complete,
     mark_task_incomplete,
 )
+from fastapi import APIRouter, HTTPException, Query
 
 router = APIRouter(prefix="/api")
 

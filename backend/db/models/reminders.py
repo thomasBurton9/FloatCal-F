@@ -1,7 +1,3 @@
-"""
-Contains tables reminders and completion log
-"""
-
 import datetime as dt
 
 from sqlalchemy import CheckConstraint, ForeignKey, UniqueConstraint

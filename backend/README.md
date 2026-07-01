@@ -22,3 +22,8 @@ Type problems and structural Flaws
 ```bash
 uv run mypy .
 ```
+
+## Documentation
+
+### File level docstrings
+File level docstrings should be in the following format:

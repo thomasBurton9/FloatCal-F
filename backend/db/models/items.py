@@ -1,13 +1,9 @@
-"""
-Contains tables Fixed Event and Floating Task
-"""
+import datetime as dt
 
 from sqlalchemy import CheckConstraint, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from db.base import Base
-
-import datetime as dt
 
 
 class FixedEvent(Base):

@@ -1,11 +1,10 @@
-from fastapi import APIRouter, HTTPException
-
 from db.queries.user_db import (
     authenticate_user,
     check_user_exists,
     create_user,
     delete_user,
 )
+from fastapi import APIRouter, HTTPException
 from schemas.user_schemas import CreateUser, DeleteUser, UserLogin
 
 router = APIRouter(prefix="/api")

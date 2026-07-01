@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from api import health, calendars, items, users, authentication
+from api import authentication, calendars, health, items, users
 
 app = FastAPI(title="FloatCal API backend")
 

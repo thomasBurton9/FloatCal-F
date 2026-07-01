@@ -1,7 +1,3 @@
-"""
-Contains tables Calendars and Calendar Members
-"""
-
 from sqlalchemy import ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 

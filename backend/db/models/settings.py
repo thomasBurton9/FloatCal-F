@@ -1,11 +1,7 @@
-"""
-Contains table Settings
-"""
-
 import datetime as dt
 from typing import Any
 
-from sqlalchemy import JSON, ForeignKey, CheckConstraint
+from sqlalchemy import JSON, CheckConstraint, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 
 from db.base import Base
