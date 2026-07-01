@@ -119,6 +119,23 @@ def manually_reschedule_task(task_id: int, time: dt.time):
         session.commit()
 
 
+def schedule_task(task_id: int, time: dt.time | None):
+    get_floating_task_statement = select(FloatingTask).where(
+        FloatingTask.task_id == task_id
+    )
+
+    with get_db() as session:
+        old_floating_task: FloatingTask | None = session.execute(
+            get_floating_task_statement
+        ).scalar()
+        if old_floating_task is None:
+            raise ValueError("Floating task with specified id does not exist")
+
+        old_floating_task.scheduled_start = time
+
+        session.commit()
+
+
 def update_fixed_event(calendar_id: int, event_id: int, event_data: UpdateFixedEvent):
     get_fixed_event_statement = (
         select(FixedEvent)

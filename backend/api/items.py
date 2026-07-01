@@ -1,6 +1,8 @@
 import datetime as dt
 from typing import Literal, Sequence
 
+from fastapi import APIRouter, HTTPException, Query
+
 from db.models.items import FixedEvent, FloatingTask
 from db.models.reminders import CompletionLog
 from db.queries.item_db import (
@@ -17,7 +19,7 @@ from db.queries.reminder_db import (
     mark_task_complete,
     mark_task_incomplete,
 )
-from fastapi import APIRouter, HTTPException, Query
+from services.calendar_service import schedule_floating_task
 
 router = APIRouter(prefix="/api")
 
@@ -191,3 +193,11 @@ def is_task_complete_api(task_id: int, date: dt.date = Query(...)) -> bool:
     completion_log_on_date: Sequence[CompletionLog] = get_completion_logs(task_id, date)
 
     return len(completion_log_on_date) >= 1
+
+
+@router.put("/{task_id}/automatically_schedule")
+def schedule_floating_task_api(task_id: int, calendar_id: int, date: dt.date):
+    try:
+        schedule_floating_task(calendar_id, date, task_id)
+    except ValueError as e:
+        raise HTTPException(422, str(e))
