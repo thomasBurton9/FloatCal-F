@@ -1,13 +1,28 @@
 import { View, Text, TextInput, Pressable, StyleSheet } from "react-native";
+import { useState } from "react";
 
-function AuthenticationModeSwitcher() {
+function AuthenticationModeSwitcher({ mode, setMode }) {
   return (
     <>
       <View style={styles.authenticationSwitcher}>
-        <Pressable>
+        <Pressable
+          /* Use blue colouring when selected, white otherwise */
+          style={[
+            mode === "Login" ? styles.currentMode : styles.nonCurrentMode,
+            styles.authenticationMode,
+          ]}
+          onPress={() => setMode("Login")}
+        >
           <Text>Login</Text>
         </Pressable>
-        <Pressable>
+        <Pressable
+          /* Use blue colouring when selected, white otherwise */
+          style={[
+            mode === "Register" ? styles.currentMode : styles.nonCurrentMode,
+            styles.authenticationMode,
+          ]}
+          onPress={() => setMode("Register")}
+        >
           <Text>Register</Text>
         </Pressable>
       </View>
@@ -16,13 +31,17 @@ function AuthenticationModeSwitcher() {
 }
 
 export default function AuthenticationScreen({ onLogin }) {
+  const [authenticationMode, setAuthenticationMode] = useState("Login");
   return (
     <>
       <View style={styles.screen}>
         <View>
           <Text>Welcome to Float Cal</Text>
         </View>
-        <AuthenticationModeSwitcher></AuthenticationModeSwitcher>
+        <AuthenticationModeSwitcher
+          mode={authenticationMode}
+          setMode={setAuthenticationMode}
+        ></AuthenticationModeSwitcher>
         <View>
           <Text>Email</Text>
           <View>
@@ -53,5 +72,15 @@ const styles = StyleSheet.create({
   screen: {
     justifyContent: "center", // Center content vertically
     alignItems: "center", // Center content horizontally
+  },
+  currentMode: {
+    backgroundColor: "blue", // In the future move this too a dedicated theme file with chosen themed colours
+  },
+  nonCurrentMode: {
+    backgroundColor: "white",
+  },
+
+  authenticationMode: {
+    padding: 10,
   },
 });

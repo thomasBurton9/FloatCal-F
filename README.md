@@ -26,10 +26,14 @@ npx expo start
 
 ### Naming Conventions
 
+#### Backend
 All classes, objects and database models should use PascalCase
 
 All methods, variables and functions should use snake_case
 
 All constants should use UPPERCASE
 
+#### Frontend
 All React Components must be PascalCase as dictated by React
+
+All variable and function names should use CamelCase
