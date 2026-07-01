@@ -10,5 +10,5 @@ __pycache__/
 
 # Javascript
 
-# Both
+# Both .env files in backend/ and frontend/
 .env
