@@ -18,6 +18,7 @@ export default function App() {
     );
   } else {
     return (
+      // Remove once logic is perfected
       <>
         <SafeAreaView>
           <Text>Login Successful</Text>

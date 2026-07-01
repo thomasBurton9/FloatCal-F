@@ -30,8 +30,50 @@ function AuthenticationModeSwitcher({ mode, setMode }) {
   );
 }
 
+function AuthenticationFields({ mode, fields, setFields }) {
+  return (
+    <>
+      {mode === "Register" ? (
+        <View>
+          <Text>Name</Text>
+          <View>
+            <TextInput
+              value={fields.name}
+              onChangeText={(name) => setFields({ ...fields, name })}
+            ></TextInput>
+          </View>
+        </View>
+      ) : null}
+      <View>
+        <Text>Email</Text>
+        <View>
+          <TextInput
+            value={fields.email}
+            onChangeText={(email) => setFields({ ...fields, email })}
+          ></TextInput>
+        </View>
+      </View>
+      <View>
+        <Text>Password</Text>
+        <View>
+          {/* Currently password is always visible */}
+          <TextInput
+            value={fields.password}
+            onChangeText={(password) => setFields({ ...fields, password })}
+          ></TextInput>
+        </View>
+      </View>
+    </>
+  );
+}
 export default function AuthenticationScreen({ onLogin }) {
   const [authenticationMode, setAuthenticationMode] = useState("Login");
+  const [authenticationFields, setAuthenticationFields] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+
   return (
     <>
       <View style={styles.screen}>
@@ -42,22 +84,22 @@ export default function AuthenticationScreen({ onLogin }) {
           mode={authenticationMode}
           setMode={setAuthenticationMode}
         ></AuthenticationModeSwitcher>
+        <AuthenticationFields
+          mode={authenticationMode}
+          fields={authenticationFields}
+          setFields={setAuthenticationFields}
+        ></AuthenticationFields>
         <View>
-          <Text>Email</Text>
-          <View>
-            <TextInput></TextInput>
-          </View>
-        </View>
-        <View>
-          <Text>Password</Text>
-          <View>
-            {/* Currently password is always visible */}
-            <TextInput></TextInput>
-          </View>
-        </View>
-        <View>
-          <Pressable onPress={onLogin}>
-            <Text>Login</Text>
+          <Pressable
+            onPress={() => {
+              if (authenticationMode === "Login") {
+                handleLogin(onLogin, authenticationFields);
+              } else {
+                handleRegister(onLogin, authenticationFields);
+              }
+            }}
+          >
+            <Text>{authenticationMode === "Login" ? "Login" : "Register"}</Text>
           </Pressable>
         </View>
       </View>
@@ -65,6 +107,16 @@ export default function AuthenticationScreen({ onLogin }) {
   );
 }
 
+// Currently has the same functionality as handleLogin
+// Will change once full implementation is used
+function handleRegister(onLogin, fields) {
+  console.log(fields); // Remove once logic is perfected
+  onLogin();
+}
+function handleLogin(onLogin, fields) {
+  console.log(fields); // Remove once logic is perfected
+  onLogin();
+}
 const styles = StyleSheet.create({
   authenticationSwitcher: {
     flexDirection: "row",
