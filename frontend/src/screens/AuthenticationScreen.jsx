@@ -1,16 +1,28 @@
-import { View, Text, TextInput, Pressable } from "react-native";
+import { View, Text, TextInput, Pressable, StyleSheet } from "react-native";
+
+function AuthenticationModeSwitcher() {
+  return (
+    <>
+      <View style={styles.authenticationSwitcher}>
+        <Pressable>
+          <Text>Login</Text>
+        </Pressable>
+        <Pressable>
+          <Text>Register</Text>
+        </Pressable>
+      </View>
+    </>
+  );
+}
 
 export default function AuthenticationScreen({ onLogin }) {
   return (
     <>
-      <View>
+      <View style={styles.screen}>
         <View>
           <Text>Welcome to Float Cal</Text>
         </View>
-        <View>
-          <Text>Login</Text>
-          <Text>Register</Text>
-        </View>
+        <AuthenticationModeSwitcher></AuthenticationModeSwitcher>
         <View>
           <Text>Email</Text>
           <View>
@@ -33,3 +45,13 @@ export default function AuthenticationScreen({ onLogin }) {
     </>
   );
 }
+
+const styles = StyleSheet.create({
+  authenticationSwitcher: {
+    flexDirection: "row",
+  },
+  screen: {
+    justifyContent: "center", // Center content vertically
+    alignItems: "center", // Center content horizontally
+  },
+});

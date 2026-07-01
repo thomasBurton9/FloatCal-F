@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Text } from "react-native";
+import { Pressable, Text } from "react-native";
 import AuthenticationScreen from "./src/screens/AuthenticationScreen";
+import { SafeAreaView } from "react-native-safe-area-context"; // Prevent app from using space reserved for the os
 
 // const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
@@ -9,14 +10,22 @@ export default function App() {
 
   if (!user) {
     return (
-      <AuthenticationScreen
-        onLogin={() => setUser(true)}
-      ></AuthenticationScreen>
+      <SafeAreaView>
+        <AuthenticationScreen
+          onLogin={() => setUser(true)}
+        ></AuthenticationScreen>
+      </SafeAreaView>
     );
   } else {
     return (
       <>
-        <Text>Login Successful</Text>
+        <SafeAreaView>
+          <Text>Login Successful</Text>
+          {/* Temporary logout */}
+          <Pressable onPress={() => setUser(false)}>
+            <Text>Logout</Text>
+          </Pressable>
+        </SafeAreaView>
       </>
     );
   }

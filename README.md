@@ -31,3 +31,5 @@ All classes, objects and database models should use PascalCase
 All methods, variables and functions should use snake_case
 
 All constants should use UPPERCASE
+
+All React Components must be PascalCase as dictated by React
