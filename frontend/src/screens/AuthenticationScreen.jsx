@@ -94,7 +94,7 @@ export default function AuthenticationScreen({ onLogin }) {
         ></AuthenticationFields>
         {errorMessage !== "" ? (
           <View>
-            <Text>{errorMessage}</Text>
+            <Text style={styles.errorMessage}>{errorMessage}</Text>
           </View>
         ) : null}
         <View>
@@ -157,7 +157,6 @@ function validateCreateUser(fields) {
 // Currently has the same functionality as handleLogin
 // Will change once full implementation is used
 async function handleRegister(onLogin, fields, setErrorMessage) {
-  console.log(fields); // Remove once logic is perfected
   const validation_result = validateCreateUser(fields);
 
   if (validation_result) {
@@ -184,6 +183,7 @@ async function handleRegister(onLogin, fields, setErrorMessage) {
         return false;
       }
     } catch (error) {
+      setErrorMessage("An unkown error occured");
       console.error("Error: ", error);
       return false;
     }
@@ -195,13 +195,59 @@ async function handleRegister(onLogin, fields, setErrorMessage) {
     onLogin();
   }
 }
-function handleLogin(onLogin, fields) {
-  console.log(fields); // Remove once logic is perfected
-  onLogin();
+
+function validateLoginUser(fields) {
+  if (fields.email.length < 4) {
+    return "Email must be at least 4 characters";
+  }
+  if (fields.email.length > 126) {
+    return "Email must be at most 126 characters";
+  }
+  return "";
+}
+
+async function handleLogin(onLogin, fields, setErrorMessage) {
+  const validation_result = validateLoginUser(fields);
+
+  if (validation_result) {
+    setErrorMessage(validation_result);
+    return;
+  }
+
+  async function authenticateAccount() {
+    try {
+      const authenticate_url = API_URL + "/authentication/login";
+      const response = await fetch(authenticate_url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: fields.email,
+          password: fields.password,
+        }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        setErrorMessage(getAuthenticationErrorMessage(data, "Authenticate"));
+        return false;
+      }
+    } catch (error) {
+      setErrorMessage("An unkown error occured");
+      console.error("Error: ", error);
+      return false;
+    }
+    return true;
+  }
+  const result = await authenticateAccount();
+  if (result) {
+    setErrorMessage("");
+    onLogin();
+  }
 }
 
 // Used given error messages from api can have 2 different shapes
-function getAuthenticationErrorMessage(data) {
+function getAuthenticationErrorMessage(data, type = "Register") {
   const detail = data["detail"];
 
   // For custom HTTPExceptions explicitly raised in backend
@@ -214,12 +260,16 @@ function getAuthenticationErrorMessage(data) {
     // Ideally, this should not happen given the frontend validation should take care of these errors and prevent submission
     if (field === "email") {
       return "Email must be at least 4 characters";
-    } else if (field === "password") {
-      return "Password must be at least 4 characters";
-    } else if (field === "display_name") {
-      return "Name must be at least 3 characters";
     }
-
+    if (type === "Register") {
+      // These messages only appear during registring and not during login, so they are skipped for loggin
+      if (field === "password") {
+        return "Password must be at least 4 characters";
+      }
+      if (field === "display_name") {
+        return "Name must be at least 3 characters";
+      }
+    }
     return error.msg ? error.msg : "Invalid input";
   }
 }
@@ -241,5 +291,9 @@ const styles = StyleSheet.create({
 
   authenticationMode: {
     padding: 10,
+  },
+
+  errorMessage: {
+    color: "red",
   },
 });
