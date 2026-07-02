@@ -1,4 +1,11 @@
-import { View, Text, TextInput, Pressable, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  Pressable,
+  StyleSheet,
+  Image,
+} from "react-native";
 import { useState } from "react";
 import { API_URL } from "../constants.js";
 
@@ -63,7 +70,7 @@ function AuthenticationFields({ mode, fields, setFields }) {
       </View>
       <View>
         <Text>Password</Text>
-        <View>
+        <View style={styles.inputIconRow}>
           {/* Currently password is never visible given there is no password toggle */}
           <TextInput
             value={fields.password}
@@ -74,7 +81,23 @@ function AuthenticationFields({ mode, fields, setFields }) {
             autoCorrect={false}
             maxLength={120}
             secureTextEntry={passwordHidden}
+            style={styles.passwordInput}
           ></TextInput>
+          {/*Eye Password See View SVG by Gokce Curt, licensed under CC BY 4.0,
+            Source: https://www.svgrepo.com/svg/390427/eye-password-see-view, Changes made: converted to png*/}
+          {/* Toggle password visibility via icon */}
+          <Pressable
+            onPress={() =>
+              passwordHidden
+                ? setPasswordHidden(false)
+                : setPasswordHidden(true)
+            }
+          >
+            <Image
+              source={require("../../assets/password_visibility_icon64x64.png")}
+              style={styles.inputIcon}
+            ></Image>
+          </Pressable>
         </View>
       </View>
     </>
@@ -308,5 +331,20 @@ const styles = StyleSheet.create({
 
   errorMessage: {
     color: "red",
+  },
+
+  inputIconRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+
+  inputIcon: {
+    width: 24,
+    height: 24,
+  },
+
+  passwordInput: {
+    minWidth: 180,
+    flex: 1,
   },
 });
