@@ -2,8 +2,7 @@ import { useState } from "react";
 import { Pressable, Text } from "react-native";
 import AuthenticationScreen from "./src/screens/AuthenticationScreen";
 import { SafeAreaView } from "react-native-safe-area-context"; // Prevent app from using space reserved for the os
-
-// const API_URL = process.env.EXPO_PUBLIC_API_URL;
+// import { API_URL } from "./src/constants.js"
 
 export default function App() {
   const [user, setUser] = useState(null); // Currently no proper authentication except a variable

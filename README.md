@@ -37,3 +37,6 @@ All constants should use UPPERCASE
 All React Components must be PascalCase as dictated by React
 
 All variable and function names should use CamelCase
+
+### Other conventions
+Use comments in the format `TODO: {content}` to indicate future work needs to be done

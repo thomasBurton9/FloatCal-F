@@ -10,7 +10,7 @@ API_URL={your_api_url}
 Example:
 
 ```.env
-API_URL=xxx.yyy.xx.yyy:8000/api
+EXPO_PUBLIC_API_URL=xxx.yyy.xx.yyy:8000/api
 ```
 
 ```bash

@@ -1,5 +1,6 @@
 import { View, Text, TextInput, Pressable, StyleSheet } from "react-native";
 import { useState } from "react";
+import { API_URL } from "../constants.js";
 
 function AuthenticationModeSwitcher({ mode, setMode }) {
   return (
@@ -74,6 +75,8 @@ export default function AuthenticationScreen({ onLogin }) {
     password: "",
   });
 
+  const [errorMessage, setErrorMessage] = useState("");
+
   return (
     <>
       <View style={styles.screen}>
@@ -89,13 +92,18 @@ export default function AuthenticationScreen({ onLogin }) {
           fields={authenticationFields}
           setFields={setAuthenticationFields}
         ></AuthenticationFields>
+        {errorMessage !== "" ? (
+          <View>
+            <Text>{errorMessage}</Text>
+          </View>
+        ) : null}
         <View>
           <Pressable
             onPress={() => {
               if (authenticationMode === "Login") {
-                handleLogin(onLogin, authenticationFields);
+                handleLogin(onLogin, authenticationFields, setErrorMessage);
               } else {
-                handleRegister(onLogin, authenticationFields);
+                handleRegister(onLogin, authenticationFields, setErrorMessage);
               }
             }}
           >
@@ -107,16 +115,115 @@ export default function AuthenticationScreen({ onLogin }) {
   );
 }
 
+// Validate input on the frontend to align with backend pydantic validation
+// Maybe move to zod or other pydantic equivalent in the future
+function validateCreateUser(fields) {
+  // Use regular expressions to check if an email is valid -> Currently not perfect logic, however good enough for current scope
+  // [a-zA-z0-9._%+-] -> Match any characters from A-Z (any case), from 0-9 or one of [. _ % + -]
+  // + <- match the preceding token atleast once
+  // @ -> match the symbol @
+  // \. -> match the symbol "."
+  // .+ -> match any characters at least once
+
+  const simple_email_regex = /[a-zA-z0-9._%+-]+@[a-zA-z0-9._%+-]+\..+/;
+
+  if (fields.email.length < 4) {
+    return "Email must be at least 4 characters";
+  }
+  if (fields.email.length > 126) {
+    return "Email must be at most 126 characters";
+  }
+  // Check the email against the basic regular expression
+  if (!simple_email_regex.test(fields.email)) {
+    return "Email must be a valid email";
+  }
+  if (fields.password.length < 4) {
+    return "Password must be at least 4 characters";
+  }
+
+  if (fields.password.length > 120) {
+    return "Password must be at most 120 characters";
+  }
+
+  if (fields.name.length < 3) {
+    return "Name must be at least 3 characters";
+  }
+  if (fields.name.length > 24) {
+    return "Name must be at most 24 characters";
+  }
+
+  return "";
+}
 // Currently has the same functionality as handleLogin
 // Will change once full implementation is used
-function handleRegister(onLogin, fields) {
+async function handleRegister(onLogin, fields, setErrorMessage) {
   console.log(fields); // Remove once logic is perfected
-  onLogin();
+  const validation_result = validateCreateUser(fields);
+
+  if (validation_result) {
+    setErrorMessage(validation_result);
+    return;
+  }
+  async function registerAccount() {
+    try {
+      const register_url = API_URL + "/authentication/create_user";
+      const response = await fetch(register_url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: fields.email,
+          password: fields.password,
+          display_name: fields.name,
+        }),
+      });
+      const data = await response.json(); // the created users id
+      if (!response.ok) {
+        setErrorMessage(getAuthenticationErrorMessage(data));
+        return false;
+      }
+    } catch (error) {
+      console.error("Error: ", error);
+      return false;
+    }
+    return true;
+  }
+  const result = await registerAccount();
+  if (result) {
+    setErrorMessage("");
+    onLogin();
+  }
 }
 function handleLogin(onLogin, fields) {
   console.log(fields); // Remove once logic is perfected
   onLogin();
 }
+
+// Used given error messages from api can have 2 different shapes
+function getAuthenticationErrorMessage(data) {
+  const detail = data["detail"];
+
+  // For custom HTTPExceptions explicitly raised in backend
+  if (typeof detail === "string") {
+    return detail;
+  } else {
+    const error = detail[0];
+    const field = error["loc"][1];
+    // For pydantic raised exceptions
+    // Ideally, this should not happen given the frontend validation should take care of these errors and prevent submission
+    if (field === "email") {
+      return "Email must be at least 4 characters";
+    } else if (field === "password") {
+      return "Password must be at least 4 characters";
+    } else if (field === "display_name") {
+      return "Name must be at least 3 characters";
+    }
+
+    return error.msg ? error.msg : "Invalid input";
+  }
+}
+
 const styles = StyleSheet.create({
   authenticationSwitcher: {
     flexDirection: "row",
