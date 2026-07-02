@@ -32,6 +32,7 @@ function AuthenticationModeSwitcher({ mode, setMode }) {
 }
 
 function AuthenticationFields({ mode, fields, setFields }) {
+  const [passwordHidden, setPasswordHidden] = useState(true);
   return (
     <>
       {mode === "Register" ? (
@@ -41,6 +42,8 @@ function AuthenticationFields({ mode, fields, setFields }) {
             <TextInput
               value={fields.name}
               onChangeText={(name) => setFields({ ...fields, name })}
+              autoComplete="name"
+              maxLength={24}
             ></TextInput>
           </View>
         </View>
@@ -51,16 +54,26 @@ function AuthenticationFields({ mode, fields, setFields }) {
           <TextInput
             value={fields.email}
             onChangeText={(email) => setFields({ ...fields, email })}
+            autoComplete="email"
+            inputMode="email"
+            maxLength={126}
+            placeholder="email@email.com"
           ></TextInput>
         </View>
       </View>
       <View>
         <Text>Password</Text>
         <View>
-          {/* Currently password is always visible */}
+          {/* Currently password is never visible given there is no password toggle */}
           <TextInput
             value={fields.password}
             onChangeText={(password) => setFields({ ...fields, password })}
+            autoComplete={
+              mode === "Register" ? "new-password" : "current-password"
+            }
+            autoCorrect={false}
+            maxLength={120}
+            secureTextEntry={passwordHidden}
           ></TextInput>
         </View>
       </View>
