@@ -9,100 +9,6 @@ import {
 import { useState } from "react";
 import { API_URL } from "../constants.js";
 
-function AuthenticationModeSwitcher({ mode, setMode }) {
-  return (
-    <>
-      <View style={styles.authenticationSwitcher}>
-        <Pressable
-          /* Use blue colouring when selected, white otherwise */
-          style={[
-            mode === "Login" ? styles.currentMode : styles.nonCurrentMode,
-            styles.authenticationMode,
-          ]}
-          onPress={() => setMode("Login")}
-        >
-          <Text>Login</Text>
-        </Pressable>
-        <Pressable
-          /* Use blue colouring when selected, white otherwise */
-          style={[
-            mode === "Register" ? styles.currentMode : styles.nonCurrentMode,
-            styles.authenticationMode,
-          ]}
-          onPress={() => setMode("Register")}
-        >
-          <Text>Register</Text>
-        </Pressable>
-      </View>
-    </>
-  );
-}
-
-function AuthenticationFields({ mode, fields, setFields }) {
-  const [passwordHidden, setPasswordHidden] = useState(true);
-  return (
-    <>
-      {mode === "Register" ? (
-        <View>
-          <Text>Name</Text>
-          <View>
-            <TextInput
-              value={fields.name}
-              onChangeText={(name) => setFields({ ...fields, name })}
-              autoComplete="name"
-              maxLength={24}
-            ></TextInput>
-          </View>
-        </View>
-      ) : null}
-      <View>
-        <Text>Email</Text>
-        <View>
-          <TextInput
-            value={fields.email}
-            onChangeText={(email) => setFields({ ...fields, email })}
-            autoComplete="email"
-            inputMode="email"
-            maxLength={126}
-            placeholder="email@email.com"
-          ></TextInput>
-        </View>
-      </View>
-      <View>
-        <Text>Password</Text>
-        <View style={styles.inputIconRow}>
-          {/* Currently password is never visible given there is no password toggle */}
-          <TextInput
-            value={fields.password}
-            onChangeText={(password) => setFields({ ...fields, password })}
-            autoComplete={
-              mode === "Register" ? "new-password" : "current-password"
-            }
-            autoCorrect={false}
-            maxLength={120}
-            secureTextEntry={passwordHidden}
-            style={styles.passwordInput}
-          ></TextInput>
-          {/*Eye Password See View SVG by Gokce Curt, licensed under CC BY 4.0,
-            Source: https://www.svgrepo.com/svg/390427/eye-password-see-view, Changes made: converted to png*/}
-          {/* Toggle password visibility via icon */}
-          <Pressable
-            onPress={() =>
-              passwordHidden
-                ? setPasswordHidden(false)
-                : setPasswordHidden(true)
-            }
-          >
-            <Image
-              source={require("../../assets/password_visibility_icon64x64.png")}
-              style={styles.inputIcon}
-            ></Image>
-          </Pressable>
-        </View>
-      </View>
-    </>
-  );
-}
 export default function AuthenticationScreen({ onLogin }) {
   const [authenticationMode, setAuthenticationMode] = useState("Login");
   const [authenticationFields, setAuthenticationFields] = useState({
@@ -117,7 +23,9 @@ export default function AuthenticationScreen({ onLogin }) {
     <>
       <View style={styles.screen}>
         <View>
-          <Text>Welcome to Float Cal</Text>
+          <Text style={{ textAlign: "center" }}>
+            Welcome to {"\n"} Float Cal
+          </Text>
         </View>
         <AuthenticationModeSwitcher
           mode={authenticationMode}
@@ -135,6 +43,7 @@ export default function AuthenticationScreen({ onLogin }) {
         ) : null}
         <View>
           <Pressable
+            style={styles.submitButton}
             onPress={() => {
               if (authenticationMode === "Login") {
                 handleLogin(onLogin, authenticationFields, setErrorMessage);
@@ -144,6 +53,109 @@ export default function AuthenticationScreen({ onLogin }) {
             }}
           >
             <Text>{authenticationMode === "Login" ? "Login" : "Register"}</Text>
+          </Pressable>
+        </View>
+      </View>
+    </>
+  );
+}
+
+function AuthenticationModeSwitcher({ mode, setMode }) {
+  return (
+    <>
+      <View style={styles.authenticationSwitcher}>
+        <Pressable
+          /* Use blue colouring when selected, white otherwise */
+          style={[
+            mode === "Login" ? styles.currentMode : styles.nonCurrentMode,
+            styles.authenticationMode,
+            styles.loginMode,
+          ]}
+          onPress={() => setMode("Login")}
+        >
+          <Text>Login</Text>
+        </Pressable>
+        <Pressable
+          /* Use blue colouring when selected, white otherwise */
+          style={[
+            mode === "Register" ? styles.currentMode : styles.nonCurrentMode,
+            styles.authenticationMode,
+            styles.registerMode,
+          ]}
+          onPress={() => setMode("Register")}
+        >
+          <Text>Register</Text>
+        </Pressable>
+      </View>
+    </>
+  );
+}
+
+function AuthenticationFields({ mode, fields, setFields }) {
+  const [passwordHidden, setPasswordHidden] = useState(true);
+  return (
+    <>
+      {mode === "Register" ? (
+        <View style={styles.inputSection}>
+          <Text>Name</Text>
+          <View style={styles.inputIconRow}>
+            <TextInput
+              value={fields.name}
+              onChangeText={(name) => setFields({ ...fields, name })}
+              autoComplete="name"
+              maxLength={24}
+              style={[styles.inputField, styles.nameInputField]}
+            ></TextInput>
+          </View>
+        </View>
+      ) : null}
+      <View style={styles.inputSection}>
+        <Text>Email</Text>
+        <View style={styles.inputIconRow}>
+          <TextInput
+            value={fields.email}
+            onChangeText={(email) => setFields({ ...fields, email })}
+            autoComplete="email"
+            inputMode="email"
+            maxLength={126}
+            placeholder="email@email.com"
+            style={styles.inputField}
+          ></TextInput>
+          <Image
+            style={styles.inputIcon}
+            source={require("../../assets/email_icon64x64.png")}
+          ></Image>
+        </View>
+      </View>
+      <View style={styles.inputSection}>
+        <Text>Password</Text>
+        <View style={styles.inputIconRow}>
+          {/* Currently password is never visible given there is no password toggle */}
+          <TextInput
+            value={fields.password}
+            onChangeText={(password) => setFields({ ...fields, password })}
+            autoComplete={
+              mode === "Register" ? "new-password" : "current-password"
+            }
+            autoCorrect={false}
+            maxLength={120}
+            secureTextEntry={passwordHidden}
+            style={styles.inputField}
+          ></TextInput>
+          {/*Eye Password See View SVG by Gokce Curt, licensed under CC BY 4.0,
+            Source: https://www.svgrepo.com/svg/390427/eye-password-see-view, Changes made: converted to png*/}
+          {/* Toggle password visibility via icon */}
+          <Pressable
+            onPress={() =>
+              passwordHidden
+                ? setPasswordHidden(false)
+                : setPasswordHidden(true)
+            }
+          >
+            <Image
+              source={require("../../assets/password_visibility_icon64x64.png")}
+              style={styles.inputIcon}
+            ></Image>
           </Pressable>
         </View>
       </View>
@@ -313,10 +325,13 @@ function getAuthenticationErrorMessage(data, type = "Register") {
 const styles = StyleSheet.create({
   authenticationSwitcher: {
     flexDirection: "row",
+    borderStyle: "solid",
+    borderRadius: 10,
+    borderWidth: 3,
   },
   screen: {
-    justifyContent: "center", // Center content vertically
     alignItems: "center", // Center content horizontally
+    justifyContent: "center", // Center content vertically
   },
   currentMode: {
     backgroundColor: "blue", // In the future move this too a dedicated theme file with chosen themed colours
@@ -327,24 +342,58 @@ const styles = StyleSheet.create({
 
   authenticationMode: {
     padding: 10,
+    width: 100,
+    alignItems: "center", // Center text horizontally,
+    justifyContent: "center", // Center text vertically
   },
 
+  loginMode: {
+    borderTopLeftRadius: 7, // Should be exactly authenticationSwitcher.borderRadius - authenticationSwitcher.borderWidth
+    borderBottomLeftRadius: 7,
+  },
+  registerMode: {
+    borderTopRightRadius: 7,
+    borderBottomRightRadius: 7,
+  },
   errorMessage: {
     color: "red",
   },
 
   inputIconRow: {
+    width: "75%",
     flexDirection: "row",
     alignItems: "center",
+    borderStyle: "solid",
+    borderWidth: 2,
+    borderRadius: 5,
   },
 
   inputIcon: {
     width: 24,
     height: 24,
+    margin: 5,
   },
 
-  passwordInput: {
-    minWidth: 180,
+  inputField: {
+    marginLeft: 2,
+    minWidth: 0,
     flex: 1,
+  },
+  nameInputField: {
+    minHeight: 34,
+  },
+  inputSection: {
+    flexDirection: "column",
+    alignItems: "center",
+  },
+
+  submitButton: {
+    margin: 5, // Outside the button
+    backgroundColor: "blue",
+    borderStyle: "solid",
+    borderRadius: 5,
+    borderWidth: 1,
+    paddingVertical: 7, // Inside the button
+    paddingHorizontal: 21,
   },
 });
