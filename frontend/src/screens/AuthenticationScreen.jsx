@@ -212,9 +212,10 @@ async function handleRegister(onLogin, fields, setErrorMessage) {
     return;
   }
   async function registerAccount() {
+    let data;
     try {
-      const register_url = API_URL + "/authentication/create_user";
-      const response = await fetch(register_url, {
+      const registerUrl = API_URL + "/authentication/create_user";
+      const response = await fetch(registerUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -225,7 +226,7 @@ async function handleRegister(onLogin, fields, setErrorMessage) {
           display_name: fields.name,
         }),
       });
-      const data = await response.json(); // the created users id
+      data = await response.json(); // the created users id
       if (!response.ok) {
         setErrorMessage(getAuthenticationErrorMessage(data));
         return false;
@@ -235,12 +236,12 @@ async function handleRegister(onLogin, fields, setErrorMessage) {
       console.error("Error: ", error);
       return false;
     }
-    return true;
+    return data;
   }
   const result = await registerAccount();
   if (result) {
     setErrorMessage("");
-    onLogin();
+    onLogin(result);
   }
 }
 
@@ -256,16 +257,16 @@ function validateLoginUser(fields) {
 
 async function handleLogin(onLogin, fields, setErrorMessage) {
   const validation_result = validateLoginUser(fields);
-
   if (validation_result) {
     setErrorMessage(validation_result);
     return;
   }
 
   async function authenticateAccount() {
+    let data;
     try {
-      const authenticate_url = API_URL + "/authentication/login";
-      const response = await fetch(authenticate_url, {
+      const authenticateUrl = API_URL + "/authentication/login";
+      const response = await fetch(authenticateUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -275,7 +276,7 @@ async function handleLogin(onLogin, fields, setErrorMessage) {
           password: fields.password,
         }),
       });
-      const data = await response.json();
+      data = await response.json();
       if (!response.ok) {
         setErrorMessage(getAuthenticationErrorMessage(data, "Authenticate"));
         return false;
@@ -285,12 +286,12 @@ async function handleLogin(onLogin, fields, setErrorMessage) {
       console.error("Error: ", error);
       return false;
     }
-    return true;
+    return data;
   }
   const result = await authenticateAccount();
   if (result) {
     setErrorMessage("");
-    onLogin();
+    onLogin(result);
   }
 }
 
