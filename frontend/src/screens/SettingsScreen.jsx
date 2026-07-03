@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Text, View, StyleSheet, Pressable } from "react-native";
+import { Text, View, StyleSheet, Pressable, Switch } from "react-native";
 import { API_URL } from "../constants";
 
 export default function SettingsScreen({ userId, setUserId }) {
@@ -65,16 +65,25 @@ export default function SettingsScreen({ userId, setUserId }) {
           <Text>Notifications</Text>
           {/* Use react native - Switch for this */}
           <View style={style.individualSetting}>
-            <Text style={style.individualSettingInfo}>
-              Notifications:{" "}
-              {settings
-                ? String(settings["notifications_enabled"])
-                : "Loading..."}
-            </Text>
-
-            <Pressable style={style.editSettingsButton}>
-              <Text>{">"}</Text>
-            </Pressable>
+            <Text style={style.individualSettingInfo}>Notifications: </Text>
+            <View style={style.editSettingsButton}>
+              <Switch
+                value={
+                  settings ? Boolean(settings["notifications_enabled"]) : false // When settings has not been loaded, this defaults to false, however
+                  // The switch will be disabled if settings is not loaded
+                }
+                /* Lag may be noticable -> possibly switch to updating local state then calling the api */
+                onValueChange={async (value) =>
+                  await updateSettings(
+                    userId,
+                    "notifications_enabled",
+                    value,
+                    setSettings,
+                  )
+                }
+                disabled={settings ? false : true}
+              ></Switch>
+            </View>
           </View>
           <View style={style.individualSetting}>
             <Text style={style.individualSettingInfo}>
@@ -96,8 +105,37 @@ export default function SettingsScreen({ userId, setUserId }) {
   );
 }
 
+async function updateSettings(userId, key, value, setSettings) {
+  // Need to make sure that scheduling windows don't overwrite
+  // the existing scheduling windows
+  // Should be done in function that calls this one
+  try {
+    const updateSettingsUrl =
+      API_URL + "/" + String(userId) + "/update_setting";
+    const response = await fetch(updateSettingsUrl, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        [key]: value,
+      }),
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      // Somehow inform user
+      console.error("Error updating settings", data);
+      return;
+    }
+  } catch (error) {
+    console.error("Error: ", error);
+    return;
+  }
+
+  const updatedSettings = await fetchSettings(userId);
+  setSettings(updatedSettings);
+}
 async function fetchSettings(userId) {
-  let data;
   try {
     const getSettingsUrl = API_URL + "/" + String(userId) + "/settings";
     const response = await fetch(getSettingsUrl, {
@@ -106,7 +144,7 @@ async function fetchSettings(userId) {
         "Content-Type": "application/json",
       },
     });
-    data = await response.json();
+    const data = await response.json();
     if (!response.ok) {
       console.error("Error fetching settings", data);
       return;
@@ -123,16 +161,16 @@ function formatTime(time) {
   return time.slice(0, 5);
 }
 
-function formatSchedulingWindows(scheduling_windows) {
-  if (!scheduling_windows) {
+function formatSchedulingWindows(schedulingWindows) {
+  if (!schedulingWindows) {
     return "No windows configured";
   }
 
   // Inform user if they have multiple scheduling windows
-  if (Object.keys(scheduling_windows).length > 1) {
-    return `${Object.keys(scheduling_windows)[0]} ...`;
+  if (Object.keys(schedulingWindows).length > 1) {
+    return `${Object.keys(schedulingWindows)[0]} ...`;
   }
-  return Object.keys(scheduling_windows)[0];
+  return Object.keys(schedulingWindows)[0];
 }
 const style = StyleSheet.create({
   screen: {
