@@ -69,8 +69,10 @@ export default function SettingsScreen({ userId, setUserId }) {
               <View style={style.editSettingsDialog}>
                 <View style={style.editSleepSettings}>
                   <View style={style.sleepTimePicker}>
-                    <Text>Sleep Start</Text>
+                    <Text style={style.sleepDateTimeLabel}>Sleep Start</Text>
                     <DateTimePicker
+                      // Styling required due to slight misalignment of item as compared to the label
+                      style={style.sleepDateTimeInput}
                       onChange={(_, time) => {
                         if (!time) {
                           return;
@@ -90,8 +92,9 @@ export default function SettingsScreen({ userId, setUserId }) {
                     ></DateTimePicker>
                   </View>
                   <View style={style.sleepTimePicker}>
-                    <Text>Sleep End</Text>
+                    <Text style={style.sleepDateTimeLabel}>Sleep End</Text>
                     <DateTimePicker
+                      style={style.sleepDateTimeInput}
                       onChange={(_, time) => {
                         if (!time) {
                           return;
@@ -135,7 +138,7 @@ export default function SettingsScreen({ userId, setUserId }) {
             <View style={style.individualSettingRow}>
               <Text style={style.individualSettingInfo}>
                 Buffer Time:{" "}
-                {settings ? settings["buffer_minutes"] + "min" : "Loading..."}
+                {settings ? settings["buffer_minutes"] + " min" : "Loading..."}
               </Text>
               <Pressable
                 // Prevent editing when no value is loaded from the server
@@ -156,12 +159,18 @@ export default function SettingsScreen({ userId, setUserId }) {
             </View>
             {editingKey === "BufferMinutes" ? (
               <View style={style.editSettingsDialog}>
-                <TextInput
-                  // TextInput only accepts string -> it does not accept numbers
-                  value={String(bufferMinutes)}
-                  inputMode={"numeric"}
-                  onChangeText={(e) => setBufferMinutes(e)}
-                ></TextInput>
+                <View style={style.bufferInputRow}>
+                  <Text>Minutes</Text>
+                  {/* TODO: Keyboard does not close when tapping somewhere else*/}
+                  <TextInput
+                    // TextInput only accepts string -> it does not accept numbers
+                    value={String(bufferMinutes)}
+                    inputMode={"numeric"}
+                    onChangeText={(e) => setBufferMinutes(e)}
+                    style={style.bufferMinutesInput}
+                  ></TextInput>
+                  <Text>min</Text>
+                </View>
                 <EditSettingsActions
                   onCancel={() => {
                     setEditingKey(null);
@@ -261,6 +270,7 @@ function EditSettingsActions({ onCancel, onSave }) {
   return (
     <View style={style.endEditSettings}>
       <Pressable
+        style={[style.editSettingsEndButtons, style.cancelEditSettingsButton]}
         onPress={() => {
           onCancel();
         }}
@@ -268,6 +278,7 @@ function EditSettingsActions({ onCancel, onSave }) {
         <Text>Cancel</Text>
       </Pressable>
       <Pressable
+        style={[style.editSettingsEndButtons, style.saveEditSettingsButton]}
         onPress={() => {
           onSave();
         }}
@@ -360,6 +371,8 @@ function formatSchedulingWindows(schedulingWindows) {
   }
   return Object.keys(schedulingWindows)[0];
 }
+// TODO: Fix alignment of sleep window picker -> Possibly will require changing from row based layout to column based layout
+// Possibly having to remove/split the EditSettingsActions component
 const style = StyleSheet.create({
   screen: {
     alignItems: "center",
@@ -373,6 +386,7 @@ const style = StyleSheet.create({
     paddingLeft: 10,
   },
   individualSetting: {
+    width: "75%",
     flexDirection: "column",
     borderStyle: "solid",
     borderWidth: 2,
@@ -383,20 +397,67 @@ const style = StyleSheet.create({
     justifyContent: "space-between", // Push button/arrow to the far right
     flexDirection: "row",
     alignItems: "center",
-    minWidth: "75%",
+    width: "100%",
   },
   editSettingsButton: {
     padding: 10,
   },
   editSleepSettings: {
     flexDirection: "row",
-    padding: 10,
+    gap: 20,
+    justifyContent: "center",
   },
   sleepTimePicker: {
     alignItems: "center",
     textAlign: "center",
+    width: 110,
   },
   endEditSettings: {
     flexDirection: "row",
+    gap: 60, // Use gap instead of margin in the children to standardize the gap.
+    justifyContent: "center",
+  },
+  editSettingsEndButtons: {
+    padding: 10,
+    borderStyle: "solid",
+    borderWidth: 3,
+    borderRadius: 25,
+    minWidth: 70, // Make the buttons the same size
+    alignItems: "center", // Make sure text is in the centre
+  },
+  saveEditSettingsButton: {
+    borderColor: "green",
+    backgroundColor: "#00FF0080", // 50% Opacity
+  },
+  cancelEditSettingsButton: {
+    borderColor: "red",
+    backgroundColor: "#FF000080",
+  },
+  editSettingsDialog: {
+    paddingHorizontal: 20,
+    paddingBottom: 12,
+    gap: 14,
+    alignItems: "center", // Help align cancel/save buttons and the inputs
+  },
+  bufferInputRow: {
+    flexDirection: "row",
+    gap: 5,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  bufferMinutesInput: {
+    borderWidth: 1,
+    borderRadius: 5,
+    padding: 5,
+    width: 50, // Make it look like a proper input
+    textAlign: "center",
+  },
+  sleepDateTimeInput: {
+    alignSelf: "center",
+    width: 100,
+  },
+  sleepDateTimeLabel: {
+    // width: "70%",
+    alignSelf: "center",
   },
 });
