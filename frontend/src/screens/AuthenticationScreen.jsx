@@ -54,6 +54,15 @@ export default function AuthenticationScreen({ onLogin }) {
           >
             <Text>{authenticationMode === "Login" ? "Login" : "Register"}</Text>
           </Pressable>
+          {/* Quick button to bypass logic to test application logic quicker*/}
+          {/* TODO: Remove once done with button*/}
+          <Pressable
+            onPress={() => {
+              onLogin(5);
+            }}
+          >
+            <Text>Admin</Text>
+          </Pressable>
         </View>
       </View>
     </>

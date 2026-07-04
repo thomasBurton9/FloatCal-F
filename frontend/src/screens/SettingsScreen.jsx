@@ -1,9 +1,14 @@
 import { useEffect, useState } from "react";
 import { Text, View, StyleSheet, Pressable, Switch } from "react-native";
 import { API_URL } from "../constants";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 export default function SettingsScreen({ userId, setUserId }) {
   const [settings, setSettings] = useState(null);
+  const [editingKey, setEditingKey] = useState(null); // Which setting is the user currently editing
+
+  const [sleepStart, setSleepStart] = useState(null);
+  const [sleepEnd, setSleepEnd] = useState(null);
 
   useEffect(() => {
     // Defining function inside useEffect to prevent cascading renders??
@@ -28,70 +33,194 @@ export default function SettingsScreen({ userId, setUserId }) {
         <View style={style.settingsSection}>
           <Text>Scheduler</Text>
           <View style={style.individualSetting}>
-            <Text style={style.individualSettingInfo}>
-              Sleep Window:{" "}
-              {settings
-                ? formatTime(settings["sleep_start"]) +
-                  "-" +
-                  formatTime(settings["sleep_end"])
-                : "Loading..."}
-            </Text>
-            <Pressable style={style.editSettingsButton}>
-              <Text>{">"}</Text>
-            </Pressable>
+            <View style={style.individualSettingRow}>
+              <Text style={style.individualSettingInfo}>
+                Sleep Window:{" "}
+                {settings
+                  ? formatTime(settings["sleep_start"]) +
+                    "-" +
+                    formatTime(settings["sleep_end"])
+                  : "Loading..."}
+              </Text>
+              <Pressable
+                disabled={settings ? false : true}
+                onPress={() => {
+                  if (editingKey !== "SleepWindow") {
+                    // Make sure that the sleep values get loaded
+                    setSleepStart(settings["sleep_start"]);
+                    setSleepEnd(settings["sleep_end"]);
+                  }
+                  toggleDropdown("SleepWindow", editingKey, setEditingKey);
+                }}
+                style={style.editSettingsButton}
+              >
+                <Text>{editingKey !== "SleepWindow" ? ">" : "V"}</Text>
+              </Pressable>
+            </View>
+            {editingKey === "SleepWindow" ? (
+              <View style={style.editSettingsDialog}>
+                <View style={style.editSleepSettings}>
+                  <View style={style.sleepTimePicker}>
+                    <Text>Sleep Start</Text>
+                    <DateTimePicker
+                      onChange={(_, time) => {
+                        if (!time) {
+                          return;
+                        }
+                        // Make sure the saved time is in an appropriate format
+                        const hours = String(time.getHours()).padStart(2, "0");
+                        const minutes = String(time.getMinutes()).padStart(
+                          2,
+                          "0",
+                        );
+                        // Format inline with what the backend returns
+                        setSleepStart(`${hours}:${minutes}:00`);
+                      }}
+                      mode={"time"}
+                      is24Hour={true}
+                      value={timeStringToDate(sleepStart)}
+                    ></DateTimePicker>
+                  </View>
+                  <View style={style.sleepTimePicker}>
+                    <Text>Sleep End</Text>
+                    <DateTimePicker
+                      onChange={(_, time) => {
+                        if (!time) {
+                          return;
+                        }
+                        // Make sure the saved time is in an appropriate format
+                        const hours = String(time.getHours()).padStart(2, "0");
+                        const minutes = String(time.getMinutes()).padStart(
+                          2,
+                          "0",
+                        );
+                        // Format inline with what the backend returns
+                        setSleepEnd(`${hours}:${minutes}:00`);
+                      }}
+                      mode={"time"}
+                      is24Hour={true}
+                      value={timeStringToDate(sleepEnd)}
+                    ></DateTimePicker>
+                  </View>
+                </View>
+                <View style={style.endEditSettings}>
+                  <Pressable
+                    onPress={() => {
+                      setEditingKey(null);
+                      setSleepStart(settings["sleep_start"]);
+                      setSleepEnd(settings["sleep_end"]);
+                    }}
+                  >
+                    <Text>Cancel</Text>
+                  </Pressable>
+                  <Pressable
+                    onPress={() => {
+                      updateSettings(
+                        userId,
+                        "sleep_start",
+                        sleepStart,
+                        setSettings,
+                      );
+                      updateSettings(
+                        userId,
+                        "sleep_end",
+                        sleepEnd,
+                        setSettings,
+                      );
+                    }}
+                  >
+                    <Text>Save</Text>
+                  </Pressable>
+                </View>
+              </View>
+            ) : null}
           </View>
           <View style={style.individualSetting}>
-            <Text style={style.individualSettingInfo}>
-              Buffer Time:{" "}
-              {settings ? settings["buffer_minutes"] + "min" : "Loading..."}
-            </Text>
-            <Pressable style={style.editSettingsButton}>
-              <Text>{">"}</Text>
-            </Pressable>
+            <View style={style.individualSettingRow}>
+              <Text style={style.individualSettingInfo}>
+                Buffer Time:{" "}
+                {settings ? settings["buffer_minutes"] + "min" : "Loading..."}
+              </Text>
+              <Pressable
+                onPress={() =>
+                  toggleDropdown("BufferMinutes", editingKey, setEditingKey)
+                }
+                style={style.editSettingsButton}
+              >
+                <Text>{editingKey !== "BufferMinutes" ? ">" : "V"}</Text>
+              </Pressable>
+            </View>
+            {editingKey === "BufferMinutes" ? (
+              <View style={style.editSettingsDialog}>
+                <Text>Hello</Text>
+              </View>
+            ) : null}
           </View>
           <View style={style.individualSetting}>
-            <Text style={style.individualSettingInfo}>
-              Preferred Times:{" "}
-              {settings
-                ? formatSchedulingWindows(settings["scheduling_windows"])
-                : "Loading..."}
-            </Text>
-            <Pressable style={style.editSettingsButton}>
-              <Text>{">"}</Text>
-            </Pressable>
+            <View style={style.individualSettingRow}>
+              <Text style={style.individualSettingInfo}>
+                Preferred Times:{" "}
+                {settings
+                  ? formatSchedulingWindows(settings["scheduling_windows"])
+                  : "Loading..."}
+              </Text>
+              <Pressable
+                onPress={() =>
+                  toggleDropdown("SchedulingWindows", editingKey, setEditingKey)
+                }
+                style={style.editSettingsButton}
+              >
+                <Text>{editingKey !== "SchedulingWindows" ? ">" : "V"}</Text>
+              </Pressable>
+            </View>
+            {editingKey === "SchedulingWindows" ? (
+              <View style={style.editSettingsDialog}>
+                <Text>Hello</Text>
+              </View>
+            ) : null}
           </View>
         </View>
         <View style={style.settingsSection}>
           <Text>Notifications</Text>
-          {/* Use react native - Switch for this */}
+          {/* Use react native - Switch for this - Done */}
           <View style={style.individualSetting}>
-            <Text style={style.individualSettingInfo}>Notifications: </Text>
-            <View style={style.editSettingsButton}>
-              <Switch
-                value={
-                  settings ? Boolean(settings["notifications_enabled"]) : false // When settings has not been loaded, this defaults to false, however
-                  // The switch will be disabled if settings is not loaded
-                }
-                /* Lag may be noticable -> possibly switch to updating local state then calling the api */
-                onValueChange={async (value) =>
-                  await updateSettings(
-                    userId,
-                    "notifications_enabled",
-                    value,
-                    setSettings,
-                  )
-                }
-                disabled={settings ? false : true}
-              ></Switch>
+            <View style={style.individualSettingRow}>
+              <Text style={style.individualSettingInfo}>Notifications: </Text>
+              <View style={style.editSettingsButton}>
+                <Switch
+                  value={
+                    settings
+                      ? Boolean(settings["notifications_enabled"])
+                      : false // When settings has not been loaded, this defaults to false, however
+                    // The switch will be disabled if settings is not loaded
+                  }
+                  /* Lag may be noticable -> possibly switch to updating local state then calling the api */
+                  onValueChange={async (value) =>
+                    await updateSettings(
+                      userId,
+                      "notifications_enabled",
+                      value,
+                      setSettings,
+                    )
+                  }
+                  disabled={settings ? false : true}
+                ></Switch>
+              </View>
             </View>
           </View>
           <View style={style.individualSetting}>
-            <Text style={style.individualSettingInfo}>
-              Sound: {settings ? settings["notification_sound"] : "Loading..."}
-            </Text>
-            <Pressable style={style.editSettingsButton}>
-              <Text>{">"}</Text>
-            </Pressable>
+            <View style={style.individualSettingRow}>
+              <Text style={style.individualSettingInfo}>
+                Sound:{" "}
+                {settings ? settings["notification_sound"] : "Loading..."}
+              </Text>
+              {/* This won't be implemented currently, given expo go does not support custom notifications
+              if a workaround is found, this buttons functionality will start working*/}
+              {/* TODO: Remove this setting from rendering */}
+              <Pressable style={style.editSettingsButton}>
+                <Text>{">"}</Text>
+              </Pressable>
+            </View>
           </View>
         </View>
         <View style={style.settingsSection}>
@@ -105,6 +234,22 @@ export default function SettingsScreen({ userId, setUserId }) {
   );
 }
 
+function timeStringToDate(time) {
+  const hours = time.slice(0, 2);
+  const minutes = time.slice(3, 5);
+
+  let date = new Date();
+  date.setHours(hours, minutes);
+
+  return date;
+}
+function toggleDropdown(field, editingKey, setEditingKey) {
+  if (editingKey !== field) {
+    setEditingKey(field);
+  } else {
+    setEditingKey(null);
+  }
+}
 async function updateSettings(userId, key, value, setSettings) {
   // Need to make sure that scheduling windows don't overwrite
   // the existing scheduling windows
@@ -185,16 +330,30 @@ const style = StyleSheet.create({
     paddingLeft: 10,
   },
   individualSetting: {
-    justifyContent: "space-between", // Push button/arrow to the far right
-    flexDirection: "row",
-    alignItems: "center",
-    minWidth: "75%",
+    flexDirection: "column",
     borderStyle: "solid",
     borderWidth: 2,
     borderRadius: 5,
     marginVertical: 10,
   },
+  individualSettingRow: {
+    justifyContent: "space-between", // Push button/arrow to the far right
+    flexDirection: "row",
+    alignItems: "center",
+    minWidth: "75%",
+  },
   editSettingsButton: {
     padding: 10,
+  },
+  editSleepSettings: {
+    flexDirection: "row",
+    padding: 10,
+  },
+  sleepTimePicker: {
+    alignItems: "center",
+    textAlign: "center",
+  },
+  endEditSettings: {
+    flexDirection: "row",
   },
 });
