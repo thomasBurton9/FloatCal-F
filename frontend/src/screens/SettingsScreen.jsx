@@ -103,35 +103,22 @@ export default function SettingsScreen({ userId, setUserId }) {
                     ></DateTimePicker>
                   </View>
                 </View>
-                <View style={style.endEditSettings}>
-                  <Pressable
-                    onPress={() => {
-                      setEditingKey(null);
-                      setSleepStart(settings["sleep_start"]);
-                      setSleepEnd(settings["sleep_end"]);
-                    }}
-                  >
-                    <Text>Cancel</Text>
-                  </Pressable>
-                  <Pressable
-                    onPress={() => {
-                      updateSettings(
-                        userId,
-                        "sleep_start",
-                        sleepStart,
-                        setSettings,
-                      );
-                      updateSettings(
-                        userId,
-                        "sleep_end",
-                        sleepEnd,
-                        setSettings,
-                      );
-                    }}
-                  >
-                    <Text>Save</Text>
-                  </Pressable>
-                </View>
+                <EditSettingsActions
+                  onCancel={() => {
+                    setEditingKey(null);
+                    setSleepStart(settings["sleep_start"]);
+                    setSleepEnd(settings["sleep_end"]);
+                  }}
+                  onSave={() => {
+                    updateSettings(
+                      userId,
+                      "sleep_start",
+                      sleepStart,
+                      setSettings,
+                    );
+                    updateSettings(userId, "sleep_end", sleepEnd, setSettings);
+                  }}
+                ></EditSettingsActions>
               </View>
             ) : null}
           </View>
@@ -234,6 +221,26 @@ export default function SettingsScreen({ userId, setUserId }) {
   );
 }
 
+function EditSettingsActions({ onCancel, onSave }) {
+  return (
+    <View style={style.endEditSettings}>
+      <Pressable
+        onPress={() => {
+          onCancel();
+        }}
+      >
+        <Text>Cancel</Text>
+      </Pressable>
+      <Pressable
+        onPress={() => {
+          onSave();
+        }}
+      >
+        <Text>Save</Text>
+      </Pressable>
+    </View>
+  );
+}
 function timeStringToDate(time) {
   const hours = time.slice(0, 2);
   const minutes = time.slice(3, 5);
