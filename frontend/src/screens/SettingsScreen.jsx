@@ -1,5 +1,12 @@
 import { useEffect, useState } from "react";
-import { Text, View, StyleSheet, Pressable, Switch } from "react-native";
+import {
+  Text,
+  View,
+  StyleSheet,
+  Pressable,
+  Switch,
+  TextInput,
+} from "react-native";
 import { API_URL } from "../constants";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
@@ -9,6 +16,7 @@ export default function SettingsScreen({ userId, setUserId }) {
 
   const [sleepStart, setSleepStart] = useState(null);
   const [sleepEnd, setSleepEnd] = useState(null);
+  const [bufferMinutes, setBufferMinutes] = useState(null);
 
   useEffect(() => {
     // Defining function inside useEffect to prevent cascading renders??
@@ -110,6 +118,7 @@ export default function SettingsScreen({ userId, setUserId }) {
                     setSleepEnd(settings["sleep_end"]);
                   }}
                   onSave={() => {
+                    // TODO: Combine these into 1 function call
                     updateSettings(
                       userId,
                       "sleep_start",
@@ -129,9 +138,17 @@ export default function SettingsScreen({ userId, setUserId }) {
                 {settings ? settings["buffer_minutes"] + "min" : "Loading..."}
               </Text>
               <Pressable
-                onPress={() =>
-                  toggleDropdown("BufferMinutes", editingKey, setEditingKey)
-                }
+                // Prevent editing when no value is loaded from the server
+                // Prevents error when attempting to access attributes of null
+                disabled={settings ? false : true}
+                onPress={() => {
+                  if (editingKey !== "BufferMinutes") {
+                    // Make sure that the bufferminutes value is loaded
+                    setBufferMinutes(settings["buffer_minutes"]);
+                    console.log(settings["buffer_minutes"]);
+                  }
+                  toggleDropdown("BufferMinutes", editingKey, setEditingKey);
+                }}
                 style={style.editSettingsButton}
               >
                 <Text>{editingKey !== "BufferMinutes" ? ">" : "V"}</Text>
@@ -139,7 +156,26 @@ export default function SettingsScreen({ userId, setUserId }) {
             </View>
             {editingKey === "BufferMinutes" ? (
               <View style={style.editSettingsDialog}>
-                <Text>Hello</Text>
+                <TextInput
+                  // TextInput only accepts string -> it does not accept numbers
+                  value={String(bufferMinutes)}
+                  inputMode={"numeric"}
+                  onChangeText={(e) => setBufferMinutes(e)}
+                ></TextInput>
+                <EditSettingsActions
+                  onCancel={() => {
+                    setEditingKey(null);
+                    setBufferMinutes(settings["buffer_minutes"]);
+                  }}
+                  onSave={() => {
+                    updateSettings(
+                      userId,
+                      "buffer_minutes",
+                      Number(bufferMinutes),
+                      setSettings,
+                    );
+                  }}
+                ></EditSettingsActions>
               </View>
             ) : null}
           </View>
