@@ -13,7 +13,7 @@ export default function App() {
       <SafeAreaView>
         <AuthenticationScreen
           onLogin={(id) => {
-            setPage("Settings");
+            setPage("DailyCalendar");
             setUser(id);
           }}
         ></AuthenticationScreen>
@@ -36,7 +36,7 @@ export default function App() {
       return (
         <>
           <SafeAreaView>
-            <DailyCalendar></DailyCalendar>
+            <DailyCalendar setPage={setPage}></DailyCalendar>
           </SafeAreaView>
         </>
       );
