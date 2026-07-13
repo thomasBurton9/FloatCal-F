@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
   Text,
   View,
@@ -6,11 +6,12 @@ import {
   Pressable,
   Switch,
   TextInput,
+  PanResponder,
 } from "react-native";
 import { API_URL } from "../constants";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
-export default function SettingsScreen({ userId, setUserId }) {
+export default function SettingsScreen({ userId, setUserId, setPage }) {
   const [settings, setSettings] = useState(null);
   const [editingKey, setEditingKey] = useState(null); // Which setting is the user currently editing
 
@@ -18,6 +19,26 @@ export default function SettingsScreen({ userId, setUserId }) {
   const [sleepEnd, setSleepEnd] = useState(null);
   const [bufferMinutes, setBufferMinutes] = useState(null);
   const [schedulingWindows, setSchedulingWindows] = useState([]);
+
+  // Allow for swipe right gesture to change screens.
+  // Using useMemo instead of useRef as in docs due to linter errors
+  const panResponder = useMemo(
+    () =>
+      PanResponder.create({
+        // Only initialise when gesture is large enough and in the right direction
+        onMoveShouldSetPanResponder: (_, gesture) =>
+          gesture.dx > 12 && Math.abs(gesture.dx) > Math.abs(gesture.dy),
+
+        // If gesture is completed and is large enough -> change screen
+        onPanResponderRelease: (_, gesture) => {
+          if (gesture.dx > 40 && Math.abs(gesture.dx) > Math.abs(gesture.dy)) {
+            // TODO: Configure gesture strength based on testing, add button to change page.
+            setPage("DailyCalendar");
+          }
+        },
+      }),
+    [setPage],
+  ); // Prevent re rendering page every time state changes
 
   useEffect(() => {
     // Defining function inside useEffect to prevent cascading renders??
@@ -35,7 +56,7 @@ export default function SettingsScreen({ userId, setUserId }) {
   // settings changes to prevent cascading renders
   return (
     <>
-      <View style={style.screen}>
+      <View {...panResponder.panHandlers} style={style.screen}>
         <View>
           <Text>Settings</Text>
         </View>
