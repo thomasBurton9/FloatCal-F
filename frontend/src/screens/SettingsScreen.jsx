@@ -17,6 +17,7 @@ export default function SettingsScreen({ userId, setUserId }) {
   const [sleepStart, setSleepStart] = useState(null);
   const [sleepEnd, setSleepEnd] = useState(null);
   const [bufferMinutes, setBufferMinutes] = useState(null);
+  const [schedulingWindows, setSchedulingWindows] = useState([]);
 
   useEffect(() => {
     // Defining function inside useEffect to prevent cascading renders??
@@ -197,9 +198,21 @@ export default function SettingsScreen({ userId, setUserId }) {
                   : "Loading..."}
               </Text>
               <Pressable
-                onPress={() =>
-                  toggleDropdown("SchedulingWindows", editingKey, setEditingKey)
-                }
+                disabled={settings ? false : true}
+                onPress={() => {
+                  if (editingKey !== "SchedulingWindows") {
+                    setSchedulingWindows(
+                      schedulingWindowsJsonToRows(
+                        settings["scheduling_windows"],
+                      ),
+                    );
+                  }
+                  toggleDropdown(
+                    "SchedulingWindows",
+                    editingKey,
+                    setEditingKey,
+                  );
+                }}
                 style={style.editSettingsButton}
               >
                 <Text>{editingKey !== "SchedulingWindows" ? ">" : "V"}</Text>
@@ -207,7 +220,127 @@ export default function SettingsScreen({ userId, setUserId }) {
             </View>
             {editingKey === "SchedulingWindows" ? (
               <View style={style.editSettingsDialog}>
-                <Text>Hello</Text>
+                {schedulingWindows
+                  ? schedulingWindows.map((window, index) => (
+                      <View key={index} style={style.schedulingWindowRow}>
+                        <View style={style.schedulingWindowColumn}>
+                          <TextInput
+                            value={window.name}
+                            placeholder="Name"
+                            onChangeText={(name) => {
+                              const next = [...schedulingWindows]; // New updated scheduling windows with added entry
+                              next[index] = { ...next[index], name };
+                              setSchedulingWindows(next);
+                            }}
+                            style={style.schedulingWindowNameInput}
+                          ></TextInput>
+                          <Pressable
+                            onPress={() =>
+                              setSchedulingWindows(
+                                schedulingWindows.filter(
+                                  (_, rowIndex) => rowIndex !== index,
+                                ), // Replace schedulingWindows with windows that do not match the deleted index
+                              )
+                            }
+                          >
+                            <Text>Delete</Text>
+                          </Pressable>
+                        </View>
+                        <View style={style.schedulingWindowColumn}>
+                          <View style={style.sleepTimePicker}>
+                            {/*Reusing sleep time style given the formatting is the same for both pickers */}
+                            <Text style={style.sleepDateTimeLabel}>Start</Text>
+                            <DateTimePicker
+                              style={style.sleepDateTimeInput}
+                              mode="time"
+                              is24Hour={true}
+                              value={timeStringToDate(window.start)}
+                              onChange={(_, time) => {
+                                if (!time) {
+                                  return;
+                                }
+                                const hours = String(time.getHours()).padStart(
+                                  2,
+                                  "0",
+                                ); // Pad the start with zeros if it is not length 2
+                                const minutes = String(
+                                  time.getMinutes(),
+                                ).padStart(2, "0");
+
+                                const next = [...schedulingWindows];
+                                next[index] = {
+                                  ...next[index],
+                                  start: `${hours}:${minutes}:00`,
+                                };
+                                setSchedulingWindows(next);
+                              }}
+                            ></DateTimePicker>
+                          </View>
+                          <View style={style.sleepTimePicker}>
+                            {/*Reusing sleep time style given the formatting is the same for both pickers */}
+                            <Text style={style.sleepDateTimeLabel}>End</Text>
+                            <DateTimePicker
+                              style={style.sleepDateTimeInput}
+                              mode="time"
+                              is24Hour={true}
+                              value={timeStringToDate(window.end)}
+                              onChange={(_, time) => {
+                                if (!time) {
+                                  return;
+                                }
+                                const hours = String(time.getHours()).padStart(
+                                  2,
+                                  "0",
+                                ); // Pad the start with zeros if it is not length 2
+                                const minutes = String(
+                                  time.getMinutes(),
+                                ).padStart(2, "0");
+
+                                const next = [...schedulingWindows];
+                                next[index] = {
+                                  ...next[index],
+                                  end: `${hours}:${minutes}:00`,
+                                };
+                                setSchedulingWindows(next);
+                              }}
+                            ></DateTimePicker>
+                          </View>
+                        </View>
+                      </View>
+                    ))
+                  : null}
+                <Pressable
+                  onPress={() =>
+                    setSchedulingWindows(() => [
+                      ...(schedulingWindows ?? []), // Error occurs if trying to 'unpack' schedulingWindows when it is null
+                      {
+                        name: "New Window",
+                        start: "09:00:00",
+                        end: "17:00:00",
+                      },
+                    ])
+                  }
+                >
+                  <Text>Add Window</Text>
+                </Pressable>
+                <EditSettingsActions
+                  onCancel={() => {
+                    setEditingKey(null);
+                    setSchedulingWindows(
+                      schedulingWindowsJsonToRows(
+                        settings["scheduling_windows"],
+                      ),
+                    );
+                  }}
+                  onSave={() => {
+                    updateSettings(
+                      userId,
+                      "scheduling_windows",
+                      schedulingWindowsRowsToJson(schedulingWindows),
+                      setSettings,
+                    );
+                  }}
+                ></EditSettingsActions>
               </View>
             ) : null}
           </View>
@@ -266,6 +399,28 @@ export default function SettingsScreen({ userId, setUserId }) {
   );
 }
 
+function schedulingWindowsJsonToRows(schedulingWindows) {
+  if (!schedulingWindows) {
+    return [];
+  }
+  // Convert object into array for ease of displaying multiple scheduling windows
+  const rows = Object.entries(schedulingWindows).map(
+    ([name, [start, end]]) => ({ name, start, end }),
+  );
+  return rows;
+}
+function schedulingWindowsRowsToJson(rows) {
+  if (!rows) {
+    return;
+  }
+
+  const jsonObject = Object.fromEntries(
+    rows
+      .filter((row) => row.name.trim())
+      .map((row) => [row.name.trim(), [row.start, row.end]]),
+  ); // Filter prevents blank names from being used
+  return jsonObject;
+}
 function EditSettingsActions({ onCancel, onSave }) {
   return (
     <View style={style.endEditSettings}>
@@ -361,7 +516,8 @@ function formatTime(time) {
 }
 
 function formatSchedulingWindows(schedulingWindows) {
-  if (!schedulingWindows) {
+  if (!schedulingWindows || Object.keys(schedulingWindows).length === 0) {
+    // Check object length as well given if ({}) -> results in true
     return "No windows configured";
   }
 
@@ -375,10 +531,12 @@ function formatSchedulingWindows(schedulingWindows) {
 // Possibly having to remove/split the EditSettingsActions component
 const style = StyleSheet.create({
   screen: {
+    width: "100%",
     alignItems: "center",
     justifyContent: "center",
   },
   settingsSection: {
+    width: "100%", // Prevent prefferred times window from expanding
     flexDirection: "column",
     alignItems: "center",
   },
@@ -460,4 +618,26 @@ const style = StyleSheet.create({
     // width: "70%",
     alignSelf: "center",
   },
+  schedulingWindowRow: {
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-evenly", // Keep gap between items the same size
+    paddingVertical: 10, // Room between items.
+  },
+  schedulingWindowNameInput: {
+    borderWidth: 1,
+    borderRadius: 5,
+    padding: 5,
+    width: 110, // May need to change to be more responsive
+    textAlign: "center",
+    // flexShrink: 1, // Shrink name input for phones
+  },
+  schedulingWindowColumn: {
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 10,
+  },
+  // TODO: Add style for delete and add window buttons in scheduling windows
+  // TODO: Align the items in the 2 columns, Somehow
 });
