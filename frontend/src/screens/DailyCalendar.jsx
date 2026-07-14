@@ -1,28 +1,243 @@
 import { Text, View, StyleSheet, Pressable, Image } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import {
+  CalendarBody,
+  CalendarContainer,
+  CalendarHeader,
+} from "@howljs/calendar-kit";
+import { API_URL } from "../constants";
 
 // Calendar at the top
 // Then bottombar 1/5th or 1/6th
-
-export default function DailyCalendar({ setPage }) {
+// TODO: Add theme for calendar
+export default function DailyCalendar({ setPage, userId }) {
   const [currentDate, setCurrentDate] = useState(new Date());
 
+  const calendarRef = useRef(null);
+
+  useEffect(() => {
+    calendarRef.current?.goToDate({
+      date: formatDate(currentDate),
+      animatedDate: true,
+    });
+  }, [currentDate]); // Maybe move this to actual date switcher to only changes dates when picker is closed
+
+  const [items, setItems] = useState([]); // Need id, title, start, end, color, + recurrenceRule
+
+  useEffect(() => {
+    async function loadItems() {
+      try {
+        const itemData = await fetchItems(userId, currentDate);
+        if (itemData) {
+          console.log(itemData);
+          const formattedItems = await formatItems(itemData, userId);
+          setItems(formattedItems);
+        }
+      } catch (error) {
+        console.error("Error loading calendar items", error);
+        setItems([]);
+      }
+    }
+    loadItems();
+  }, [userId, currentDate]);
   return (
     <>
-      <Text>Calendar Page</Text>
-      <CalendarView></CalendarView>
-      <BottomBar
-        setPage={setPage}
-        currentDate={currentDate}
-        setCurrentDate={setCurrentDate}
-      ></BottomBar>
+      <View style={style.dailyViewScreen}>
+        <CalendarView
+          items={items}
+          calendarRef={calendarRef}
+          setCurrentDate={setCurrentDate}
+          currentDate={currentDate}
+        ></CalendarView>
+        <BottomBar
+          setPage={setPage}
+          currentDate={currentDate}
+          setCurrentDate={setCurrentDate}
+        ></BottomBar>
+      </View>
     </>
   );
 }
 
-function CalendarView() {
-  return <></>;
+// TODO: Add reccurence
+async function formatItems(items, userId) {
+  // Items is a list[FixedEvent | FloatingTask]
+  // Convert into [
+  // {
+  //  id: id,
+  // title: title
+  // start: {dateTime: date + start time}
+  // end: {dateTime: date + end time}
+  // color: color
+  // }
+  // ]
+  const calendars = await fetchCalendars(userId); // Should be list[Calendar]
+  let outputItems = [];
+  for (const item of items) {
+    if (Object.hasOwn(item, "duration_minutes")) {
+      // Floating Tasks
+      outputItems.push({
+        id: `task:${item["task_id"]}`,
+        title: item["name"],
+        start: { dateTime: item["date"] + "T" + item["scheduled_start"] },
+        end: {
+          dateTime: addMinutesToDateTime(
+            item["date"],
+            item["scheduled_start"],
+            item["duration_minutes"],
+          ),
+        }, // Return base colour in case of failures
+        color: getCalendarColour(calendars, item["calendar_id"]) || "#FF0000FF", // TODO: Modify colour based on type of task
+      });
+    } else {
+      outputItems.push({
+        id: `event:${item["event_id"]}`,
+        title: item["name"],
+        start: { dateTime: item["date"] + "T" + item["start_time"] }, // calendar package wants explicit 'T' separator
+        end: { dateTime: item["date"] + "T" + item["end_time"] },
+        color: getCalendarColour(calendars, item["calendar_id"]) || "#FF0000FF",
+      });
+    }
+  }
+  return outputItems;
+}
+
+function addMinutesToDateTime(dateString, timeString, minutes) {
+  const newDateTime = new Date(`${dateString}T${timeString}`);
+  const duration = parseInt(minutes);
+
+  newDateTime.setMinutes(newDateTime.getMinutes() + duration); // Automatically rolls the hour over in case it does go over
+
+  const newHours = String(newDateTime.getHours()).padStart(2, "0");
+  const newMinutes = String(newDateTime.getMinutes()).padStart(2, "0"); // 'minutes' has already been declared??
+  return `${formatDate(newDateTime)}T${newHours}:${newMinutes}:00`;
+}
+function getCalendarColour(calendars, calendarId) {
+  for (const calendar of calendars) {
+    if (calendar["calendar_id"] === calendarId) {
+      return calendar["colour"];
+    }
+  }
+}
+async function fetchCalendars(userId) {
+  try {
+    const getCalendarsUrl = API_URL + "/" + String(userId) + "/calendars";
+    const response = await fetch(getCalendarsUrl, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("Error fetching calendars", data);
+      return [];
+    }
+    return data;
+  } catch (error) {
+    console.error("Error fetching calendars: ", error);
+    return []; // Prevent further error when another function assumes a result
+  }
+}
+async function fetchItems(userId, date) {
+  const calendarIds = await fetchCalendarIds(userId);
+  if (!calendarIds) {
+    return [];
+  }
+  let items = [];
+  for (const calendarId of calendarIds) {
+    try {
+      const getItemsUrl =
+        API_URL +
+        "/" +
+        String(calendarId) +
+        "/items?date=" +
+        String(formatDate(date));
+      const response = await fetch(getItemsUrl, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        console.error("Error fetching items", data);
+        continue;
+      }
+      // Concatenate 2 arrays together
+      items = [...items, ...data]; // Data should be list[FloatingTask | FixedEvent]
+    } catch (error) {
+      console.error("Error fetching items: ", error);
+    }
+  }
+  return items;
+}
+
+async function fetchCalendarIds(userId) {
+  try {
+    const getItemsUrl = API_URL + "/" + String(userId) + "/calendar_ids";
+    const response = await fetch(getItemsUrl, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("Error fetching calendar ids", data);
+      return;
+    }
+    return data;
+  } catch (error) {
+    console.error("Error fetching calendar ids", error);
+  }
+}
+function CalendarView({ items, currentDate, setCurrentDate, calendarRef }) {
+  return (
+    <>
+      <View style={style.mainCalendarContainer}>
+        <CalendarContainer
+          ref={calendarRef}
+          numberOfDays={1}
+          scrollByDay={true}
+          firstDay={7}
+          allowDragToCreate={true}
+          allowDragToEdit={true} // TODO: Implement the event handlers
+          allowPinchToZoom={true}
+          overlapType="no-overlap" // TODO: Look back to client feedback to see if changing to 'overlap' makes sense
+          initialDate={formatDate(currentDate)}
+          events={items}
+          onDateChanged={(date) => {
+            console.log(date);
+            console.log(typeof date);
+            setCurrentDate(new Date(date));
+          }}
+        >
+          <CalendarHeader />
+          <CalendarBody />
+        </CalendarContainer>
+      </View>
+    </>
+  );
+}
+
+function formatDate(date) {
+  if (!date) {
+    console.error("No date provided");
+    return formatDate(new Date());
+  }
+  if (typeof date === "string") {
+    date = new Date(date);
+  }
+  const year = String(date.getFullYear());
+  const month = String(date.getMonth() + 1).padStart(2, "0"); // months are 0 indexes i.e. jan = 0
+  const day = String(date.getDate()).padStart(2, "0");
+
+  const finalDate = `${year}-${month}-${day}`;
+  return finalDate;
 }
 
 function BottomBar({ setPage, currentDate, setCurrentDate }) {
@@ -76,7 +291,7 @@ function DatePicker({ currentDate, setCurrentDate }) {
           value={currentDate}
           onChange={(_, date) => {
             if (date) {
-              // Prevent setting date to undefined/null
+              // Prevent setting date to undefined/null/
               setCurrentDate(date);
             }
           }}
@@ -95,6 +310,13 @@ function ManageFloatingTasksButton() {
 }
 
 const style = StyleSheet.create({
+  dailyViewScreen: {
+    flexDirection: "column",
+    flex: 1, // Expand fully
+  },
+  mainCalendarContainer: {
+    flex: 1, // Expand fully
+  },
   bottomBar: {
     flexDirection: "row",
     gap: 10,

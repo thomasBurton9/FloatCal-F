@@ -35,8 +35,9 @@ export default function App() {
     } else if (page === "DailyCalendar") {
       return (
         <>
-          <SafeAreaView>
-            <DailyCalendar setPage={setPage}></DailyCalendar>
+          <SafeAreaView style={{ flex: 1 }}>
+            {/* Using inline css unless significantly more will be needed */}
+            <DailyCalendar setPage={setPage} userId={user}></DailyCalendar>
           </SafeAreaView>
         </>
       );

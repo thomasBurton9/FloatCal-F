@@ -1,4 +1,4 @@
-from typing import Sequence
+from typing import Sequence, List
 
 from pwdlib import PasswordHash
 from pwdlib.hashers.argon2 import Argon2Hasher
@@ -8,8 +8,10 @@ from db.models.calendars import Calendar, CalendarMember
 from db.models.items import FixedEvent, FloatingTask
 from db.models.settings import Setting
 from db.models.users import User
+from db.queries.calendar_db import create_calendar
 from db.queries.item_db import remove_event_session, remove_task_session
 from db.session import get_db
+from schemas.calendar_schemas import CreateCalendar
 from schemas.user_schemas import CreateUser, DeleteUser, UserLogin
 
 
@@ -21,7 +23,7 @@ def check_user_exists(user_id: int):
 
 
 # Making a calendar also results in a membership record
-def get_user_calendars(user_id: int):
+def get_user_calendars(user_id: int) -> List[Calendar]:
     user_member_calendar_statement = select(CalendarMember.calendar_id).where(
         CalendarMember.user_id == user_id
     )
@@ -38,7 +40,20 @@ def get_user_calendars(user_id: int):
         calendars: Sequence[Calendar] = (
             session.execute(calendar_statement).scalars().all()
         )
-        return calendars
+        return list(calendars)
+
+
+def get_user_calendar_ids(user_id: int) -> List[int]:
+    user_member_calendar_statement = select(CalendarMember.calendar_id).where(
+        CalendarMember.user_id == user_id
+    )
+
+    with get_db() as session:
+        calendar_ids: Sequence[int] = (
+            session.execute(user_member_calendar_statement).scalars().all()
+        )
+
+        return list(calendar_ids)
 
 
 def create_user(data: CreateUser) -> int:
@@ -62,6 +77,12 @@ def create_user(data: CreateUser) -> int:
         new_settings: Setting = Setting(user_id=new_user.user_id)
         session.add(new_settings)
         session.commit()
+
+        create_calendar(
+            new_user.user_id,
+            CreateCalendar(name="Default", colour="#FF0000E6"),
+        )
+
         return new_user.user_id  # Indicate success
 
 

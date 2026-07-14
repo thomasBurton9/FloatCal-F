@@ -36,7 +36,12 @@ All constants should use UPPERCASE
 #### Frontend
 All React Components must be PascalCase as dictated by React
 
-All variable and function names should use CamelCase
+All variable and function names should use camelCase
 
 ### Other conventions
 Use comments in the format `TODO: {content}` to indicate future work needs to be done
+
+
+## Scope
+
+Timezones are currently ignored

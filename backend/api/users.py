@@ -3,7 +3,11 @@ from fastapi import APIRouter, HTTPException
 from db.models.settings import Setting
 from db.queries.calendar_db import create_calendar
 from db.queries.settings_db import get_settings, update_settings
-from db.queries.user_db import check_user_exists, get_user_calendars
+from db.queries.user_db import (
+    check_user_exists,
+    get_user_calendars,
+    get_user_calendar_ids,
+)
 from schemas.calendar_schemas import CreateCalendar
 from schemas.settings_schemas import UpdateSettings
 
@@ -16,6 +20,14 @@ def get_user_calendars_api(user_id: int):
         raise HTTPException(422, "User with specified user_id does not exist")
 
     return get_user_calendars(user_id)
+
+
+@router.get("/{user_id}/calendar_ids")
+def get_user_calendar_ids_api(user_id: int):
+    if not check_user_exists(user_id):
+        raise HTTPException(422, "User with specified user_id does not exist")
+
+    return get_user_calendar_ids(user_id)
 
 
 @router.post("/{user_id}/create_calendar")
