@@ -10,6 +10,8 @@ import {
 } from "react-native";
 import { API_URL } from "../constants";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { fetchSettings } from "../api/settingsApi";
+import { timeStringToDate } from "../helpers/dateHelpers";
 
 export default function SettingsScreen({ userId, setUserId, setPage }) {
   const [settings, setSettings] = useState(null);
@@ -464,15 +466,6 @@ function EditSettingsActions({ onCancel, onSave }) {
     </View>
   );
 }
-function timeStringToDate(time) {
-  const hours = time.slice(0, 2);
-  const minutes = time.slice(3, 5);
-
-  let date = new Date();
-  date.setHours(hours, minutes);
-
-  return date;
-}
 function toggleDropdown(field, editingKey, setEditingKey) {
   if (editingKey !== field) {
     setEditingKey(field);
@@ -509,25 +502,6 @@ async function updateSettings(userId, key, value, setSettings) {
 
   const updatedSettings = await fetchSettings(userId);
   setSettings(updatedSettings);
-}
-async function fetchSettings(userId) {
-  try {
-    const getSettingsUrl = API_URL + "/" + String(userId) + "/settings";
-    const response = await fetch(getSettingsUrl, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const data = await response.json();
-    if (!response.ok) {
-      console.error("Error fetching settings", data);
-      return;
-    }
-    return data;
-  } catch (error) {
-    console.error("Error fetching settings:", error);
-  }
 }
 
 // Format time returned from api into more readable time

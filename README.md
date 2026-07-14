@@ -45,3 +45,4 @@ Use comments in the format `TODO: {content}` to indicate future work needs to be
 ## Scope
 
 Timezones are currently ignored
+Components do not need to be compatible with android

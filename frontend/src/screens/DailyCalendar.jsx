@@ -6,8 +6,9 @@ import {
   CalendarContainer,
   CalendarHeader,
 } from "@howljs/calendar-kit";
-import { API_URL } from "../constants";
-
+import { fetchCalendars } from "../api/calendarApi";
+import { formatDate } from "../helpers/dateHelpers";
+import { fetchItems } from "../api/itemApi";
 // Calendar at the top
 // Then bottombar 1/5th or 1/6th
 // TODO: Add theme for calendar
@@ -120,81 +121,7 @@ function getCalendarColour(calendars, calendarId) {
     }
   }
 }
-async function fetchCalendars(userId) {
-  try {
-    const getCalendarsUrl = API_URL + "/" + String(userId) + "/calendars";
-    const response = await fetch(getCalendarsUrl, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const data = await response.json();
 
-    if (!response.ok) {
-      console.error("Error fetching calendars", data);
-      return [];
-    }
-    return data;
-  } catch (error) {
-    console.error("Error fetching calendars: ", error);
-    return []; // Prevent further error when another function assumes a result
-  }
-}
-async function fetchItems(userId, date) {
-  const calendarIds = await fetchCalendarIds(userId);
-  if (!calendarIds) {
-    return [];
-  }
-  let items = [];
-  for (const calendarId of calendarIds) {
-    try {
-      const getItemsUrl =
-        API_URL +
-        "/" +
-        String(calendarId) +
-        "/items?date=" +
-        String(formatDate(date));
-      const response = await fetch(getItemsUrl, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        console.error("Error fetching items", data);
-        continue;
-      }
-      // Concatenate 2 arrays together
-      items = [...items, ...data]; // Data should be list[FloatingTask | FixedEvent]
-    } catch (error) {
-      console.error("Error fetching items: ", error);
-    }
-  }
-  return items;
-}
-
-async function fetchCalendarIds(userId) {
-  try {
-    const getItemsUrl = API_URL + "/" + String(userId) + "/calendar_ids";
-    const response = await fetch(getItemsUrl, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const data = await response.json();
-
-    if (!response.ok) {
-      console.error("Error fetching calendar ids", data);
-      return;
-    }
-    return data;
-  } catch (error) {
-    console.error("Error fetching calendar ids", error);
-  }
-}
 function CalendarView({ items, currentDate, setCurrentDate, calendarRef }) {
   return (
     <>
@@ -222,22 +149,6 @@ function CalendarView({ items, currentDate, setCurrentDate, calendarRef }) {
       </View>
     </>
   );
-}
-
-function formatDate(date) {
-  if (!date) {
-    console.error("No date provided");
-    return formatDate(new Date());
-  }
-  if (typeof date === "string") {
-    date = new Date(date);
-  }
-  const year = String(date.getFullYear());
-  const month = String(date.getMonth() + 1).padStart(2, "0"); // months are 0 indexes i.e. jan = 0
-  const day = String(date.getDate()).padStart(2, "0");
-
-  const finalDate = `${year}-${month}-${day}`;
-  return finalDate;
 }
 
 function BottomBar({ setPage, currentDate, setCurrentDate }) {
