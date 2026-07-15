@@ -1,6 +1,76 @@
 import { API_URL } from "../constants";
 import { fetchCalendarIds } from "./calendarApi";
 import { formatDate } from "../helpers/dateHelpers";
+
+// Similar function used in SettingsScreen.jsx
+function formatTime(time) {
+  return time.toTimeString().slice(0, 5);
+}
+
+export async function createFloatingTask(calendarId, itemFields) {
+  try {
+    const createTaskUrl = API_URL + "/" + String(calendarId) + "/tasks";
+    const response = await fetch(createTaskUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: itemFields.name,
+        date: formatDate(itemFields.date),
+        duration_minutes: Number(itemFields.duration),
+        notes: itemFields.notes || null,
+        recurrence_rule: itemFields.recurrenceOn
+          ? itemFields.recurrenceRule
+          : null,
+        reminder: itemFields.remindersOn,
+        preferred_window: itemFields.preferredWindow || null,
+        scheduled_start: null,
+        manually_scheduled: false,
+      }),
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      console.error("Error creating floating task", data);
+      return;
+    }
+    return data;
+  } catch (error) {
+    console.error("Error creating floating task:", error);
+  }
+}
+
+export async function createFixedEvent(calendarId, itemFields) {
+  try {
+    const createEventUrl = API_URL + "/" + String(calendarId) + "/events";
+    const response = await fetch(createEventUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: itemFields.name,
+        date: formatDate(itemFields.date),
+        notes: itemFields.notes || null,
+        recurrence_rule: itemFields.recurrenceOn
+          ? itemFields.recurrenceRule
+          : null,
+        reminder: itemFields.remindersOn,
+        start_time: formatTime(itemFields.startTime),
+        end_time: formatTime(itemFields.endTime),
+      }),
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      console.error("Error creating fixed event", data);
+      return;
+    }
+    return data;
+  } catch (error) {
+    console.error("Error creating fixed event:", error);
+  }
+}
+
 export async function fetchItems(userId, date) {
   const calendarIds = await fetchCalendarIds(userId);
   if (!calendarIds) {

@@ -280,7 +280,6 @@ async function getPreferredWindows(userId) {
 // TODO: Implement proper functionality
 function handleAddItem(itemType, setCurrentModal, itemFields, setItemFields) {
   setItemFields({
-    ...itemFields,
     name: "",
     date: new Date(),
     duration: "",
