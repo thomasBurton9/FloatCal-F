@@ -6,12 +6,14 @@ import {
   StyleSheet,
   View,
   Switch,
+  Alert,
 } from "react-native";
 import { useEffect, useState } from "react";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Dropdown } from "react-native-element-dropdown";
 import { fetchCalendars } from "../api/calendarApi.js";
 import { fetchSettings } from "../api/settingsApi.js";
+import { createFixedEvent, createFloatingTask } from "../api/itemApi.js";
 
 export default function AddItem({ isVisible, setCurrentModal, userId }) {
   const [itemType, setItemType] = useState("Floating");
@@ -276,9 +278,99 @@ async function getPreferredWindows(userId) {
   return Object.keys(settings.scheduling_windows).map((name) => ({ name }));
 }
 
-// Currently a stub
-// TODO: Implement proper functionality
-function handleAddItem(itemType, setCurrentModal, itemFields, setItemFields) {
+async function handleAddItem(
+  itemType,
+  setCurrentModal,
+  itemFields,
+  setItemFields,
+) {
+  const recurrenceRules = [
+    "daily",
+    "weekly",
+    "fortnightly",
+    "monthly",
+    "yearly",
+  ];
+  // TODO: Potentially change from alerts to actual fields
+  // Length checks should theoretically be not needed given TextInput components natively prevent this
+  // Kept anyways as a second layer of validation
+  if (!itemFields.name || itemFields.name.length > 63) {
+    Alert.alert("Invalid name", "Name must be between 1 and 63 characters.");
+    return;
+  }
+  // Make sure date is an actual date and is not none/invalid
+  if (!(itemFields.date instanceof Date) || isNaN(itemFields.date.getTime())) {
+    Alert.alert("Invalid date", "Please select a valid date.");
+    return;
+  }
+
+  if (!itemFields.calendar) {
+    Alert.alert("Invalid calendar", "Please select a calendar.");
+    return;
+  }
+  if (itemFields.notes.length > 319) {
+    Alert.alert("Invalid notes", "Notes must be fewer than 320 characters.");
+    return;
+  }
+  if (
+    itemFields.recurrenceOn &&
+    !recurrenceRules.includes(itemFields.recurrenceRule)
+  ) {
+    Alert.alert(
+      "Invalid recurrence",
+      "Recurrence must be daily, weekly, fortnightly, monthly or yearly.",
+    );
+    return;
+  }
+
+  if (itemType === "Floating") {
+    const duration = Number(itemFields.duration);
+
+    if (!Number.isInteger(duration) || duration < 1 || duration > 1440) {
+      Alert.alert(
+        "Invalid duration",
+        "Duration must be a whole number between 1 and 1440 minutes.",
+      );
+      return;
+    }
+    const createdTask = await createFloatingTask(
+      itemFields.calendar,
+      itemFields,
+    );
+    if (createdTask === undefined) {
+      Alert.alert("Unable to add task", "Please try again.");
+      return;
+    }
+    // TODO: Automatically attempt to schedule task when adding a new floating task.
+  } else if (itemType === "Fixed") {
+    if (
+      !(itemFields.startTime instanceof Date) ||
+      !(itemFields.endTime instanceof Date)
+    ) {
+      Alert.alert("Invalid time", "Please select valid start and end times.");
+      return;
+    }
+    const startMinutes =
+      itemFields.startTime.getHours() * 60 + itemFields.startTime.getMinutes();
+    const endMinutes =
+      itemFields.endTime.getHours() * 60 + itemFields.endTime.getMinutes();
+    if (startMinutes >= endMinutes) {
+      Alert.alert("Invalid time", "End time must be after start time.");
+      return;
+    }
+    const createdEvent = await createFixedEvent(
+      itemFields.calendar,
+      itemFields,
+    );
+    if (createdEvent === undefined) {
+      Alert.alert("Unable to add event", "Please try again.");
+      return;
+    }
+  } else {
+    Alert.alert("Invalid item type", "Error in selecting item type");
+    return;
+  }
+
   setItemFields({
     name: "",
     date: new Date(),
