@@ -9,6 +9,8 @@ import {
 import { fetchCalendars } from "../api/calendarApi";
 import { formatDate } from "../helpers/dateHelpers";
 import { fetchItems } from "../api/itemApi";
+import AddItem from "../components/AddItem";
+
 // Calendar at the top
 // Then bottombar 1/5th or 1/6th
 // TODO: Add theme for calendar
@@ -53,6 +55,7 @@ export default function DailyCalendar({ setPage, userId }) {
         ></CalendarView>
         <BottomBar
           setPage={setPage}
+          userId={userId}
           currentDate={currentDate}
           setCurrentDate={setCurrentDate}
         ></BottomBar>
@@ -151,26 +154,44 @@ function CalendarView({ items, currentDate, setCurrentDate, calendarRef }) {
   );
 }
 
-function BottomBar({ setPage, currentDate, setCurrentDate }) {
+function BottomBar({ setPage, userId, currentDate, setCurrentDate }) {
+  const [currentModal, setCurrentModal] = useState(null);
+
   return (
     <View style={style.bottomBar}>
-      <BottomLeftNavigation setPage={setPage}></BottomLeftNavigation>
+      <BottomLeftNavigation
+        setPage={setPage}
+        setCurrentModal={setCurrentModal}
+      ></BottomLeftNavigation>
       <DatePicker
         currentDate={currentDate}
         setCurrentDate={setCurrentDate}
       ></DatePicker>
       <ManageFloatingTasksButton></ManageFloatingTasksButton>
+      <AddItem
+        isVisible={currentModal === "addItem"}
+        setCurrentModal={setCurrentModal}
+        userId={userId}
+      ></AddItem>
     </View>
   );
 }
 
-function BottomLeftNavigation({ setPage }) {
+function BottomLeftNavigation({ setPage, setCurrentModal }) {
   return (
     <View style={style.bottomLeftNavigation}>
       <Pressable style={style.smallButton}>
-        <Text style={style.smallButtonAdd}>+</Text>
+        <Text
+          style={style.smallButtonAdd}
+          onPress={() => setCurrentModal("addItem")}
+        >
+          +
+        </Text>
       </Pressable>
-      <Pressable style={style.smallButton}>
+      <Pressable
+        style={style.smallButton}
+        onPress={() => setCurrentModal("manageCalendars")}
+      >
         <Image
           style={style.smallButtonIcon}
           source={require("../../assets/calendar_icon64x64.png")}
@@ -182,7 +203,10 @@ function BottomLeftNavigation({ setPage }) {
           source={require("../../assets/settings_icon64x64.png")}
         ></Image>
       </Pressable>
-      <Pressable style={style.smallButton}>
+      <Pressable
+        style={style.smallButton}
+        onPress={() => setCurrentModal("search")}
+      >
         <Image
           style={style.smallButtonIcon}
           source={require("../../assets/search_icon64x64.png")}

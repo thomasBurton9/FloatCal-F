@@ -46,3 +46,7 @@ Use comments in the format `TODO: {content}` to indicate future work needs to be
 
 Timezones are currently ignored
 Components do not need to be compatible with android
+
+## TODO
+
+Critical - Mismatch between frontend and backend when applying preferred windows. Will cause problems when implementing automatical scheduling.
