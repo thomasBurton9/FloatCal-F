@@ -42,3 +42,73 @@ export async function fetchCalendarIds(userId) {
     console.error("Error fetching calendar ids", error);
   }
 }
+
+export async function createCalendar(userId, calendarFields) {
+  try {
+    const createCalendarUrl =
+      API_URL + "/" + String(userId) + "/create_calendar";
+    const response = await fetch(createCalendarUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: calendarFields.name,
+        colour: calendarFields.colour,
+      }),
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("Error creating calendar", data);
+      return;
+    }
+    return data;
+  } catch (error) {
+    console.error("Error creating calendar: ", error);
+  }
+}
+
+export async function addCalendarMember(calendarId, userId) {
+  try {
+    const addMemberUrl =
+      API_URL + "/add_member/" + String(calendarId) + "/" + String(userId);
+    const response = await fetch(addMemberUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("Error adding calendar member", data);
+      return;
+    }
+    return data;
+  } catch (error) {
+    console.error("Error adding calendar member: ", error);
+  }
+}
+
+export async function removeCalendarMember(calendarId, userId) {
+  try {
+    const removeMemberUrl =
+      API_URL + "/remove_member/" + String(calendarId) + "/" + String(userId);
+    const response = await fetch(removeMemberUrl, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("Error removing calendar member", data);
+      return;
+    }
+    return data;
+  } catch (error) {
+    console.error("Error removing calendar member: ", error);
+  }
+}
