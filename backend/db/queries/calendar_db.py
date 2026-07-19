@@ -155,3 +155,17 @@ def get_calendar_info(calendar_id: int) -> Calendar:
         if not calendar:
             raise ValueError("Calendar with specified id does not exist")
         return calendar
+
+
+def get_calendar_member_entries(calendar_id: int) -> list[CalendarMember]:
+    from db.session import get_db
+
+    calendar_member_statement = select(CalendarMember).where(
+        CalendarMember.calendar_id == calendar_id
+    )
+
+    with get_db() as session:
+        calendar_member_entries = (
+            session.execute(calendar_member_statement).scalars().all()
+        )
+        return list(calendar_member_entries)
