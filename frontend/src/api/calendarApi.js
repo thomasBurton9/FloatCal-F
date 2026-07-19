@@ -42,6 +42,29 @@ export async function fetchCalendarIds(userId) {
     console.error("Error fetching calendar ids", error);
   }
 }
+// Returns list of CalendarMember's
+export async function fetchCalendarMemberEntries(calendarId) {
+  try {
+    const getMemberEntriesUrl =
+      API_URL + "/" + String(calendarId) + "/member_entries";
+    const response = await fetch(getMemberEntriesUrl, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("Error fetching calendar member entries", data);
+      return [];
+    }
+    return data;
+  } catch (error) {
+    console.error("Error fetching calendar member entries: ", error);
+    return [];
+  }
+}
 
 export async function createCalendar(userId, calendarFields) {
   try {
