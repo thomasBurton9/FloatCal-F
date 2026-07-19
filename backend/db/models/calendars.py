@@ -1,4 +1,4 @@
-from sqlalchemy import ForeignKey, UniqueConstraint
+from sqlalchemy import CheckConstraint, ForeignKey, UniqueConstraint, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from db.base import Base
@@ -6,10 +6,13 @@ from db.base import Base
 
 class Calendar(Base):
     __tablename__ = "Calendars"
+    __table_args__ = (
+        CheckConstraint("length(name) BETWEEN 1 and 16", name="name_length_check"),
+    )
 
     calendar_id: Mapped[int] = mapped_column(primary_key=True)
 
-    name: Mapped[str] = mapped_column(nullable=False)
+    name: Mapped[str] = mapped_column(String(17), nullable=False)
 
     colour: Mapped[str] = mapped_column(nullable=False)  # Hexcode
 

@@ -2,13 +2,21 @@ import {
   Modal,
   Pressable,
   ScrollView,
+  Alert,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from "react-native";
 import { useEffect, useMemo, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { fetchCalendars } from "../api/calendarApi";
+import { createCalendar, fetchCalendars } from "../api/calendarApi";
+import ColorPicker, {
+  colorKit,
+  HueSlider,
+  OpacitySlider,
+  Panel1,
+} from "reanimated-color-picker";
 
 export default function ManageCalendars({
   isVisible,
@@ -57,6 +65,8 @@ export default function ManageCalendars({
       return (
         <CreateCalendarScreen
           setCurrentView={setCurrentView}
+          userId={userId}
+          setCalendars={setCalendars}
         ></CreateCalendarScreen>
       );
     }
@@ -172,15 +182,91 @@ function CalendarButton({ calendar, setCurrentView, setSelectedCalendar }) {
 }
 
 // Screen for calendar creation
-function CreateCalendarScreen({ setCurrentView }) {
+function CreateCalendarScreen({ setCurrentView, userId, setCalendars }) {
+  const [calendarFields, setCalendarFields] = useState({
+    name: "",
+    colour: "#FF0000FF",
+  });
+
   return (
     <View style={styles.placeholderView}>
       <BackButton setCurrentView={setCurrentView}></BackButton>
       <Text style={styles.placeholderTitle}>Create Calendar</Text>
+      <TextInput
+        value={calendarFields.name}
+        maxLength={16}
+        placeholder="Calendar Name"
+        style={styles.calendarNameInput}
+        onChangeText={(name) =>
+          setCalendarFields({ ...calendarFields, name: name })
+        }
+      ></TextInput>
+      {/* Potentially swap to native ios picker if styling does not work out*/}
+      <Text style={styles.colorPickerText}>Choose Calendar Colour</Text>
+      <ColorPicker
+        style={styles.colorPicker}
+        value={calendarFields.colour}
+        onCompleteJS={(colour) =>
+          setCalendarFields({
+            ...calendarFields,
+            colour: colorKit.HEX(colour.rgba, true), // Argument "true" is required to prevent the alpha value being cut off
+          })
+        }
+      >
+        {/* <Preview style={styles.colorPreview}></Preview>*/}
+        <Panel1 />
+        <HueSlider />
+        <OpacitySlider /> {/* TODO: Decide whether to include this */}
+      </ColorPicker>
+      <Pressable
+        style={styles.createCalendarSubmit}
+        onPress={() =>
+          handleCreateCalendar(
+            calendarFields,
+            setCalendarFields,
+            userId,
+            setCurrentView,
+            setCalendars,
+          )
+        }
+      >
+        {" "}
+        {/* TODO: Fix First press results in the name keyboard opening for some reason??. Second Press works */}
+        <Text style={styles.createCalendarSubmitText}>Create Calendar</Text>
+      </Pressable>
     </View>
   );
 }
 
+async function handleCreateCalendar(
+  calendarFields,
+  setCalendarFields,
+  userId,
+  setCurrentView,
+  setCalendars,
+) {
+  if (!calendarFields.name || calendarFields.name.length > 16) {
+    Alert.alert("Invalid name", "Name must be between 1 and 16 characters.");
+    return;
+  }
+
+  // No need to check colour format given it is using colour picker
+  // TODO: Potentially add regex validation
+
+  const createdCalendar = await createCalendar(userId, calendarFields);
+  if (createdCalendar === undefined) {
+    Alert.alert("Unable to create calendar", "Please try again.");
+    return;
+  }
+
+  const calendarData = await fetchCalendars(userId);
+  setCalendars(calendarData);
+  setCalendarFields({
+    name: "",
+    colour: "#FF0000FF",
+  });
+  setCurrentView("list");
+}
 // Screen with information about one singular calendar
 function CalendarDetailsScreen({ selectedCalendar, setCurrentView }) {
   return (
@@ -214,6 +300,36 @@ function BackButton({ setCurrentView }) {
 }
 
 const styles = StyleSheet.create({
+  calendarNameInput: {
+    width: "80%",
+    minHeight: 40,
+    borderStyle: "solid",
+    borderWidth: 2,
+    borderRadius: 6,
+    paddingHorizontal: 8,
+  },
+  colorPickerText: {
+    fontSize: 18,
+  },
+  colorPicker: {
+    width: "60%", // Required to show element properly
+    height: 300,
+  },
+  colorPreview: {
+    height: 30,
+    marginVertical: 8,
+  },
+  createCalendarSubmit: {
+    backgroundColor: "blue",
+    borderStyle: "solid",
+    borderWidth: 1,
+    borderRadius: 10,
+    padding: 10,
+    alignItems: "center",
+  },
+  createCalendarSubmitText: {
+    color: "white",
+  },
   manageCalendarsModal: {
     paddingBottom: 0,
     marginBottom: 0,
