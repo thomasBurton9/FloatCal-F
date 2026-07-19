@@ -4,8 +4,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from api import authentication, calendars, health, items, users
 
 
-
-
 app = FastAPI(title="FloatCal API backend")
 
 app.include_router(health.router)
@@ -18,8 +16,8 @@ app.include_router(authentication.router)
 origins = [
     "http://localhost:8000",
     "http://127.0.0.1:8000",
-    "http://localhost:8081"
-] # Allow for web testing preventing CORS error converting regular requests to options requests.
+    "http://localhost:8081",
+]  # Allow for web testing preventing CORS error converting regular requests to options requests.
 
 app.add_middleware(
     CORSMiddleware,
@@ -28,6 +26,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 @app.get("/")
 async def root():

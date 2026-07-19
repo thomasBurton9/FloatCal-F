@@ -12,7 +12,7 @@ from db.queries.calendar_db import create_calendar
 from db.queries.item_db import remove_event_session, remove_task_session
 from db.session import get_db
 from schemas.calendar_schemas import CreateCalendar
-from schemas.user_schemas import CreateUser, DeleteUser, UserLogin
+from schemas.user_schemas import CreateUser, DeleteUser, UserInfo, UserLogin
 
 
 def check_user_exists(user_id: int):
@@ -20,6 +20,21 @@ def check_user_exists(user_id: int):
 
     with get_db() as session:
         return session.execute(user_exists_statement).scalar() is not None
+
+
+def get_user_info(user_id: int) -> UserInfo:
+    user_info_statement = select(User).where(User.user_id == user_id)
+
+    with get_db() as session:
+        user: User | None = session.execute(user_info_statement).scalar()
+        if user is None:
+            raise ValueError("User with specified user_id does not exist")
+
+        return UserInfo(
+            user_id=user.user_id,
+            email=user.email,
+            display_name=user.display_name,
+        )
 
 
 # Making a calendar also results in a membership record

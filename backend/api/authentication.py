@@ -3,9 +3,10 @@ from db.queries.user_db import (
     check_user_exists,
     create_user,
     delete_user,
+    get_user_info,
 )
 from fastapi import APIRouter, HTTPException
-from schemas.user_schemas import CreateUser, DeleteUser, UserLogin
+from schemas.user_schemas import CreateUser, DeleteUser, UserInfo, UserLogin
 
 router = APIRouter(prefix="/api")
 
@@ -38,5 +39,17 @@ def authenticate_user_api(data: UserLogin):
     try:
         user_id: int = authenticate_user(data)
         return user_id
+    except ValueError as e:
+        raise HTTPException(422, str(e))
+
+
+@router.get("/authentication/{user_id}/user_info", response_model=UserInfo) # Inform docs that the response has a certain shape (UserInfo shape)
+def get_user_info_api(user_id: int):
+    if not check_user_exists(user_id):
+        raise HTTPException(422, "User with specified user_id does not exist")
+
+    try:
+        user_info: UserInfo = get_user_info(user_id)
+        return user_info
     except ValueError as e:
         raise HTTPException(422, str(e))

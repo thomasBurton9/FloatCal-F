@@ -18,3 +18,9 @@ class DeleteUser(BaseModel):
 class UserLogin(BaseModel):
     email: Annotated[str, Field(min_length=4, max_length=126)]
     password: str
+
+
+class UserInfo(BaseModel):
+    user_id: int
+    email: Annotated[str, Field(min_length=4, max_length=126)]
+    display_name: Annotated[str, Field(min_length=3, max_length=24)]
