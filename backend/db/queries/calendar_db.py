@@ -142,6 +142,27 @@ def create_calendar(user_id: int, data: CreateCalendar):
         session.add(new_member)
         session.commit()
 
+# TODO: Currently leaves child records -> If foreign key enforcement is turned on this will error.
+def delete_calendar(user_id, calendar_id):
+    try:
+        calendar: Calendar = get_calendar_info(calendar_id)
+        if calendar.created_by_user_id != user_id:
+            raise ValueError(
+                "The user with specified user id did not created the selected calendar"
+            )
+
+    except ValueError as e:
+        raise ValueError(str(e))
+
+    delete_calendar_statement = (
+        delete(Calendar)
+        .where(Calendar.calendar_id == calendar_id)
+        .where(Calendar.created_by_user_id == user_id)
+    )
+    with get_db() as session:
+        session.execute(delete_calendar_statement)
+        session.commit()
+
 
 def get_calendar_info(calendar_id: int) -> Calendar:
     if not check_calendar_exists(calendar_id):

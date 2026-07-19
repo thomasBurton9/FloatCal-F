@@ -92,6 +92,33 @@ export async function createCalendar(userId, calendarFields) {
   }
 }
 
+export async function removeCalendar(userId, calendarId) {
+  try {
+    const removeCalendarUrl =
+      API_URL +
+      "/" +
+      String(userId) +
+      "/" +
+      String(calendarId) +
+      "/delete_calendar";
+    const response = await fetch(removeCalendarUrl, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("Error removing calendar", data);
+      return;
+    }
+    return data;
+  } catch (error) {
+    console.error("Error removing calendar: ", error);
+  }
+}
+
 export async function addCalendarMember(calendarId, userId) {
   try {
     const addMemberUrl =

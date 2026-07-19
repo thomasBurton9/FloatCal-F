@@ -1,12 +1,16 @@
 from fastapi import APIRouter, HTTPException
 
 from db.models.settings import Setting
-from db.queries.calendar_db import create_calendar
+from db.queries.calendar_db import (
+    check_calendar_exists,
+    create_calendar,
+    delete_calendar,
+)
 from db.queries.settings_db import get_settings, update_settings
 from db.queries.user_db import (
     check_user_exists,
-    get_user_calendars,
     get_user_calendar_ids,
+    get_user_calendars,
 )
 from schemas.calendar_schemas import CreateCalendar
 from schemas.settings_schemas import UpdateSettings
@@ -39,6 +43,19 @@ def create_calendar_api(user_id: int, data: CreateCalendar):
 
     # Also adds the user to the calendar immediately
     create_calendar(user_id, data)
+
+
+@router.delete("/{user_id}/{calendar_id}/delete_calendar")
+def delete_calendar_api(user_id: int, calendar_id: int):
+    if not check_user_exists(user_id):
+        raise HTTPException(422, "User with specified user_id does not exist")
+    if not check_calendar_exists(calendar_id):
+        raise HTTPException(422, "Calendar with specified id does not exist")
+
+    try:
+        delete_calendar(user_id, calendar_id)
+    except ValueError as e:
+        raise HTTPException(422, str(e))
 
 
 @router.patch("/{user_id}/update_setting")
