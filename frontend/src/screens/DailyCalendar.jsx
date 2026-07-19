@@ -10,6 +10,7 @@ import { fetchCalendars } from "../api/calendarApi";
 import { formatDate } from "../helpers/dateHelpers";
 import { fetchItems } from "../api/itemApi";
 import AddItem from "../components/AddItem";
+import ManageCalendars from "../components/ManageCalendars";
 
 // Calendar at the top
 // Then bottombar 1/5th or 1/6th
@@ -173,6 +174,11 @@ function BottomBar({ setPage, userId, currentDate, setCurrentDate }) {
         setCurrentModal={setCurrentModal}
         userId={userId}
       ></AddItem>
+      <ManageCalendars
+        isVisible={currentModal === "manageCalendars"}
+        setCurrentModal={setCurrentModal}
+        userId={userId}
+      ></ManageCalendars>
     </View>
   );
 }
