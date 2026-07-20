@@ -71,6 +71,40 @@ export async function createFixedEvent(calendarId, itemFields) {
   }
 }
 
+export async function fetchTasksInRange(userId, startDate, endDate) {
+  const calendarIds = await fetchCalendarIds(userId);
+  if (!calendarIds) {
+    return [];
+  }
+
+  try {
+    const getItemsUrl =
+      API_URL +
+      "/" +
+      String(userId) +
+      "/get_tasks_bulk_user" +
+      "?start_date=" +
+      String(formatDate(startDate)) +
+      "&end_date=" +
+      String(formatDate(endDate));
+
+    const response = await fetch(getItemsUrl, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      console.error("Error fetching tasks", data);
+    }
+    return data;
+  } catch (error) {
+    console.error("Error fetching tasks: ", error);
+    return;
+  }
+}
+
 export async function fetchItems(userId, date) {
   const calendarIds = await fetchCalendarIds(userId);
   if (!calendarIds) {
