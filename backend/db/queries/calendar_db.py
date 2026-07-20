@@ -1,5 +1,6 @@
 import datetime as dt
-from typing import List, Sequence
+from collections import defaultdict
+from typing import DefaultDict, Dict, List, Sequence
 
 from sqlalchemy import delete, select
 
@@ -18,6 +19,77 @@ def check_calendar_exists(calendar_id: int):
 
     with get_db() as session:
         return session.execute(calendar_exists_statement).scalar() is not None
+
+
+def list_tasks_for_calendar_date(calendar_id: int, date: dt.date) -> List[FloatingTask]:
+    floating_task_statement = (
+        select(FloatingTask)
+        .where(FloatingTask.calendar_id == calendar_id)
+        .where(FloatingTask.date == date)
+    )
+    with get_db() as session:
+        floating_task_result: Sequence[FloatingTask] = (
+            session.execute(floating_task_statement).scalars().all()
+        )
+
+        return list(floating_task_result)
+
+
+# Inclusive of start and end dates
+def list_tasks_for_calendar_date_range(
+    calendar_id: int, start_date: dt.date, end_date: dt.date
+) -> Dict[dt.date, List[FloatingTask]]:
+    floating_task_statement = (
+        select(FloatingTask)
+        .where(FloatingTask.calendar_id == calendar_id)
+        .where(FloatingTask.date <= end_date and FloatingTask.date >= start_date)
+    )
+
+    with get_db() as session:
+        floating_task_results: Sequence[FloatingTask] = (
+            session.execute(floating_task_statement).scalars().all()
+        )
+
+        # Use defaultdict instead of regular dict to allow easy creation of new keys
+        task_date_hashmap: DefaultDict[dt.date, List[FloatingTask]] = defaultdict(list)
+        for task in floating_task_results:
+            task_date_hashmap[task.date].append(task)
+
+        return dict(task_date_hashmap)
+
+
+def list_tasks_for_user_date_range(
+    user_id: int, start_date: dt.date, end_date: dt.date
+) -> Dict[dt.date, List[FloatingTask]]:
+
+    with get_db() as session:
+        calendar_id_statement = select(CalendarMember.user_id).where(
+            CalendarMember.user_id == user_id
+        )
+
+        calendar_ids: Sequence[int] | None = (
+            session.execute(calendar_id_statement).scalars().all()
+        )
+
+        if not calendar_ids:
+            return defaultdict()
+
+        floating_task_statement = (
+            select(FloatingTask)
+            .where(FloatingTask.calendar_id.in_(calendar_ids))
+            .where(FloatingTask.date <= end_date and FloatingTask.date >= start_date)
+        )
+
+        floating_task_results: Sequence[FloatingTask] = (
+            session.execute(floating_task_statement).scalars().all()
+        )
+
+        # Use defaultdict instead of regular dict to allow easy creation of new keys
+        task_date_hashmap: DefaultDict[dt.date, List[FloatingTask]] = defaultdict(list)
+        for task in floating_task_results:
+            task_date_hashmap[task.date].append(task)
+
+        return dict(task_date_hashmap)
 
 
 def list_items_for_calendar_date(
@@ -46,7 +118,7 @@ def list_items_for_calendar_date(
 
     combined: List[FixedEvent | FloatingTask] = [
         *fixed_event_result,
-        *floating_task_result,
+        *floating_task_result,  # '*' is the unpack operator -> similar to ... in js
     ]  # Combine the 2 lists
 
     def sort_helper(item):
@@ -142,8 +214,9 @@ def create_calendar(user_id: int, data: CreateCalendar):
         session.add(new_member)
         session.commit()
 
+
 # TODO: Currently leaves child records -> If foreign key enforcement is turned on this will error.
-def delete_calendar(user_id, calendar_id):
+def delete_calendar(user_id: int, calendar_id: int):
     try:
         calendar: Calendar = get_calendar_info(calendar_id)
         if calendar.created_by_user_id != user_id:

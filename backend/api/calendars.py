@@ -8,6 +8,9 @@ from db.queries.calendar_db import (
     check_member_in_calendar,
     get_calendar_member_entries,
     list_items_for_calendar_date,
+    list_tasks_for_calendar_date,
+    list_tasks_for_calendar_date_range,
+    list_tasks_for_user_date_range,
     remove_member_from_calendar,
 )
 
@@ -75,6 +78,39 @@ def add_task_api(calendar_id: int, task_data: CreateFloatingTask):
     if not check_calendar_exists(calendar_id):
         raise HTTPException(404, "calendar_id does not exist")
     add_floating_task(calendar_id, task_data)
+
+
+@router.get("/{calendar_id}/get_tasks")
+def get_floating_tasks_api(calendar_id: int, date: dt.date):
+    if not check_calendar_exists(calendar_id):
+        raise HTTPException(404, "calendar_id does not exist")
+
+    return list_tasks_for_calendar_date(calendar_id, date)
+
+
+# TODO: Potentially add pydantic return types to each function for better documentation.
+# Basic type annotation is not supported due to them being invalid pydantic fields
+
+
+# Inclusive of start and end dates
+@router.get("/{calendar_id}/get_tasks_bulk")
+def get_floating_tasks_bulk_api(
+    calendar_id: int, start_date: dt.date, end_date: dt.date
+):
+    if not check_calendar_exists(calendar_id):
+        raise HTTPException(404, "calendar_id does not exist")
+
+    return list_tasks_for_calendar_date_range(calendar_id, start_date, end_date)
+
+
+@router.get("/{user_id}/get_tasks_bulk_user")
+def get_floating_tasks_user_bulk_api(
+    user_id: int, start_date: dt.date, end_date: dt.date
+):
+    if not check_user_exists(user_id):
+        raise HTTPException(404, "User with specified id does not exist")
+
+    return list_tasks_for_user_date_range(user_id, start_date, end_date)
 
 
 @router.patch("/{calendar_id}/events/{event_id}")
