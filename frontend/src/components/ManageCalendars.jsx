@@ -10,7 +10,11 @@ import {
 } from "react-native";
 import { useEffect, useMemo, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { createCalendar, fetchCalendars } from "../api/calendarApi";
+import {
+  createCalendar,
+  fetchCalendars,
+  removeCalendar,
+} from "../api/calendarApi";
 import ColorPicker, {
   colorKit,
   HueSlider,
@@ -77,6 +81,8 @@ export default function ManageCalendars({
       <CalendarDetailsScreen
         selectedCalendar={selectedCalendar}
         setCurrentView={setCurrentView}
+        userId={userId}
+        setCalendars={setCalendars}
       ></CalendarDetailsScreen>
     );
   }
@@ -268,16 +274,70 @@ async function handleCreateCalendar(
   setCurrentView("list");
 }
 // Screen with information about one singular calendar
-function CalendarDetailsScreen({ selectedCalendar, setCurrentView }) {
+function CalendarDetailsScreen({
+  selectedCalendar,
+  setCurrentView,
+  userId,
+  setCalendars,
+}) {
   return (
     <View style={styles.placeholderView}>
       <BackButton setCurrentView={setCurrentView}></BackButton>
       <Text style={styles.placeholderTitle}>
+        {"Name: "} {/* Using curly brace syntax to keep the space after name */}
         {/* Fall back to calendar details if a calendar is not loaded */}
         {selectedCalendar ? selectedCalendar.name : "Calendar Details"}
       </Text>
+      <View
+        style={{
+          flexDirection: "row",
+        }}
+      >
+        <Text>Colour: </Text>
+        <View
+          style={{
+            width: 100,
+            height: 20,
+            backgroundColor: selectedCalendar.colour,
+          }}
+        ></View>
+      </View>
+      {/* TODO: Add confirmation for deletion in the future*/}
+      {/* Display delete dialog only for user created calendars */}
+      {/* TODO: Add 'leave calendar' dialog instead */}
+      {selectedCalendar.created_by_user_id === userId ?
+        (<Pressable
+          style={styles.deleteButton}
+          onPress={() =>
+            handleRemoveCalendar(
+              userId,
+              selectedCalendar.calendar_id,
+              setCalendars,
+              setCurrentView,
+            )
+          }
+        >
+          <Text>Delete Calendar</Text>
+        </Pressable>) : null
+      }
     </View>
   );
+}
+
+async function handleRemoveCalendar(
+  userId,
+  calendarId,
+  setCalendars,
+  setCurrentView,
+) {
+  const removedCalendar = await removeCalendar(userId, calendarId);
+  if (removedCalendar === undefined) {
+    Alert.alert("Unable to remove calendar", "Please try again.");
+    return;
+  }
+  const calendarData = await fetchCalendars(userId);
+  setCalendars(calendarData);
+  setCurrentView("list");
 }
 
 // Currently non functional screen to list invites from others -> TODO: May need new backend db table
@@ -300,6 +360,14 @@ function BackButton({ setCurrentView }) {
 }
 
 const styles = StyleSheet.create({
+  deleteButton: {
+    color: "#FF0000FF",
+    backgroundColor: "#FF0000FF",
+    padding: 10,
+    borderStyle: "solid",
+    borderWidth: 2,
+    borderRadius: 10,
+  },
   calendarNameInput: {
     width: "80%",
     minHeight: 40,
