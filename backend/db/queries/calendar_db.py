@@ -6,6 +6,8 @@ from sqlalchemy import delete, select
 
 from db.models.calendars import Calendar, CalendarMember
 from db.models.items import FixedEvent, FloatingTask
+from db.models.reminders import Reminder
+from db.queries.item_db import remove_event_session, remove_task_session
 from db.session import get_db
 from schemas.calendar_schemas import CreateCalendar
 from schemas.item_schemas import CreateFixedEvent, CreateFloatingTask
@@ -227,12 +229,32 @@ def delete_calendar(user_id: int, calendar_id: int):
     except ValueError as e:
         raise ValueError(str(e))
 
-    delete_calendar_statement = (
-        delete(Calendar)
-        .where(Calendar.calendar_id == calendar_id)
-        .where(Calendar.created_by_user_id == user_id)
-    )
     with get_db() as session:
+        delete_calendar_statement = (
+            delete(Calendar)
+            .where(Calendar.calendar_id == calendar_id)
+            .where(Calendar.created_by_user_id == user_id)
+        )
+        get_tasks_statement = select(FloatingTask.task_id).where(
+            FloatingTask.calendar_id == calendar_id
+        )
+
+        get_events_statement = select(FixedEvent.event_id).where(
+            FixedEvent.calendar_id == calendar_id
+        )
+
+        task_ids: Sequence[int] = session.execute(get_tasks_statement).scalars().all()
+        event_ids: Sequence[int] = session.execute(get_events_statement).scalars().all()
+
+        for task_id in task_ids:
+            remove_task_session(calendar_id, task_id, session)
+        for event_id in event_ids:
+            remove_event_session(calendar_id, event_id, session)
+
+        delete_calendar_members_statement = delete(CalendarMember).where(
+            CalendarMember.calendar_id == calendar_id
+        )
+        session.execute(delete_calendar_members_statement)
         session.execute(delete_calendar_statement)
         session.commit()
 
