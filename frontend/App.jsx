@@ -1,3 +1,4 @@
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useState } from "react";
 import AuthenticationScreen from "./src/screens/AuthenticationScreen";
 import SettingsScreen from "./src/screens/SettingsScreen";
@@ -6,6 +7,14 @@ import { SafeAreaView } from "react-native-safe-area-context"; // Prevent app fr
 // import { API_URL } from "./src/constants.js"
 
 export default function App() {
+  return <>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <PageRouter></PageRouter>
+    </GestureHandlerRootView>
+  </>
+}
+
+function PageRouter() {
   const [user, setUser] = useState(null); // Currently no proper authentication except a variable
   const [page, setPage] = useState("");
   if (!user) {
