@@ -64,7 +64,7 @@ def list_tasks_for_user_date_range(
 ) -> Dict[dt.date, List[FloatingTask]]:
 
     with get_db() as session:
-        calendar_id_statement = select(CalendarMember.user_id).where(
+        calendar_id_statement = select(CalendarMember.calendar_id).where(
             CalendarMember.user_id == user_id
         )
 
