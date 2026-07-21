@@ -6,7 +6,6 @@ from sqlalchemy import delete, select
 
 from db.models.calendars import Calendar, CalendarMember
 from db.models.items import FixedEvent, FloatingTask
-from db.models.reminders import Reminder
 from db.queries.item_db import remove_event_session, remove_task_session
 from db.session import get_db
 from schemas.calendar_schemas import CreateCalendar
@@ -79,7 +78,7 @@ def list_tasks_for_user_date_range(
         floating_task_statement = (
             select(FloatingTask)
             .where(FloatingTask.calendar_id.in_(calendar_ids))
-            .where(FloatingTask.date <= end_date and FloatingTask.date >= start_date)
+            .where(FloatingTask.date <= end_date, FloatingTask.date >= start_date)
         )
 
         floating_task_results: Sequence[FloatingTask] = (
