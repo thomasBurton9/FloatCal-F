@@ -90,6 +90,7 @@ export default function AddItem({ isVisible, setCurrentModal, userId }) {
               <View style={styles.topBar}>
                 <Pressable onPress={() => setCurrentModal(null)}>
                   <Text
+                    // TODO: Change styles for X button inline with the working ones from ManageCalendars/ManageTasks
                     style={{
                       minWidth: 30,
                       minHeight: 30,

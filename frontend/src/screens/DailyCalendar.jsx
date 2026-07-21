@@ -7,10 +7,11 @@ import {
   CalendarHeader,
 } from "@howljs/calendar-kit";
 import { fetchCalendars } from "../api/calendarApi";
-import { formatDate } from "../helpers/dateHelpers";
+import { formatDate, addMinutesToDateTime } from "../helpers/dateHelpers";
 import { fetchItems } from "../api/itemApi";
 import AddItem from "../components/AddItem";
 import ManageCalendars from "../components/ManageCalendars";
+import ManageTasks from "../components/ManageTasks";
 
 // Calendar at the top
 // Then bottombar 1/5th or 1/6th
@@ -28,7 +29,6 @@ export default function DailyCalendar({ setPage, userId }) {
   }, [currentDate]); // Maybe move this to actual date switcher to only changes dates when picker is closed
 
   const [items, setItems] = useState([]); // Need id, title, start, end, color, + recurrenceRule
-
   useEffect(() => {
     async function loadItems() {
       try {
@@ -108,16 +108,6 @@ async function formatItems(items, userId) {
   return outputItems;
 }
 
-function addMinutesToDateTime(dateString, timeString, minutes) {
-  const newDateTime = new Date(`${dateString}T${timeString}`);
-  const duration = parseInt(minutes);
-
-  newDateTime.setMinutes(newDateTime.getMinutes() + duration); // Automatically rolls the hour over in case it does go over
-
-  const newHours = String(newDateTime.getHours()).padStart(2, "0");
-  const newMinutes = String(newDateTime.getMinutes()).padStart(2, "0"); // 'minutes' has already been declared??
-  return `${formatDate(newDateTime)}T${newHours}:${newMinutes}:00`;
-}
 function getCalendarColour(calendars, calendarId) {
   for (const calendar of calendars) {
     if (calendar["calendar_id"] === calendarId) {
@@ -168,7 +158,9 @@ function BottomBar({ setPage, userId, currentDate, setCurrentDate }) {
         currentDate={currentDate}
         setCurrentDate={setCurrentDate}
       ></DatePicker>
-      <ManageFloatingTasksButton></ManageFloatingTasksButton>
+      <ManageFloatingTasksButton
+        setCurrentModal={setCurrentModal}
+      ></ManageFloatingTasksButton>
       <AddItem
         isVisible={currentModal === "addItem"}
         setCurrentModal={setCurrentModal}
@@ -179,6 +171,11 @@ function BottomBar({ setPage, userId, currentDate, setCurrentDate }) {
         setCurrentModal={setCurrentModal}
         userId={userId}
       ></ManageCalendars>
+      <ManageTasks
+        isVisible={currentModal === "manageTasks"}
+        setCurrentModal={setCurrentModal}
+        userId={userId}
+      ></ManageTasks>
     </View>
   );
 }
@@ -242,9 +239,12 @@ function DatePicker({ currentDate, setCurrentDate }) {
   );
 }
 
-function ManageFloatingTasksButton() {
+function ManageFloatingTasksButton({ setCurrentModal }) {
   return (
-    <Pressable style={style.bigButton}>
+    <Pressable
+      onPress={() => setCurrentModal("manageTasks")}
+      style={style.bigButton}
+    >
       <Text style={style.manageFloatingTasksText}>Manage Floating Tasks</Text>
     </Pressable>
   );

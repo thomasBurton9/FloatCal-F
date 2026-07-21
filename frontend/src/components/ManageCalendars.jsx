@@ -305,8 +305,8 @@ function CalendarDetailsScreen({
       {/* TODO: Add confirmation for deletion in the future*/}
       {/* Display delete dialog only for user created calendars */}
       {/* TODO: Add 'leave calendar' dialog instead */}
-      {selectedCalendar.created_by_user_id === userId ?
-        (<Pressable
+      {selectedCalendar.created_by_user_id === userId ? (
+        <Pressable
           style={styles.deleteButton}
           onPress={() =>
             handleRemoveCalendar(
@@ -318,8 +318,8 @@ function CalendarDetailsScreen({
           }
         >
           <Text>Delete Calendar</Text>
-        </Pressable>) : null
-      }
+        </Pressable>
+      ) : null}
     </View>
   );
 }

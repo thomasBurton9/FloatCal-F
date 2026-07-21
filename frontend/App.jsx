@@ -7,11 +7,13 @@ import { SafeAreaView } from "react-native-safe-area-context"; // Prevent app fr
 // import { API_URL } from "./src/constants.js"
 
 export default function App() {
-  return <>
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <PageRouter></PageRouter>
-    </GestureHandlerRootView>
-  </>
+  return (
+    <>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <PageRouter></PageRouter>
+      </GestureHandlerRootView>
+    </>
+  );
 }
 
 function PageRouter() {

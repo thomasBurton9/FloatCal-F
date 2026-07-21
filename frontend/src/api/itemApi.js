@@ -74,7 +74,7 @@ export async function createFixedEvent(calendarId, itemFields) {
 export async function fetchTasksInRange(userId, startDate, endDate) {
   const calendarIds = await fetchCalendarIds(userId);
   if (!calendarIds) {
-    return [];
+    return {};
   }
 
   try {
@@ -97,11 +97,12 @@ export async function fetchTasksInRange(userId, startDate, endDate) {
     const data = await response.json();
     if (!response.ok) {
       console.error("Error fetching tasks", data);
+      return {}; // Return non undefined value to prevent crashes in functions assuming a value is returned
     }
     return data;
   } catch (error) {
     console.error("Error fetching tasks: ", error);
-    return;
+    return {}
   }
 }
 
@@ -127,7 +128,7 @@ export async function fetchItems(userId, date) {
       });
       const data = await response.json();
       if (!response.ok) {
-        console.error("Error fetching items", data);
+        console.error("Error fetching items: ", data);
         continue;
       }
       // Concatenate 2 arrays together
