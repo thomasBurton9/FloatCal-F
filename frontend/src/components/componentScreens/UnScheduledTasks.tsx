@@ -1,6 +1,123 @@
+import {
+  NestableScrollContainer,
+  NestableDraggableFlatList,
+} from "react-native-draggable-flatlist";
 import { UnscheduledTaskListProps } from "../../types/manageTasks";
+import { useState, useEffect, useMemo } from "react";
+import { StyleSheet, View, Text, Pressable } from "react-native";
+import { Checkbox } from "expo-checkbox";
+
+import type {
+  TaskOnDateProps,
+  IndividualTaskRowProps,
+} from "../../types/manageTasks";
+
+// Largely copied from ScheduledTasks.tsx -> ScheduledTaskList
+// Due to similar logic, code and styling
 export function UnScheduledTaskList({
   unscheduledTasks,
+  calendars,
 }: UnscheduledTaskListProps) {
-  return <></>;
+  const [orderedTasks, setOrderedTasks] = useState(unscheduledTasks); // Allow for the drag functionality to change the order of tasks -> Currently non functional in terms of actually choosing times
+  useEffect(() => {
+    setOrderedTasks(unscheduledTasks);
+  }, [unscheduledTasks]);
+
+  const sortedDates = useMemo(
+    // Backend does not provide tasks that are sorted by date
+    // Therefore the dates need to be sorted to be outputted correctly
+    () => Object.keys(orderedTasks).sort((a, b) => a.localeCompare(b)), // Use a string compare method given YYYY-MM-DD format is alphabetical
+    [orderedTasks],
+  );
+
+  return (
+    <NestableScrollContainer
+      style={styles.unScheduledTaskScroll}
+      contentContainerStyle={styles.unScheduledTaskContent}
+    >
+      {sortedDates.map((date) => (
+        <TasksOnDate
+          key={date}
+          date={date}
+          tasks={orderedTasks[date]}
+          onReorder={(data) => {
+            setOrderedTasks((currentTasks) => ({
+              ...currentTasks, // Keep all other tasks
+              [date]: data, // But change the one that got reordered
+            }));
+          }}
+        ></TasksOnDate>
+      ))}
+    </NestableScrollContainer>
+  );
 }
+
+function TasksOnDate({ date, tasks, onReorder }: TaskOnDateProps) {
+  return (
+    <View style={styles.tasksOnDateContainer}>
+      <View style={styles.dateHeader}>
+        <Text style={styles.dateText}>{date}</Text>
+        <Text style={styles.reorderHint}>Drag to reorder</Text>{" "}
+        {/* Provides users with information on functionality of tasks */}
+      </View>
+
+      <NestableDraggableFlatList
+        data={tasks}
+        scrollEnabled={false}
+        keyExtractor={(task) => `${task.calendar_id}:${task.task_id}`}
+        renderItem={({ item, drag }) => (
+          <IndividualTaskRow task={item} drag={drag} />
+        )}
+        onDragEnd={({ data }) => onReorder(data)}
+      />
+    </View>
+  );
+}
+
+function IndividualTaskRow({ task, drag }: IndividualTaskRowProps) {
+  return (
+    <View style={styles.individualTaskRowContainer}>
+      <View style={styles.taskText}>
+        <Text style={styles.taskName}>{task.name}</Text>
+        <Text style={styles.taskDuration}>{task.duration_minutes}m</Text>
+      </View>
+      {/* Currently non functional TODO:*/}
+      <Checkbox style={styles.checkbox}></Checkbox>
+      {/* Format time in HH:MM-HH:MM */}
+      {/* Potentially replace ScheduledTask start time -> end time with suggested start time??*/}
+      {/* Or button to schedule task */}
+      {/*<Text style={styles.taskTime}>
+        {task.scheduled_start
+          ? `${task.scheduled_start.slice(0, 5)}-${extractTime(addMinutesToDateTime(task.date, task.scheduled_start, task.duration_minutes))}`
+          : ""}
+      </Text>*/}
+      {/*Instead of an icon for the drag handle use 3 thin lines*/}
+      {/*TODO: Potentially change to icon if current implementation can be improved*/}
+      {/*Only initialise dragging upon holding the 3 lines*/}
+      <Pressable
+        style={styles.dragHandle}
+        onLongPress={drag}
+        delayLongPress={200}
+      >
+        <View style={styles.dragHandleLine} />
+        <View style={styles.dragHandleLine} />
+        <View style={styles.dragHandleLine} />
+      </Pressable>
+    </View>
+  );
+}
+const styles = StyleSheet.create({
+  unScheduledTaskScroll: {},
+  unScheduledTaskContent: {},
+  tasksOnDateContainer: {},
+  dateHeader: {},
+  dateText: {},
+  reorderHint: {},
+  individualTaskRowContainer: {},
+  taskText: {},
+  taskName: {},
+  taskDuration: {},
+  checkbox: {},
+  dragHandle: {},
+  dragHandleLine: {},
+});
