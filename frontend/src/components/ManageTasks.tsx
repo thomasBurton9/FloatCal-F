@@ -21,6 +21,10 @@ import type {
   IndividualTaskRowProps,
 } from "../types/manageTasks";
 import { Checkbox } from "expo-checkbox";
+import {
+  NestableDraggableFlatList,
+  NestableScrollContainer,
+} from "react-native-draggable-flatlist";
 
 export default function ManageTasks({
   isVisible,
@@ -80,9 +84,11 @@ export default function ManageTasks({
   }, [tasks]);
 
   // TODO: Implement backend + frontend checking for tasks.
-  const completedTasks = useMemo(() => {
-    return {};
-  }, []);
+  //
+  // Commented to prevent warning for not using
+  // const completedTasks = useMemo(() => {
+  //   return {};
+  // }, []);
 
   function currentView() {
     if (taskType === "Scheduled") {
@@ -191,47 +197,71 @@ function TaskTypeSwitcher({ taskType, setTaskType }: TaskTypeSwitcherProps) {
 }
 
 function ScheduledTaskList({ scheduledTasks }: ScheduledTaskListProps) {
+  const [orderedTasks, setOrderedTasks] = useState(scheduledTasks); // Allow for the drag functionality to change the order of tasks -> Currently non functional in terms of actually choosing times
+
+  useEffect(() => {
+    setOrderedTasks(scheduledTasks);
+  }, [scheduledTasks]);
+
+  const sortedDates = useMemo(
+    () => Object.keys(orderedTasks).sort((a, b) => a.localeCompare(b)),
+    [orderedTasks],
+  );
+
   return (
-    <>
-      {Object.keys(scheduledTasks).map((key) => {
-        return (
-          <TasksOnDate
-            key={key}
-            date={key}
-            tasks={scheduledTasks[key]}
-          ></TasksOnDate>
-        );
-      })}
-    </>
+    <NestableScrollContainer
+      style={styles.scheduledTaskScroll} // Styling for the actual visualised part of container -> e.g. 500px by 500px
+      contentContainerStyle={styles.scheduledTaskContent} // Styling for the inner "infinite scroll view"
+    >
+      {sortedDates.map((date) => (
+        <TasksOnDate
+          key={date}
+          date={date}
+          tasks={orderedTasks[date]}
+          onReorder={(data) =>
+            setOrderedTasks((currentTasks) => ({
+              ...currentTasks,
+              [date]: data,
+            }))
+          }
+        />
+      ))}
+    </NestableScrollContainer>
   );
 }
 
-function IndividualTaskRow({ task }: IndividualTaskRowProps) {
+function IndividualTaskRow({ task, drag }: IndividualTaskRowProps) {
   return (
     <View style={styles.individualTaskRowContainer}>
       <View style={styles.taskText}>
         <Text style={styles.taskName}>{task.name}</Text>
         <Text style={styles.taskDuration}>{task.duration_minutes}m</Text>
       </View>
-
+      {/* Currently non functional TODO:*/}
       <Checkbox style={styles.checkbox}></Checkbox>
-
+      {/* Format time in HH:MM-HH:MM */}
       <Text style={styles.taskTime}>
         {task.scheduled_start
           ? `${task.scheduled_start.slice(0, 5)}-${extractTime(addMinutesToDateTime(task.date, task.scheduled_start, task.duration_minutes))}`
           : ""}
       </Text>
       {/*Instead of an icon for the drag handle use 3 thin lines*/}
-      <View style={styles.dragHandle}>
+      {/*TODO: Potentially change to icon if current implementation can be improved*/}
+      {/*Only initialise dragging upon holding the 3 lines*/}
+      <Pressable
+        style={styles.dragHandle}
+        onLongPress={drag}
+        delayLongPress={200}
+      >
         <View style={styles.dragHandleLine} />
         <View style={styles.dragHandleLine} />
         <View style={styles.dragHandleLine} />
-      </View>
+      </Pressable>
     </View>
   );
 }
 
-function TasksOnDate({ date, tasks }: TaskOnDateProps) {
+function TasksOnDate({ date, tasks, onReorder }: TaskOnDateProps) {
   return (
     <View style={styles.tasksOnDateContainer}>
       <View style={styles.dateHeader}>
@@ -240,12 +270,15 @@ function TasksOnDate({ date, tasks }: TaskOnDateProps) {
         {/* Provides users with information on functionality of tasks */}
       </View>
 
-      {tasks.map((task) => (
-        <IndividualTaskRow
-          key={`${task.calendar_id}:${task.task_id}`} // Using calendar_id:task_id given task_id's can duplicate across calendars
-          task={task}
-        />
-      ))}
+      <NestableDraggableFlatList
+        data={tasks}
+        scrollEnabled={false}
+        keyExtractor={(task) => `${task.calendar_id}:${task.task_id}`}
+        renderItem={({ item, drag }) => (
+          <IndividualTaskRow task={item} drag={drag} />
+        )}
+        onDragEnd={({ data }) => onReorder(data)}
+      />
     </View>
   );
 }
@@ -303,6 +336,12 @@ const styles = StyleSheet.create({
     width: "100%",
     flexDirection: "column",
     marginTop: 18,
+  },
+  scheduledTaskScroll: {
+    width: "100%",
+  },
+  scheduledTaskContent: {
+    paddingBottom: 20,
   },
   dateHeader: {
     flexDirection: "row",

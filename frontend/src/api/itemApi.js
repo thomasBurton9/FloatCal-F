@@ -102,7 +102,7 @@ export async function fetchTasksInRange(userId, startDate, endDate) {
     return data;
   } catch (error) {
     console.error("Error fetching tasks: ", error);
-    return {}
+    return {};
   }
 }
 

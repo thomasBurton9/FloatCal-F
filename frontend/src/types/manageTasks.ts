@@ -45,7 +45,9 @@ export type UnscheduledTaskListProps = {
 export type TaskOnDateProps = {
   date: string;
   tasks: Task[];
+  onReorder: (tasks: Task[]) => void;
 };
 export type IndividualTaskRowProps = {
   task: Task;
+  drag: () => void;
 };
