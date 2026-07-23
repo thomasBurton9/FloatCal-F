@@ -107,17 +107,71 @@ function IndividualTaskRow({ task, drag }: IndividualTaskRowProps) {
   );
 }
 const styles = StyleSheet.create({
-  unScheduledTaskScroll: {},
-  unScheduledTaskContent: {},
-  tasksOnDateContainer: {},
-  dateHeader: {},
-  dateText: {},
-  reorderHint: {},
-  individualTaskRowContainer: {},
-  taskText: {},
-  taskName: {},
-  taskDuration: {},
-  checkbox: {},
-  dragHandle: {},
-  dragHandleLine: {},
+  individualTaskRowContainer: {
+    width: "100%",
+    minHeight: 84,
+    flexDirection: "row",
+    alignItems: "flex-start",
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderWidth: 2,
+    borderColor: "#111",
+  },
+  taskText: {
+    flex: 1,
+    justifyContent: "flex-start",
+  },
+  // TODO: Make all these px widths responsive
+  taskName: {
+    fontSize: 16,
+  },
+  taskDuration: {
+    marginTop: 4,
+    fontSize: 16,
+  },
+  checkbox: {
+    width: 22,
+    height: 22,
+    marginHorizontal: 10,
+  },
+  taskTime: {
+    width: 88,
+    fontSize: 15,
+  },
+  dragHandle: {
+    width: 36,
+    gap: 5,
+    marginLeft: 6,
+    alignSelf: "center",
+  },
+  dragHandleLine: {
+    height: 3,
+    backgroundColor: "#111111",
+  },
+
+  tasksOnDateContainer: {
+    width: "100%",
+    flexDirection: "column",
+    marginTop: 18,
+  },
+  unScheduledTaskScroll: {
+    width: "100%",
+  },
+  unScheduledTaskContent: {
+    paddingBottom: 20,
+  },
+  dateHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 10,
+    marginBottom: 10,
+  },
+  dateText: {
+    fontSize: 25,
+  },
+  reorderHint: {
+    color: "#aaa", // Grey -> #aaa == #aaaaaa
+    fontSize: 17,
+  },
 });

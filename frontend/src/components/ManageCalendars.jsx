@@ -236,7 +236,6 @@ function CreateCalendarScreen({ setCurrentView, userId, setCalendars }) {
           )
         }
       >
-        {" "}
         {/* TODO: Fix First press results in the name keyboard opening for some reason??. Second Press works */}
         <Text style={styles.createCalendarSubmitText}>Create Calendar</Text>
       </Pressable>

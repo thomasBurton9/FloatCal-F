@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
     fontSize: 25,
   },
   reorderHint: {
-    color: "#aaa",
+    color: "#aaa", // Grey
     fontSize: 17,
   },
 });

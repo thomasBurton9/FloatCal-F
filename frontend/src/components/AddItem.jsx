@@ -83,7 +83,6 @@ export default function AddItem({ isVisible, setCurrentModal, userId }) {
         visible={isVisible} // currentModal === "addItem"
       >
         <Pressable onPress={Keyboard.dismiss} style={{ flex: 1 }}>
-          {" "}
           {/* Allow for dismissal of keyboard some fields */}
           <SafeAreaView edges={["top"]} style={styles.addItemModal}>
             <View style={styles.addItemModalContainer}>
