@@ -43,7 +43,7 @@ def list_tasks_for_calendar_date_range(
     floating_task_statement = (
         select(FloatingTask)
         .where(FloatingTask.calendar_id == calendar_id)
-        .where(FloatingTask.date <= end_date and FloatingTask.date >= start_date)
+        .where(FloatingTask.date <= end_date, FloatingTask.date >= start_date)
     )
 
     with get_db() as session:
