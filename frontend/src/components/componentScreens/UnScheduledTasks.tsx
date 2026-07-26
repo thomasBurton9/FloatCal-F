@@ -57,7 +57,7 @@ function TasksOnDate({ date, tasks, onReorder }: TaskOnDateProps) {
     <View style={styles.tasksOnDateContainer}>
       <View style={styles.dateHeader}>
         <Text style={styles.dateText}>{date}</Text>
-        <Text style={styles.reorderHint}>Drag to reorder</Text>{" "}
+        <Text style={styles.reorderHint}>Drag to reorder</Text>
         {/* Provides users with information on functionality of tasks */}
       </View>
 

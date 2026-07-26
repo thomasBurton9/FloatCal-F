@@ -156,7 +156,9 @@ def schedule_floating_task(calendar_id: int, date: dt.date, task_id: int):
         else:
             schedule_task(task_id, None)
         # Possibly there is a better way of informing the frontend of this error versus other errors
-        raise ValueError("Scheduling failed: no available time slot")
+        raise ValueError(
+            "Scheduling failed: no available time slot"
+        )  # When changing this message change also the comparison in AddItem.jsx -> handleAddItem
 
     preferred_gaps: list[tuple[dt.time, dt.time]] = []
 

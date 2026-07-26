@@ -20,7 +20,7 @@ export default function DailyCalendar({ setPage, userId }) {
   const [currentDate, setCurrentDate] = useState(new Date());
 
   const calendarRef = useRef(null);
-
+  const [itemAddedTrigger, setItemAddedTrigger] = useState(false);
   useEffect(() => {
     calendarRef.current?.goToDate({
       date: formatDate(currentDate),
@@ -44,7 +44,7 @@ export default function DailyCalendar({ setPage, userId }) {
       }
     }
     loadItems();
-  }, [userId, currentDate]);
+  }, [userId, currentDate, itemAddedTrigger]);
   return (
     <>
       <View style={style.dailyViewScreen}>
@@ -59,6 +59,7 @@ export default function DailyCalendar({ setPage, userId }) {
           userId={userId}
           currentDate={currentDate}
           setCurrentDate={setCurrentDate}
+          onItemAdded={() => setItemAddedTrigger(!itemAddedTrigger)}
         ></BottomBar>
       </View>
     </>
@@ -145,7 +146,13 @@ function CalendarView({ items, currentDate, setCurrentDate, calendarRef }) {
   );
 }
 
-function BottomBar({ setPage, userId, currentDate, setCurrentDate }) {
+function BottomBar({
+  setPage,
+  userId,
+  currentDate,
+  setCurrentDate,
+  onItemAdded,
+}) {
   const [currentModal, setCurrentModal] = useState(null);
 
   return (
@@ -165,6 +172,7 @@ function BottomBar({ setPage, userId, currentDate, setCurrentDate }) {
         isVisible={currentModal === "addItem"}
         setCurrentModal={setCurrentModal}
         userId={userId}
+        onItemAdded={onItemAdded}
       ></AddItem>
       <ManageCalendars
         isVisible={currentModal === "manageCalendars"}

@@ -14,10 +14,19 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { Dropdown } from "react-native-element-dropdown";
 import { fetchCalendars } from "../api/calendarApi.js";
 import { fetchSettings } from "../api/settingsApi.js";
-import { createFixedEvent, createFloatingTask } from "../api/itemApi.js";
+import {
+  automaticallyScheduleTask,
+  createFixedEvent,
+  createFloatingTask,
+} from "../api/itemApi.js";
 import { SafeAreaView } from "react-native-safe-area-context"; // Modal does not respect the safearea view from App.jsx
 
-export default function AddItem({ isVisible, setCurrentModal, userId }) {
+export default function AddItem({
+  isVisible,
+  setCurrentModal,
+  userId,
+  onItemAdded,
+}) {
   const [itemType, setItemType] = useState("Floating");
   const [calendars, setCalendars] = useState([]);
   const [preferredWindowOptions, setPreferredWindowOptions] = useState([]);
@@ -278,6 +287,7 @@ export default function AddItem({ isVisible, setCurrentModal, userId }) {
                       setCurrentModal,
                       itemFields,
                       setItemFields,
+                      onItemAdded,
                     )
                   }
                 >
@@ -308,6 +318,7 @@ async function handleAddItem(
   setCurrentModal,
   itemFields,
   setItemFields,
+  onItemAdded,
 ) {
   const recurrenceRules = [
     "daily",
@@ -366,7 +377,27 @@ async function handleAddItem(
       Alert.alert("Unable to add task", "Please try again.");
       return;
     }
-    // TODO: Automatically attempt to schedule task when adding a new floating task.
+    const scheduleResult = await automaticallyScheduleTask(
+      createdTask,
+      itemFields.calendar,
+      itemFields.date,
+    );
+    // TODO: Add modal to handle this behavior as indicated in Design tools
+    if (!scheduleResult.success) {
+      if (
+        scheduleResult.error === "Scheduling failed: no available time slot"
+      ) {
+        Alert.alert(
+          "Task added",
+          "No available time slot was found. The task remains unscheduled.",
+        );
+      } else {
+        Alert.alert(
+          "Task added",
+          "The task could not be scheduled and remains unscheduled.",
+        );
+      }
+    }
   } else if (itemType === "Fixed") {
     if (
       !(itemFields.startTime instanceof Date) ||
@@ -410,6 +441,7 @@ async function handleAddItem(
     remindersOn: false,
   });
   setCurrentModal(null);
+  onItemAdded();
 }
 
 function ItemTypeSwitcher({ itemType, setItemType }) {

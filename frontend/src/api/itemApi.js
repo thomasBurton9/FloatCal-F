@@ -27,12 +27,12 @@ export async function automaticallyScheduleTask(task_id, calendar_id, date) {
 
     if (!response.ok) {
       console.error("Error automatically scheduling task", data);
-      return;
+      return { success: false, error: data.detail }; // For some reason js compact (true, data) into just data??
     }
-    return data;
+    return { success: true };
   } catch (error) {
     console.error("Error automatically scheduling task: ", error);
-    return;
+    return { success: false };
   }
 }
 export async function createFloatingTask(calendarId, itemFields) {
