@@ -1,5 +1,5 @@
 import datetime as dt
-from typing import Any, Annotated
+from typing import Annotated
 
 from pydantic import BaseModel, Field
 
@@ -15,4 +15,4 @@ class UpdateSettings(BaseModel):
 
     notification_sound: str = None  # type: ignore[assignment]
 
-    scheduling_windows: dict[str, Any] | None = None
+    scheduling_windows: dict[str, tuple[dt.time, dt.time]] | None = None

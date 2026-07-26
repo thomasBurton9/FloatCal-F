@@ -130,8 +130,8 @@ Components do not need to be compatible with android, though they generally stil
 
 ## TODO
 
-Critical - Mismatch between frontend and backend when applying preferred windows. Will cause problems when implementing automatical scheduling.
-
+~~Critical - Mismatch between frontend and backend when applying preferred windows. Will cause problems when implementing automatical scheduling.~~ 
+- Potentially fixed in commit "fix(backend): fixed critical mismatch between ends for preferred windows"
 ### Once all code is finished
 Check all variable, class and other names. Make sure they align with stated naming conventions
 Check the semantic name of all variables and change any that don't make sense

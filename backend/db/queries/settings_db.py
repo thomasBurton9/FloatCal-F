@@ -23,6 +23,15 @@ def update_settings(user_id: int, data: UpdateSettings):
 
         updates: dict[str, Any] = data.model_dump(exclude_unset=True)
 
+        # Pydantic converts scheduling-window values to datetime.time objects
+        # the database column is JSON and must contain strings.
+        scheduling_windows = updates.get("scheduling_windows")
+        if scheduling_windows is not None: # updates don't have to contain all fields so a check is necessary
+            updates["scheduling_windows"] = {
+                name: [start.isoformat(), end.isoformat()] # converts object into iso string
+                for name, (start, end) in scheduling_windows.items() # using dictionary comprehension instead of a full loop for shorter code
+            }
+
         for field, value in updates.items():
             setattr(old_settings, field, value)
 

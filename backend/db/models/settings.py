@@ -5,9 +5,9 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 from db.base import Base
 
-type SchedulingWindows = dict[
-    str, tuple[dt.time, dt.time]
-]  # Make sure that scheduling windows windows are in a valid format
+# Scheduling windows are stored in json as iso strings
+# i.e. {"Morning": ["09:00:00", "12:00:00"]}.
+type SchedulingWindows = dict[str, list[str]] # Type used to validate input
 
 
 # More validation checks are required
@@ -31,9 +31,7 @@ class Setting(Base):
 
     notification_sound: Mapped[str] = mapped_column(default="Alarm", nullable=False)
 
-    # Possibly checks to make sure it is a valid scheduling window and also possibly make the dict more explicit e.g. dict[str, tuple[dt.time, dt.time]] - though that fails import
     scheduling_windows: Mapped[SchedulingWindows | None] = mapped_column(
         JSON,
-        nullable=True,  # Format "Morning" : [0800, 1000]
-        # Format: dict[str, tuple[dt.time, dt.time]]
+        nullable=True,
     )  # Maybe add defaults later + change nullable=False

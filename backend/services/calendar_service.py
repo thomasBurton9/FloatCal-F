@@ -86,6 +86,21 @@ def is_gap_in_window(
     return gap[0] >= window[0] and gap[1] <= window[1]
 
 
+def parse_scheduling_window(window: list[str]) -> tuple[dt.time, dt.time]:
+    """Convert a scheduling window in json to datetime.time values for easy comparison"""
+    # Validate window, preventing invalid inputs
+    if len(window) != 2:
+        raise ValueError("Scheduling window must contain a start and end time only")
+
+    try:
+        start = dt.time.fromisoformat(window[0])
+        end = dt.time.fromisoformat(window[1])
+    except ValueError as e:
+        raise ValueError("Scheduling window contains an invalid time", e)
+
+    return start, end
+
+
 def schedule_floating_task(calendar_id: int, date: dt.date, task_id: int):
     try:
         calendar_info: Calendar = get_calendar_info(calendar_id)
@@ -148,9 +163,16 @@ def schedule_floating_task(calendar_id: int, date: dt.date, task_id: int):
     # Variable defined but not initialised to maintain full function scope
     selected_gap: tuple[dt.time, dt.time]
 
-    preferred_window = (
+    stored_preferred_window = (
         settings.scheduling_windows.get(task.preferred_window)
         if task.preferred_window is not None and settings.scheduling_windows is not None
+        else None
+    )
+
+    # Have to convert scheduling windows from string into python datetime objects to be compared easily in scheduler code
+    preferred_window = (
+        parse_scheduling_window(stored_preferred_window)
+        if stored_preferred_window is not None
         else None
     )
 
