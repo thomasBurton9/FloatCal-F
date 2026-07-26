@@ -1,4 +1,5 @@
 import datetime as dt
+from typing import TypedDict
 
 
 class CalendarItem:
@@ -113,3 +114,18 @@ class FloatingTask(CalendarItem):
 
     def automatically_schedule(self, new_start_time: dt.time):
         raise NotImplementedError
+
+
+class FloatingTaskWithCompletion(TypedDict):
+    task_id: int
+    calendar_id: int
+    name: str
+    date: dt.date
+    duration_minutes: int
+    notes: str | None
+    recurrence_rule: str | None
+    reminder: bool
+    preferred_window: str | None
+    scheduled_start: dt.time | None
+    manually_scheduled: bool
+    completed: bool

@@ -11,6 +11,7 @@ from db.queries.calendar_db import (
     list_tasks_for_calendar_date,
     list_tasks_for_calendar_date_range,
     list_tasks_for_user_date_range,
+    list_tasks_for_user_date_range_base,
     remove_member_from_calendar,
 )
 
@@ -103,6 +104,19 @@ def get_floating_tasks_bulk_api(
     return list_tasks_for_calendar_date_range(calendar_id, start_date, end_date)
 
 
+# Endpoint just returns floating tasks without completedLog attached, kept in case needed in the future
+# TODO: Remove
+@router.get("/{user_id}/get_tasks_bulk_user_base")
+def get_floating_tasks_user_bulk_base_api(
+    user_id: int, start_date: dt.date, end_date: dt.date
+):
+    if not check_user_exists(user_id):
+        raise HTTPException(404, "User with specified id does not exist")
+
+    return list_tasks_for_user_date_range_base(user_id, start_date, end_date)
+
+
+# Endpoint returns floating tasks with a completed log
 @router.get("/{user_id}/get_tasks_bulk_user")
 def get_floating_tasks_user_bulk_api(
     user_id: int, start_date: dt.date, end_date: dt.date

@@ -1,13 +1,15 @@
 import datetime as dt
 from collections import defaultdict
-from typing import DefaultDict, Dict, List, Sequence
+from typing import DefaultDict, Dict, List, Sequence, Tuple
 
 from sqlalchemy import delete, select
 
 from db.models.calendars import Calendar, CalendarMember
 from db.models.items import FixedEvent, FloatingTask
+from db.models.reminders import CompletionLog
 from db.queries.item_db import remove_event_session, remove_task_session
 from db.session import get_db
+from models.calendar_items import FloatingTaskWithCompletion
 from schemas.calendar_schemas import CreateCalendar
 from schemas.item_schemas import CreateFixedEvent, CreateFloatingTask
 
@@ -59,7 +61,9 @@ def list_tasks_for_calendar_date_range(
         return dict(task_date_hashmap)
 
 
-def list_tasks_for_user_date_range(
+# Function just returns floating tasks without completedLog attached, kept in case needed in the future
+# TODO: Remove
+def list_tasks_for_user_date_range_base(
     user_id: int, start_date: dt.date, end_date: dt.date
 ) -> Dict[dt.date, List[FloatingTask]]:
 
@@ -89,6 +93,77 @@ def list_tasks_for_user_date_range(
         task_date_hashmap: DefaultDict[dt.date, List[FloatingTask]] = defaultdict(list)
         for task in floating_task_results:
             task_date_hashmap[task.date].append(task)
+
+        return dict(task_date_hashmap)
+
+
+# Function returns floating tasks with a completed log
+def list_tasks_for_user_date_range(
+    user_id: int, start_date: dt.date, end_date: dt.date
+) -> Dict[dt.date, List[FloatingTaskWithCompletion]]:
+
+    with get_db() as session:
+        calendar_id_statement = select(CalendarMember.calendar_id).where(
+            CalendarMember.user_id == user_id
+        )
+
+        calendar_ids: Sequence[int] | None = (
+            session.execute(calendar_id_statement).scalars().all()
+        )
+
+        if not calendar_ids:
+            return defaultdict()
+
+        floating_task_statement = (
+            select(FloatingTask)
+            .where(FloatingTask.calendar_id.in_(calendar_ids))
+            .where(FloatingTask.date <= end_date, FloatingTask.date >= start_date)
+        )
+
+        floating_task_results: Sequence[FloatingTask] = (
+            session.execute(floating_task_statement).scalars().all()
+        )
+
+        completion_logs_statement = (
+            select(
+                CompletionLog.task_id,
+                CompletionLog.completed_date,
+            )
+            .where(
+                CompletionLog.task_id.in_(
+                    [task.task_id for task in floating_task_results]
+                )
+            )
+            .where(CompletionLog.completed_date.between(start_date, end_date))
+        )
+
+        completion_logs: Sequence[Tuple[int, dt.date]] = (
+            session.execute(completion_logs_statement).tuples().all()
+        )  # use tuples instead of scalars given previous statement returns 2 values
+
+        # Use defaultdict instead of regular dict to allow easy creation of new keys
+        task_date_hashmap: DefaultDict[dt.date, List[FloatingTaskWithCompletion]] = (
+            defaultdict(list)
+        )
+        for task in floating_task_results:
+            # Given we are adding completion logs we need to recreate the FloatingTask dict/model
+
+            task_data: FloatingTaskWithCompletion = {
+                "task_id": task.task_id,
+                "calendar_id": task.calendar_id,
+                "name": task.name,
+                "date": task.date,
+                "duration_minutes": task.duration_minutes,
+                "notes": task.notes,
+                "recurrence_rule": task.recurrence_rule,
+                "reminder": task.reminder,
+                "preferred_window": task.preferred_window,
+                "scheduled_start": task.scheduled_start,
+                "manually_scheduled": task.manually_scheduled,
+                "completed": (task.task_id, task.date) in completion_logs,
+                # Check if specific log exists -> if so set 'completed' to true else false
+            }
+            task_date_hashmap[task.date].append(task_data)
 
         return dict(task_date_hashmap)
 
