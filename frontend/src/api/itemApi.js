@@ -34,7 +34,7 @@ export async function createFloatingTask(calendarId, itemFields) {
       console.error("Error creating floating task", data);
       return;
     }
-    return data;
+    return data; // Should return an int now -> task_id
   } catch (error) {
     console.error("Error creating floating task:", error);
   }

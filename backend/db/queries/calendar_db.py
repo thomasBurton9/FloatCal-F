@@ -147,7 +147,7 @@ def add_fixed_event(calendar_id: int, event_data: CreateFixedEvent):
         session.commit()
 
 
-def add_floating_task(calendar_id: int, task_data: CreateFloatingTask):
+def add_floating_task(calendar_id: int, task_data: CreateFloatingTask) -> int:
     with get_db() as session:
         new_floating_task: FloatingTask = FloatingTask(
             calendar_id=calendar_id,
@@ -164,6 +164,8 @@ def add_floating_task(calendar_id: int, task_data: CreateFloatingTask):
 
         session.add(new_floating_task)
         session.commit()
+
+        return new_floating_task.task_id
 
 
 def check_member_in_calendar(calendar_id: int, user_id: int):

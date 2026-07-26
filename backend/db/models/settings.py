@@ -7,7 +7,7 @@ from db.base import Base
 
 # Scheduling windows are stored in json as iso strings
 # i.e. {"Morning": ["09:00:00", "12:00:00"]}.
-type SchedulingWindows = dict[str, list[str]] # Type used to validate input
+type SchedulingWindows = dict[str, list[str]]  # Type used to validate input
 
 
 # More validation checks are required

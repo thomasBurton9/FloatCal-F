@@ -77,7 +77,7 @@ def add_event_api(calendar_id: int, event_data: CreateFixedEvent):
 def add_task_api(calendar_id: int, task_data: CreateFloatingTask):
     if not check_calendar_exists(calendar_id):
         raise HTTPException(404, "calendar_id does not exist")
-    add_floating_task(calendar_id, task_data)
+    return add_floating_task(calendar_id, task_data)
 
 
 @router.get("/{calendar_id}/get_tasks")
