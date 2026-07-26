@@ -7,6 +7,34 @@ function formatTime(time) {
   return time.toTimeString().slice(0, 5);
 }
 
+export async function automaticallyScheduleTask(task_id, calendar_id, date) {
+  try {
+    const automaticallyScheduleTaskUrl =
+      API_URL +
+      "/" +
+      String(task_id) +
+      "/automatically_schedule?calendar_id=" +
+      String(calendar_id) +
+      "&date=" +
+      String(formatDate(date));
+    const response = await fetch(automaticallyScheduleTaskUrl, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("Error automatically scheduling task", data);
+      return;
+    }
+    return data;
+  } catch (error) {
+    console.error("Error automatically scheduling task: ", error);
+    return;
+  }
+}
 export async function createFloatingTask(calendarId, itemFields) {
   try {
     const createTaskUrl = API_URL + "/" + String(calendarId) + "/tasks";
