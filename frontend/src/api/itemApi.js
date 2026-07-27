@@ -99,6 +99,32 @@ export async function createFixedEvent(calendarId, itemFields) {
   }
 }
 
+export async function deleteTask(calendarId, taskId) {
+  try {
+    const deleteTaskUrl =
+      API_URL + "/remove_item/" + String(calendarId) + "/" + String(taskId);
+    const response = await fetch(deleteTaskUrl, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        item_type: "task",
+      }),
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("Error deleting task", data);
+      return { success: false, error: data.detail };
+    }
+    return { success: true };
+  } catch (error) {
+    console.error("Error deleting task:", error);
+    return { success: false, error };
+  }
+}
+
 export async function fetchTasksInRange(userId, startDate, endDate) {
   const calendarIds = await fetchCalendarIds(userId);
   if (!calendarIds) {
