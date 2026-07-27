@@ -175,23 +175,6 @@ function BottomBar({
       <ManageFloatingTasksButton
         setCurrentModal={setCurrentModal}
       ></ManageFloatingTasksButton>
-      {/* URGENT: REMOVE BEFORE COMMIT */}
-      {/* <Pressable
-        style={style.adminTestButton}
-        onPress={() => {
-          setSchedulingErrorTask({
-            taskId: 0,
-            calendarId: 0,
-            name: "Test scheduling error task",
-            durationMinutes: 30,
-          });
-          setCurrentModal("schedulingError");
-        }}
-      >
-        <Text style={style.adminTestButtonText}>
-          Admin: Test Scheduling Error
-        </Text>
-      </Pressable>*/}
       <AddItem
         isVisible={currentModal === "addItem"}
         setCurrentModal={setCurrentModal}
@@ -346,16 +329,6 @@ const style = StyleSheet.create({
   manageFloatingTasksText: {
     textAlign: "center",
   },
-  // adminTestButton: {
-  //   borderStyle: "solid",
-  //   borderWidth: 2,
-  //   borderRadius: 10,
-  //   padding: 8,
-  //   maxWidth: 140,
-  // },
-  // adminTestButtonText: {
-  //   textAlign: "center",
-  // },
   datePickerContainer: {
     width: "33%", // TODO: Currently datetime picker has less space to its right than to its left
     alignItems: "center",
