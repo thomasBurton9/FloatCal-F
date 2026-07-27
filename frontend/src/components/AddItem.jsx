@@ -26,6 +26,7 @@ export default function AddItem({
   setCurrentModal,
   userId,
   onItemAdded,
+  setSchedulingErrorTask,
 }) {
   const [itemType, setItemType] = useState("Floating");
   const [calendars, setCalendars] = useState([]);
@@ -288,6 +289,7 @@ export default function AddItem({
                       itemFields,
                       setItemFields,
                       onItemAdded,
+                      setSchedulingErrorTask,
                     )
                   }
                 >
@@ -319,6 +321,7 @@ async function handleAddItem(
   itemFields,
   setItemFields,
   onItemAdded,
+  setSchedulingErrorTask,
 ) {
   const recurrenceRules = [
     "daily",
@@ -382,21 +385,29 @@ async function handleAddItem(
       itemFields.calendar,
       itemFields.date,
     );
-    // TODO: Add modal to handle this behavior as indicated in Design tools
     if (!scheduleResult.success) {
-      if (
-        scheduleResult.error === "Scheduling failed: no available time slot"
-      ) {
-        Alert.alert(
-          "Task added",
-          "No available time slot was found. The task remains unscheduled.",
-        );
-      } else {
-        Alert.alert(
-          "Task added",
-          "The task could not be scheduled and remains unscheduled.",
-        );
-      }
+      setSchedulingErrorTask({
+        taskId: createdTask,
+        name: itemFields.name,
+        durationMinutes: Number(itemFields.duration), // itemFields.duration is a string input so converting it to a number is required for arithmetic
+        calendarId: itemFields.calendar,
+      });
+
+      setItemFields({
+        name: "",
+        date: new Date(),
+        duration: "",
+        startTime: new Date(),
+        endTime: new Date(),
+        notes: "",
+        preferredWindow: "",
+        calendar: "",
+        recurrenceOn: false,
+        recurrenceRule: "",
+        remindersOn: false,
+      });
+      setCurrentModal("schedulingError");
+      onItemAdded();
     }
   } else if (itemType === "Fixed") {
     if (

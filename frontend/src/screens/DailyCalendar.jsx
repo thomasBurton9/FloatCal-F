@@ -12,6 +12,7 @@ import { fetchItems } from "../api/itemApi";
 import AddItem from "../components/AddItem";
 import ManageCalendars from "../components/ManageCalendars";
 import ManageTasks from "../components/ManageTasks";
+import SchedulingError from "../components/SchedulingError";
 
 // Calendar at the top
 // Then bottombar 1/5th or 1/6th
@@ -154,7 +155,13 @@ function BottomBar({
   onItemAdded,
 }) {
   const [currentModal, setCurrentModal] = useState(null);
-
+  const [schedulingErrorTask, setSchedulingErrorTask] = useState(null);
+  // const [schedulingErrorTask, setSchedulingErrorTask] = useState({
+  //   taskId: 0,
+  //   calendarId: 0,
+  //   name: "Test scheduling error task",
+  //   durationMinutes: 30,
+  // });
   return (
     <View style={style.bottomBar}>
       <BottomLeftNavigation
@@ -168,11 +175,29 @@ function BottomBar({
       <ManageFloatingTasksButton
         setCurrentModal={setCurrentModal}
       ></ManageFloatingTasksButton>
+      {/* URGENT: REMOVE BEFORE COMMIT */}
+      {/* <Pressable
+        style={style.adminTestButton}
+        onPress={() => {
+          setSchedulingErrorTask({
+            taskId: 0,
+            calendarId: 0,
+            name: "Test scheduling error task",
+            durationMinutes: 30,
+          });
+          setCurrentModal("schedulingError");
+        }}
+      >
+        <Text style={style.adminTestButtonText}>
+          Admin: Test Scheduling Error
+        </Text>
+      </Pressable>*/}
       <AddItem
         isVisible={currentModal === "addItem"}
         setCurrentModal={setCurrentModal}
         userId={userId}
         onItemAdded={onItemAdded}
+        setSchedulingErrorTask={setSchedulingErrorTask}
       ></AddItem>
       <ManageCalendars
         isVisible={currentModal === "manageCalendars"}
@@ -184,6 +209,14 @@ function BottomBar({
         setCurrentModal={setCurrentModal}
         userId={userId}
       ></ManageTasks>
+      {schedulingErrorTask ? (
+        <SchedulingError
+          isVisible={currentModal === "schedulingError"}
+          setCurrentModal={setCurrentModal}
+          setPage={setPage}
+          task={schedulingErrorTask}
+        ></SchedulingError>
+      ) : null}
     </View>
   );
 }
@@ -313,6 +346,16 @@ const style = StyleSheet.create({
   manageFloatingTasksText: {
     textAlign: "center",
   },
+  // adminTestButton: {
+  //   borderStyle: "solid",
+  //   borderWidth: 2,
+  //   borderRadius: 10,
+  //   padding: 8,
+  //   maxWidth: 140,
+  // },
+  // adminTestButtonText: {
+  //   textAlign: "center",
+  // },
   datePickerContainer: {
     width: "33%", // TODO: Currently datetime picker has less space to its right than to its left
     alignItems: "center",

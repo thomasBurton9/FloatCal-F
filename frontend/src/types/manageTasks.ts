@@ -52,3 +52,17 @@ export type IndividualTaskRowProps = {
   task: Task;
   drag: () => void;
 };
+
+export type SchedulingErrorProps = {
+  isVisible: boolean;
+  setCurrentModal: (taskName: string | null) => void;
+  setPage: (pageName: string) => void;
+  task: SchedulingErrorTask | null;
+};
+
+export type SchedulingErrorTask = {
+  taskId: number;
+  calendarId: number;
+  name: string;
+  durationMinutes: number;
+};
