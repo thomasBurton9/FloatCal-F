@@ -11,6 +11,7 @@ import type {
   ScheduledTaskListProps,
   TaskOnDateProps,
 } from "../../types/manageTasks";
+import { handleTaskComplete } from "../../helpers/completionLog";
 
 export function ScheduledTaskList({ scheduledTasks }: ScheduledTaskListProps) {
   const [orderedTasks, setOrderedTasks] = useState(scheduledTasks); // Allow for the drag functionality to change the order of tasks -> Currently non functional in terms of actually choosing times
@@ -69,16 +70,40 @@ function TasksOnDate({ date, tasks, onReorder }: TaskOnDateProps) {
     </View>
   );
 }
-
 function IndividualTaskRow({ task, drag }: IndividualTaskRowProps) {
+  // Basically identical checkbox logic as UnScheduledTasks
+  const [completedStatus, setCompletedStatus] = useState(task.completed);
+
+  useEffect(() => {
+    setCompletedStatus(task.completed);
+  }, [task.completed]);
   return (
     <View style={styles.individualTaskRowContainer}>
       <View style={styles.taskText}>
         <Text style={styles.taskName}>{task.name}</Text>
         <Text style={styles.taskDuration}>{task.duration_minutes}m</Text>
       </View>
-      {/* Currently non functional TODO:*/}
-      <Checkbox style={styles.checkbox}></Checkbox>
+      {/* Currently not fully functional TODO:*/}
+      <Checkbox
+        value={completedStatus}
+        onValueChange={async (value) => {
+          // On failure roll back change -> save previous state to allow this
+
+          const initialStatus = completedStatus;
+          setCompletedStatus(value);
+          const result = await handleTaskComplete(
+            value,
+            task.task_id,
+            task.date,
+          );
+
+          if (!result.success) {
+            setCompletedStatus(initialStatus);
+          }
+        }}
+        disabled={false}
+        style={styles.checkbox}
+      ></Checkbox>
       {/* Format time in HH:MM-HH:MM */}
       <Text style={styles.taskTime}>
         {task.scheduled_start

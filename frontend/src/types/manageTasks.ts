@@ -18,6 +18,7 @@ export type Task = {
   preferred_window?: string;
   scheduled_start?: string; // Though it stores time, it does not use date but time. This might need to be changed
   manually_scheduled: boolean;
+  completed: boolean;
 };
 
 export type OrganizedTasks = Record<string, Task[]>; // Potentially change string to date??

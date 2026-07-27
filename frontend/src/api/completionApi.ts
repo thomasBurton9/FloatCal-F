@@ -56,7 +56,7 @@ export async function markTaskIncomplete(
       console.error("Error marking task incomplete", data);
       return { success: false, error: data.detail };
       // Using explicit return types here/now for better consistency, easier coding and avoidance of errors/confusion
-      // As compared to previous js code without it 
+      // As compared to previous js code without it
     }
     return { success: true };
   } catch (error) {

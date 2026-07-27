@@ -11,6 +11,7 @@ import type {
   TaskOnDateProps,
   IndividualTaskRowProps,
 } from "../../types/manageTasks";
+import { handleTaskComplete } from "../../helpers/completionLog";
 
 // Largely copied from ScheduledTasks.tsx -> ScheduledTaskList
 // Due to similar logic, code and styling
@@ -75,14 +76,39 @@ function TasksOnDate({ date, tasks, onReorder }: TaskOnDateProps) {
 }
 
 function IndividualTaskRow({ task, drag }: IndividualTaskRowProps) {
+  // Basically identical checkbox logic as ScheduledTasks
+  const [completedStatus, setCompletedStatus] = useState(task.completed);
+
+  useEffect(() => {
+    setCompletedStatus(task.completed);
+  }, [task.completed]);
   return (
     <View style={styles.individualTaskRowContainer}>
       <View style={styles.taskText}>
         <Text style={styles.taskName}>{task.name}</Text>
         <Text style={styles.taskDuration}>{task.duration_minutes}m</Text>
       </View>
-      {/* Currently non functional TODO:*/}
-      <Checkbox style={styles.checkbox}></Checkbox>
+      {/* Currently not fully functional TODO:*/}
+      <Checkbox
+        value={completedStatus}
+        onValueChange={async (value) => {
+          // On failure roll back change -> save previous state to allow this
+          const initialStatus = completedStatus;
+          setCompletedStatus(value);
+
+          const result = await handleTaskComplete(
+            value,
+            task.task_id,
+            task.date,
+          );
+
+          if (!result.success) {
+            setCompletedStatus(initialStatus);
+          }
+        }}
+        disabled={false}
+        style={styles.checkbox}
+      ></Checkbox>
       {/* Format time in HH:MM-HH:MM */}
       {/* Potentially replace ScheduledTask start time -> end time with suggested start time??*/}
       {/* Or button to schedule task */}
