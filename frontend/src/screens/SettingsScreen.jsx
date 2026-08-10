@@ -12,6 +12,7 @@ import { API_URL } from "../constants";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { fetchSettings } from "../api/settingsApi";
 import { timeStringToDate } from "../helpers/dateHelpers";
+import { validateSettings } from "../helpers/validateSettings";
 
 export default function SettingsScreen({ userId, setUserId, setPage }) {
   const [settings, setSettings] = useState(null);
@@ -70,8 +71,8 @@ export default function SettingsScreen({ userId, setUserId, setPage }) {
                 Sleep Window:{" "}
                 {settings
                   ? formatTime(settings["sleep_start"]) +
-                    "-" +
-                    formatTime(settings["sleep_end"])
+                  "-" +
+                  formatTime(settings["sleep_end"])
                   : "Loading..."}
               </Text>
               <Pressable
@@ -145,14 +146,11 @@ export default function SettingsScreen({ userId, setUserId, setPage }) {
                     setSleepEnd(settings["sleep_end"]);
                   }}
                   onSave={() => {
-                    // TODO: Combine these into 1 function call
                     updateSettings(
                       userId,
-                      "sleep_start",
-                      sleepStart,
+                      { sleep_window: [sleepStart, sleepEnd] },
                       setSettings,
                     );
-                    updateSettings(userId, "sleep_end", sleepEnd, setSettings);
                   }}
                 ></EditSettingsActions>
               </View>
@@ -203,8 +201,7 @@ export default function SettingsScreen({ userId, setUserId, setPage }) {
                   onSave={() => {
                     updateSettings(
                       userId,
-                      "buffer_minutes",
-                      Number(bufferMinutes),
+                      { buffer_minutes: bufferMinutes },
                       setSettings,
                     );
                   }}
@@ -245,92 +242,95 @@ export default function SettingsScreen({ userId, setUserId, setPage }) {
               <View style={style.editSettingsDialog}>
                 {schedulingWindows
                   ? schedulingWindows.map((window, index) => (
-                      <View key={index} style={style.schedulingWindowRow}>
-                        <View style={style.schedulingWindowColumn}>
-                          <TextInput
-                            value={window.name}
-                            placeholder="Name"
-                            onChangeText={(name) => {
-                              const next = [...schedulingWindows]; // New updated scheduling windows with added entry
-                              next[index] = { ...next[index], name };
+                    <View key={index} style={style.schedulingWindowRow}>
+                      <View style={style.schedulingWindowColumn}>
+                        <TextInput
+                          value={window.name}
+                          placeholder="Name"
+                          onChangeText={(name) => {
+                            const next = [...schedulingWindows]; // New updated scheduling windows with added entry
+                            next[index] = { ...next[index], name };
+                            setSchedulingWindows(next);
+                          }}
+                          style={style.schedulingWindowNameInput}
+                        ></TextInput>
+                        <Pressable
+                          onPress={() =>
+                            setSchedulingWindows(
+                              schedulingWindows.filter(
+                                (_, rowIndex) => rowIndex !== index,
+                              ), // Replace schedulingWindows with windows that do not match the deleted index
+                            )
+                          }
+                        >
+                          <Text>Delete</Text>
+                        </Pressable>
+                      </View>
+                      <View style={style.schedulingWindowColumn}>
+                        <View style={style.sleepTimePicker}>
+                          {/*Reusing sleep time style given the formatting is the same for both pickers */}
+                          <Text style={style.sleepDateTimeLabel}>Start</Text>
+                          <DateTimePicker
+                            style={style.sleepDateTimeInput}
+                            mode="time"
+                            is24Hour={true}
+                            value={timeStringToDate(window.start)}
+                            onChange={(_, time) => {
+                              if (!time) {
+                                return;
+                              }
+                              const hours = String(time.getHours()).padStart(
+                                2,
+                                "0",
+                              ); // Pad the start with zeros if it is not length 2
+                              const minutes = String(
+                                time.getMinutes(),
+                              ).padStart(2, "0");
+
+                              const next = [...schedulingWindows];
+                              next[index] = {
+                                ...next[index], // Make next[index] the same as previous i.e. end is included, but start is not included as it is specified below
+                                start: `${hours}:${minutes}:00`,
+                              };
                               setSchedulingWindows(next);
                             }}
-                            style={style.schedulingWindowNameInput}
-                          ></TextInput>
-                          <Pressable
-                            onPress={() =>
-                              setSchedulingWindows(
-                                schedulingWindows.filter(
-                                  (_, rowIndex) => rowIndex !== index,
-                                ), // Replace schedulingWindows with windows that do not match the deleted index
-                              )
-                            }
-                          >
-                            <Text>Delete</Text>
-                          </Pressable>
+                          ></DateTimePicker>
                         </View>
-                        <View style={style.schedulingWindowColumn}>
-                          <View style={style.sleepTimePicker}>
-                            {/*Reusing sleep time style given the formatting is the same for both pickers */}
-                            <Text style={style.sleepDateTimeLabel}>Start</Text>
-                            <DateTimePicker
-                              style={style.sleepDateTimeInput}
-                              mode="time"
-                              is24Hour={true}
-                              value={timeStringToDate(window.start)}
-                              onChange={(_, time) => {
-                                if (!time) {
-                                  return;
-                                }
-                                const hours = String(time.getHours()).padStart(
-                                  2,
-                                  "0",
-                                ); // Pad the start with zeros if it is not length 2
-                                const minutes = String(
-                                  time.getMinutes(),
-                                ).padStart(2, "0");
+                        <View style={style.sleepTimePicker}>
+                          {/*Reusing sleep time style given the formatting is the same for both pickers */}
+                          <Text style={style.sleepDateTimeLabel}>End</Text> {/* This is preferred times picker */}
+                          <DateTimePicker
+                            style={style.sleepDateTimeInput}
+                            mode="time"
+                            is24Hour={true}
+                            value={timeStringToDate(window.end)}
+                            onChange={(_, time) => {
+                              // Add/update dateHelpers function for this 
+                              if (!time) {
+                                return;
+                              }
+                              const hours = String(time.getHours()).padStart(
+                                2,
+                                "0",
+                              ); // Pad the start with zeros if it is not length 2
+                              const minutes = String(
+                                time.getMinutes(),
+                              ).padStart(2, "0");
 
-                                const next = [...schedulingWindows];
-                                next[index] = {
-                                  ...next[index],
-                                  start: `${hours}:${minutes}:00`,
-                                };
-                                setSchedulingWindows(next);
-                              }}
-                            ></DateTimePicker>
-                          </View>
-                          <View style={style.sleepTimePicker}>
-                            {/*Reusing sleep time style given the formatting is the same for both pickers */}
-                            <Text style={style.sleepDateTimeLabel}>End</Text>
-                            <DateTimePicker
-                              style={style.sleepDateTimeInput}
-                              mode="time"
-                              is24Hour={true}
-                              value={timeStringToDate(window.end)}
-                              onChange={(_, time) => {
-                                if (!time) {
-                                  return;
-                                }
-                                const hours = String(time.getHours()).padStart(
-                                  2,
-                                  "0",
-                                ); // Pad the start with zeros if it is not length 2
-                                const minutes = String(
-                                  time.getMinutes(),
-                                ).padStart(2, "0");
+                              const next = [...schedulingWindows] // Copy schedulingWindows into next
 
-                                const next = [...schedulingWindows];
-                                next[index] = {
-                                  ...next[index],
-                                  end: `${hours}:${minutes}:00`,
-                                };
-                                setSchedulingWindows(next);
-                              }}
-                            ></DateTimePicker>
-                          </View>
+                              next[index] = {
+                                ...next[index], // Make next[index] the same as previous i.e. start is included, but end is not included as it is specified below
+                                end: `${hours}:${minutes}:00`,
+                              }
+                              
+                              setSchedulingWindows(next);
+                            }}
+                          ></DateTimePicker>
                         </View>
                       </View>
-                    ))
+                    </View>
+                  ))
                   : null}
                 <Pressable
                   onPress={() =>
@@ -358,8 +358,10 @@ export default function SettingsScreen({ userId, setUserId, setPage }) {
                   onSave={() => {
                     updateSettings(
                       userId,
-                      "scheduling_windows",
-                      schedulingWindowsRowsToJson(schedulingWindows),
+                      {
+                        scheduling_windows:
+                          schedulingWindowsRowsToJson(schedulingWindows),
+                      },
                       setSettings,
                     );
                   }}
@@ -386,8 +388,7 @@ export default function SettingsScreen({ userId, setUserId, setPage }) {
                   onValueChange={async (value) =>
                     await updateSettings(
                       userId,
-                      "notifications_enabled",
-                      value,
+                      { notifications_enabled: value },
                       setSettings,
                     )
                   }
@@ -473,10 +474,25 @@ function toggleDropdown(field, editingKey, setEditingKey) {
     setEditingKey(null);
   }
 }
-async function updateSettings(userId, key, value, setSettings) {
-  // Need to make sure that scheduling windows don't overwrite
-  // the existing scheduling windows
-  // Should be done in function that calls this one
+async function updateSettings(userId, updates, setSettings) {
+  if (!validateSettings(updates)) {
+    return;
+  }
+
+  const { sleep_window, ...otherUpdates } = updates; // Split updates into 2 -> sleep_window is combined when submitting initially to prevent broken values
+  // However it needs to be split apart once again
+
+  // If buffer_minutes is to be converted to a Number it should be done here. Most likely not needed
+  const requestUpdates = {
+    ...otherUpdates,
+    ...(sleep_window
+      ? {
+        sleep_start: sleep_window[0],
+        sleep_end: sleep_window[1],
+      }
+      : {}),
+  };
+
   try {
     const updateSettingsUrl =
       API_URL + "/" + String(userId) + "/update_setting";
@@ -485,9 +501,7 @@ async function updateSettings(userId, key, value, setSettings) {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        [key]: value,
-      }),
+      body: JSON.stringify(requestUpdates),
     });
     const data = await response.json();
     if (!response.ok) {

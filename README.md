@@ -138,3 +138,5 @@ Tighten user facing error -> The actual text, how much info the provide
 Check all variable, class and other names. Make sure they align with stated naming conventions
 Check the semantic name of all variables and change any that don't make sense
 Search codebase for "TODO:" and either remove or fix each of these comments
+
+Remove all console.log() and unecessary console.error()
