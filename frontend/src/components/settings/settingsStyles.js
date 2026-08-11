@@ -1,0 +1,114 @@
+import { StyleSheet } from "react-native";
+
+export const style = StyleSheet.create({
+  screen: {
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  settingsSection: {
+    width: "100%", // Prevent prefferred times window from expanding
+    flexDirection: "column",
+    alignItems: "center",
+  },
+  individualSettingInfo: {
+    paddingLeft: 10,
+  },
+  individualSetting: {
+    width: "75%",
+    flexDirection: "column",
+    borderStyle: "solid",
+    borderWidth: 2,
+    borderRadius: 5,
+    marginVertical: 10,
+  },
+  individualSettingRow: {
+    justifyContent: "space-between", // Push button/arrow to the far right
+    flexDirection: "row",
+    alignItems: "center",
+    width: "100%",
+  },
+  editSettingsButton: {
+    padding: 10,
+  },
+  editSleepSettings: {
+    flexDirection: "row",
+    gap: 20,
+    justifyContent: "center",
+  },
+  sleepTimePicker: {
+    alignItems: "center",
+    textAlign: "center",
+    width: 110,
+  },
+  endEditSettings: {
+    flexDirection: "row",
+    gap: 60, // Use gap instead of margin in the children to standardize the gap.
+    justifyContent: "center",
+  },
+  editSettingsEndButtons: {
+    padding: 10,
+    borderStyle: "solid",
+    borderWidth: 3,
+    borderRadius: 25,
+    minWidth: 70, // Make the buttons the same size
+    alignItems: "center", // Make sure text is in the centre
+  },
+  saveEditSettingsButton: {
+    borderColor: "green",
+    backgroundColor: "#00FF0080", // 50% Opacity
+  },
+  cancelEditSettingsButton: {
+    borderColor: "red",
+    backgroundColor: "#FF000080",
+  },
+  editSettingsDialog: {
+    paddingHorizontal: 20,
+    paddingBottom: 12,
+    gap: 14,
+    alignItems: "center", // Help align cancel/save buttons and the inputs
+  },
+  bufferInputRow: {
+    flexDirection: "row",
+    gap: 5,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  bufferMinutesInput: {
+    borderWidth: 1,
+    borderRadius: 5,
+    padding: 5,
+    width: 50, // Make it look like a proper input
+    textAlign: "center",
+  },
+  sleepDateTimeInput: {
+    alignSelf: "center",
+    width: 100,
+  },
+  sleepDateTimeLabel: {
+    // width: "70%",
+    alignSelf: "center",
+  },
+  schedulingWindowRow: {
+    width: "100%",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-evenly", // Keep gap between items the same size
+    paddingVertical: 10, // Room between items.
+  },
+  schedulingWindowNameInput: {
+    borderWidth: 1,
+    borderRadius: 5,
+    padding: 5,
+    width: 110, // May need to change to be more responsive
+    textAlign: "center",
+    // flexShrink: 1, // Shrink name input for phones
+  },
+  schedulingWindowColumn: {
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 10,
+  },
+  // TODO: Add style for delete and add window buttons in scheduling windows
+  // TODO: Align the items in the 2 columns, Somehow
+});

@@ -6,7 +6,7 @@ import { addMinutesToDateTime, extractTime } from "../helpers/dateHelpers";
 import calendarIcon from "../../assets/calendar_icon64x64.png";
 import clockIcon from "../../assets/clock_icon64x64.png";
 import recurrenceIcon from "../../assets/recurrence_icon64x64.png";
-import reminderIcon from "../../assets/reminder_bell_icon64x64.png"; 
+import reminderIcon from "../../assets/reminder_bell_icon64x64.png";
 
 export default function ItemInfoModal({
   isVisible,

@@ -7,20 +7,20 @@ const MAX_BUFFER_MINUTES = 1440;
 export function validateSettings(updates: SettingsUpdate): boolean {
   console.log(updates);
 
-  
   if ("sleep_window" in updates) {
     const sleepWindow: SleepWindow | undefined = updates.sleep_window;
     const sleepStart: string | undefined = sleepWindow?.[0]; // Use syntax (?.[]) that allows undefined when the sleep window does not exist for some reason
-    const sleepEnd: string | undefined  = sleepWindow?.[1];
+    const sleepEnd: string | undefined = sleepWindow?.[1];
     const sleepStartMinutes = timeToMinutes(sleepStart);
     const sleepEndMinutes = timeToMinutes(sleepEnd);
 
-    if (sleepStartMinutes === null || sleepEndMinutes === null) { // Potentially this is not necessary given the previous type check / time picker prevent this
+    if (sleepStartMinutes === null || sleepEndMinutes === null) {
+      // Potentially this is not necessary given the previous type check / time picker prevent this
       Alert.alert("The sleep times must be valid times");
       return false;
     }
 
-    // Sleep windows can cross midnight. 
+    // Sleep windows can cross midnight.
     // So that is not checked
     // Sleep window cannot be 24h due to breaking scheduling entirely
     // Potentially limit sleep to like 16h TODO: Decide whether this is necessary
@@ -39,7 +39,7 @@ export function validateSettings(updates: SettingsUpdate): boolean {
         ? NaN
         : Number(bufferValue);
 
-    // This currently is scoped around all invalid inputs including blank, whitespace or just invalid number 
+    // This currently is scoped around all invalid inputs including blank, whitespace or just invalid number
     // Number() returns NaN if the input is not a number
     if (!Number.isInteger(bufferMinutes)) {
       Alert.alert(

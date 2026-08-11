@@ -59,7 +59,7 @@ export default function DailyCalendar({ setPage, userId }) {
           currentDate={currentDate}
           onItemPress={(item) => {
             setSelectedItem(item);
-            setCurrentModal("itemInfo")
+            setCurrentModal("itemInfo");
           }}
         ></CalendarView>
         <BottomBar

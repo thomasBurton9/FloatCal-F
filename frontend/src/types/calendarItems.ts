@@ -26,7 +26,6 @@ export type FloatingTask = {
 
 export type CalendarItem = FixedEvent | FloatingTask;
 
-
 export type ItemInfoModalProps = {
   isVisible: boolean;
   item: CalendarItem | null;
