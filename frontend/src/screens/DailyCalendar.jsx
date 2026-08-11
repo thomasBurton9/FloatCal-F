@@ -13,12 +13,15 @@ import AddItem from "../components/AddItem";
 import ManageCalendars from "../components/ManageCalendars";
 import ManageTasks from "../components/ManageTasks";
 import SchedulingError from "../components/SchedulingError";
+import ItemInfoModal from "../components/ItemInfoModal";
 
 // Calendar at the top
 // Then bottombar 1/5th or 1/6th
 // TODO: Add theme for calendar
 export default function DailyCalendar({ setPage, userId }) {
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [currentModal, setCurrentModal] = useState(null);
+  const [selectedItem, setSelectedItem] = useState(null); // Current selected item -> Used for task info popup
 
   const calendarRef = useRef(null);
   const [itemAddedTrigger, setItemAddedTrigger] = useState(false);
@@ -54,14 +57,34 @@ export default function DailyCalendar({ setPage, userId }) {
           calendarRef={calendarRef}
           setCurrentDate={setCurrentDate}
           currentDate={currentDate}
+          onItemPress={(item) => {
+            setSelectedItem(item);
+            setCurrentModal("itemInfo")
+          }}
         ></CalendarView>
         <BottomBar
           setPage={setPage}
           userId={userId}
           currentDate={currentDate}
           setCurrentDate={setCurrentDate}
+          onItemPress={(item) => {
+            setSelectedItem(item);
+            setCurrentModal("itemInfo");
+          }}
+          currentModal={currentModal}
+          setCurrentModal={setCurrentModal}
           onItemAdded={() => setItemAddedTrigger(!itemAddedTrigger)}
         ></BottomBar>
+        <ItemInfoModal
+          isVisible={currentModal === "itemInfo"}
+          item={selectedItem}
+          setCurrentModal={(modal) => {
+            setCurrentModal(modal);
+            if (modal === null) {
+              setSelectedItem(null);
+            }
+          }}
+        ></ItemInfoModal>
       </View>
     </>
   );
@@ -87,6 +110,10 @@ async function formatItems(items, userId) {
       outputItems.push({
         id: `task:${item["task_id"]}`,
         title: item["name"],
+        calendarItem: {
+          ...item,
+          calendar_name: getCalendarName(calendars, item["calendar_id"]),
+        },
         start: { dateTime: item["date"] + "T" + item["scheduled_start"] },
         end: {
           dateTime: addMinutesToDateTime(
@@ -101,6 +128,10 @@ async function formatItems(items, userId) {
       outputItems.push({
         id: `event:${item["event_id"]}`,
         title: item["name"],
+        calendarItem: {
+          ...item,
+          calendar_name: getCalendarName(calendars, item["calendar_id"]),
+        },
         start: { dateTime: item["date"] + "T" + item["start_time"] }, // calendar package wants explicit 'T' separator
         end: { dateTime: item["date"] + "T" + item["end_time"] },
         color: getCalendarColour(calendars, item["calendar_id"]) || "#FF0000FF",
@@ -118,7 +149,22 @@ function getCalendarColour(calendars, calendarId) {
   }
 }
 
-function CalendarView({ items, currentDate, setCurrentDate, calendarRef }) {
+function getCalendarName(calendars, calendarId) {
+  for (const calendar of calendars) {
+    if (calendar["calendar_id"] === calendarId) {
+      return calendar["name"];
+    }
+  }
+  return "Unknown calendar";
+}
+
+function CalendarView({
+  items,
+  currentDate,
+  setCurrentDate,
+  calendarRef,
+  onItemPress,
+}) {
   return (
     <>
       <View style={style.mainCalendarContainer}>
@@ -133,6 +179,7 @@ function CalendarView({ items, currentDate, setCurrentDate, calendarRef }) {
           overlapType="no-overlap" // TODO: Look back to client feedback to see if changing to 'overlap' makes sense
           initialDate={formatDate(currentDate)}
           events={items}
+          onPressEvent={(event) => onItemPress(event.calendarItem)}
           onDateChanged={(date) => {
             console.log(date);
             console.log(typeof date);
@@ -152,9 +199,10 @@ function BottomBar({
   userId,
   currentDate,
   setCurrentDate,
+  currentModal,
+  setCurrentModal,
   onItemAdded,
 }) {
-  const [currentModal, setCurrentModal] = useState(null);
   const [schedulingErrorTask, setSchedulingErrorTask] = useState(null);
   // const [schedulingErrorTask, setSchedulingErrorTask] = useState({
   //   taskId: 0,
