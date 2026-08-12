@@ -12,6 +12,7 @@ export function CompletedTaskList({
   completedTasks,
   calendars,
   onTaskPress,
+  onStateUpdate,
 }: CompletedTaskListProps) {
   const [orderedTasks, setOrderedTasks] = useState(completedTasks); // Allow for the drag functionality to change the order of tasks -> Currently non functional in terms of actually choosing times
 
@@ -43,6 +44,7 @@ export function CompletedTaskList({
               }))
             }
             onTaskPress={onTaskPress}
+            onStateUpdate={onStateUpdate}
           ></TasksOnDate>
         ))}
       </NestableScrollContainer>

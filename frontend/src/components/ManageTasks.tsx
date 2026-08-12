@@ -29,7 +29,7 @@ export default function ManageTasks({
   const [tasks, setTasks] = useState<OrganizedTasks>({});
   const [taskType, setTaskType] = useState<TaskType>("Scheduled"); // Scheduled || Unscheduled || Completed
   const [calendars, setCalendars] = useState<Calendar[]>([]); // Need calendars as well to properly colour each task
-
+  const [taskStateUpdated, setTaskStateUpdated] = useState(false); // Used purely to reload data
   // Using nested function to avoid having to pass multiple args
   function handleTaskPress(task: Task) {
     const calendar = calendars.find(
@@ -52,6 +52,10 @@ export default function ManageTasks({
   }, [userId]); //  Given calendars don't change in this view, they should not need to be a dependency
 
   // Currently only loads 30 days worth of data
+  // TODO: Change the amount of days | add infinite scroll without loading
+  // TODO: Make updating only 1 completion not require everything to be refetched?
+  // Possibly out of scope / would require caching
+
   useEffect(() => {
     async function loadTasks() {
       const dateIn30Days = new Date();
@@ -66,7 +70,7 @@ export default function ManageTasks({
     }
 
     loadTasks();
-  }, [userId, isVisible]); // Depends on tasks given tasks can be changed in this view
+  }, [userId, isVisible, taskStateUpdated]); // Depends on tasks given tasks can be changed in this view
 
   const scheduledTasks: OrganizedTasks = useMemo(() => {
     let tempScheduledTasks: OrganizedTasks = {};
@@ -118,6 +122,7 @@ export default function ManageTasks({
             scheduledTasks={scheduledTasks}
             calendars={calendars}
             onTaskPress={handleTaskPress}
+            onStateUpdate={() => setTaskStateUpdated(!taskStateUpdated)}
           ></ScheduledTaskList>
         </>
       );
@@ -128,6 +133,7 @@ export default function ManageTasks({
             unscheduledTasks={unscheduledTasks}
             calendars={calendars}
             onTaskPress={handleTaskPress}
+            onStateUpdate={() => setTaskStateUpdated(!taskStateUpdated)}
           ></UnScheduledTaskList>
         </>
       );
@@ -137,6 +143,7 @@ export default function ManageTasks({
           completedTasks={completedTasks}
           calendars={calendars}
           onTaskPress={handleTaskPress}
+          onStateUpdate={() => setTaskStateUpdated(!taskStateUpdated)}
         ></CompletedTaskList>
       );
     }

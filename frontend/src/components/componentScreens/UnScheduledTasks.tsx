@@ -19,6 +19,7 @@ export function UnScheduledTaskList({
   unscheduledTasks,
   calendars,
   onTaskPress,
+  onStateUpdate,
 }: UnscheduledTaskListProps) {
   const [orderedTasks, setOrderedTasks] = useState(unscheduledTasks); // Allow for the drag functionality to change the order of tasks -> Currently non functional in terms of actually choosing times
   useEffect(() => {
@@ -49,13 +50,20 @@ export function UnScheduledTaskList({
             }));
           }}
           onTaskPress={onTaskPress}
+          onStateUpdate={onStateUpdate}
         ></TasksOnDate>
       ))}
     </NestableScrollContainer>
   );
 }
 
-function TasksOnDate({ date, tasks, onReorder, onTaskPress }: TaskOnDateProps) {
+function TasksOnDate({
+  date,
+  tasks,
+  onReorder,
+  onTaskPress,
+  onStateUpdate,
+}: TaskOnDateProps) {
   return (
     <View style={styles.tasksOnDateContainer}>
       <View style={styles.dateHeader}>
@@ -73,6 +81,7 @@ function TasksOnDate({ date, tasks, onReorder, onTaskPress }: TaskOnDateProps) {
             task={item}
             drag={drag}
             onTaskPress={onTaskPress}
+            onStateUpdate={onStateUpdate}
           />
         )}
         onDragEnd={({ data }) => onReorder(data)}
@@ -85,6 +94,7 @@ function IndividualTaskRow({
   task,
   drag,
   onTaskPress,
+  onStateUpdate,
 }: IndividualTaskRowProps) {
   // Basically identical checkbox logic as ScheduledTasks
   const [completedStatus, setCompletedStatus] = useState(task.completed);
@@ -114,6 +124,8 @@ function IndividualTaskRow({
 
           if (!result.success) {
             setCompletedStatus(initialStatus);
+          } else {
+            onStateUpdate();
           }
         }}
         disabled={false}

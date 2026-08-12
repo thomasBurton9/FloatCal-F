@@ -42,17 +42,20 @@ export type ScheduledTaskListProps = {
   scheduledTasks: OrganizedTasks;
   calendars: Calendar[];
   onTaskPress: (task: Task) => void;
+  onStateUpdate: () => void;
 };
 
 export type CompletedTaskListProps = {
   completedTasks: OrganizedTasks;
   calendars: Calendar[];
   onTaskPress: (task: Task) => void;
+  onStateUpdate: () => void;
 };
 export type UnscheduledTaskListProps = {
   unscheduledTasks: OrganizedTasks;
   calendars: Calendar[];
   onTaskPress: (task: Task) => void;
+  onStateUpdate: () => void;
 };
 
 export type TaskOnDateProps = {
@@ -60,11 +63,13 @@ export type TaskOnDateProps = {
   tasks: Task[];
   onReorder: (tasks: Task[]) => void;
   onTaskPress: (task: Task) => void;
+  onStateUpdate: () => void;
 };
 export type IndividualTaskRowProps = {
   task: Task;
   drag: () => void;
   onTaskPress: (task: Task) => void;
+  onStateUpdate: () => void;
 };
 
 export type SchedulingErrorProps = {
