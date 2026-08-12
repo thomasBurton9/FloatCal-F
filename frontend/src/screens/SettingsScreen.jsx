@@ -52,6 +52,12 @@ export default function SettingsScreen({ userId, setUserId, setPage }) {
   return (
     <>
       <View {...panResponder.panHandlers} style={style.screen}>
+        <Pressable
+          style={style.backButton}
+          onPress={() => setPage("DailyCalendar")}
+        >
+          <Text style={style.backButtonText}>{"<"}</Text>
+        </Pressable>
         <View>
           <Text>Settings</Text>
         </View>

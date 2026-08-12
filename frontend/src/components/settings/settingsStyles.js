@@ -7,9 +7,28 @@ export const style = StyleSheet.create({
     justifyContent: "center",
   },
   settingsSection: {
-    width: "100%", // Prevent prefferred times window from expanding
+    width: "100%", // Prevent preferred times window from expanding
     flexDirection: "column",
     alignItems: "center",
+  },
+  backButton: {
+    borderStyle: "solid",
+    borderWidth: 1.5,
+    borderRadius: 18,
+    width: 36,
+    height: 36,
+    alignItems: "center",
+    justifyContent: "center",
+    // position-absolute allows for individual manipulation
+    position: "absolute",
+    // top and left indicate the absolute distance from the top and left sides of the screen
+    // Currently not responsive at all.
+    top: 0,
+    left: 16,
+  },
+  backButtonText: {
+    textAlign: "center",
+    fontSize: 20,
   },
   individualSettingInfo: {
     paddingLeft: 10,
