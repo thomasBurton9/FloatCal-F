@@ -14,6 +14,7 @@ import ManageCalendars from "../components/ManageCalendars";
 import ManageTasks from "../components/ManageTasks";
 import SchedulingError from "../components/SchedulingError";
 import ItemInfoModal from "../components/ItemInfoModal";
+import { lightenHex } from "../helpers/colourHelpers";
 
 // Calendar at the top
 // Then bottombar 1/5th or 1/6th
@@ -117,21 +118,7 @@ async function formatItems(items, userId) {
       let baseColour = getCalendarColour(calendars, item["calendar_id"]);
 
       if (baseColour) {
-        const length = baseColour.length; // Should be 9 ideally
-        const r = parseInt(baseColour.slice(1, 3), 16); // As these are hexcodes we decode them in base 16
-        const g = parseInt(baseColour.slice(3, 5), 16);
-        const b = parseInt(baseColour.slice(5, 7), 16);
-        let a;
-        if (length === 9) {
-          a = baseColour.slice(7, 9); //Slice till the end
-        }
-
-        function lightenAndConvert(colourValue) {
-          let newColour = Math.round(colourValue + (255 - colourValue) * 0.3); // Lighten floating tasks by 20% -> not my formula
-          newColour = newColour.toString(16).padStart(2, "0");
-          return newColour;
-        }
-        baseColour = `#${lightenAndConvert(r)}${lightenAndConvert(g)}${lightenAndConvert(b)}${a ? a : "FF"}`;
+        baseColour = lightenHex(baseColour, 0.3);
       } else {
         baseColour = "#FF0000FF";
       }
