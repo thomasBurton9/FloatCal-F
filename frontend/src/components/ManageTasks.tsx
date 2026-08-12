@@ -68,9 +68,12 @@ export default function ManageTasks({
     let tempScheduledTasks: OrganizedTasks = {};
 
     for (const key of Object.keys(tasks)) {
-      tempScheduledTasks[key] = tasks[key].filter(
+      const filteredTasks = tasks[key].filter(
         (task: Task) => task.scheduled_start,
       );
+      if (filteredTasks.length !== 0) {
+        tempScheduledTasks[key] = filteredTasks;
+      }
     }
     return tempScheduledTasks;
   }, [tasks]);
@@ -79,13 +82,28 @@ export default function ManageTasks({
     let tempUnscheduledTasks: OrganizedTasks = {};
 
     for (const key of Object.keys(tasks)) {
-      tempUnscheduledTasks[key] = tasks[key].filter(
+      const filteredTasks = tasks[key].filter(
         (task: Task) => !task.scheduled_start,
-      );
+      ); // Save these to a variable so empty rows don't get rendered down the line
+
+      if (filteredTasks.length !== 0) {
+        tempUnscheduledTasks[key] = filteredTasks;
+      }
     }
     return tempUnscheduledTasks;
   }, [tasks]);
 
+  const completedTasks: OrganizedTasks = useMemo(() => {
+    let tempCompletedTasks: OrganizedTasks = {};
+
+    for (const key of Object.keys(tasks)) {
+      const filteredTasks = tasks[key].filter((task: Task) => task.completed);
+      if (filteredTasks.length !== 0) {
+        tempCompletedTasks[key] = filteredTasks;
+      }
+    }
+    return tempCompletedTasks;
+  }, [tasks]);
   // TODO: Implement backend + frontend checking for tasks.
   //
   // Commented to prevent warning for not using
