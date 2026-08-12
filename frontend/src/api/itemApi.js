@@ -98,29 +98,29 @@ export async function createFixedEvent(calendarId, itemFields) {
     console.error("Error creating fixed event:", error);
   }
 }
-
-export async function deleteTask(calendarId, taskId) {
+// itemType is either "task" or "event"
+export async function deleteItem(calendarId, itemId, itemType) {
   try {
-    const deleteTaskUrl =
-      API_URL + "/remove_item/" + String(calendarId) + "/" + String(taskId);
-    const response = await fetch(deleteTaskUrl, {
+    const deleteItemUrl =
+      API_URL + "/remove_item/" + String(calendarId) + "/" + String(itemId);
+    const response = await fetch(deleteItemUrl, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        item_type: "task",
+        item_type: itemType,
       }),
     });
     const data = await response.json();
 
     if (!response.ok) {
-      console.error("Error deleting task", data);
+      console.error("Error deleting item", data);
       return { success: false, error: data.detail };
     }
     return { success: true };
   } catch (error) {
-    console.error("Error deleting task:", error);
+    console.error("Error deleting item:", error);
     return { success: false, error };
   }
 }

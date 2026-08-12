@@ -9,7 +9,7 @@ import {
   Image,
   Alert,
 } from "react-native";
-import { deleteTask } from "../api/itemApi";
+import { deleteItem } from "../api/itemApi";
 
 export default function SchedulingError({
   isVisible,
@@ -122,7 +122,7 @@ async function handleDeleteTask(
   calendarId: number,
   setCurrentModal: (currentModal: string | null) => void,
 ): Promise<void> {
-  const result = await deleteTask(calendarId, taskId);
+  const result = await deleteItem(calendarId, taskId, "task");
 
   if (result.success) {
     setCurrentModal(null);
