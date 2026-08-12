@@ -114,6 +114,28 @@ async function formatItems(items, userId) {
   for (const item of items) {
     if (Object.hasOwn(item, "duration_minutes")) {
       // Floating Tasks
+      let baseColour = getCalendarColour(calendars, item["calendar_id"]);
+
+      if (baseColour) {
+        const length = baseColour.length; // Should be 9 ideally
+        const r = parseInt(baseColour.slice(1, 3), 16); // As these are hexcodes we decode them in base 16
+        const g = parseInt(baseColour.slice(3, 5), 16);
+        const b = parseInt(baseColour.slice(5, 7), 16);
+        let a;
+        if (length === 9) {
+          a = baseColour.slice(7, 9); //Slice till the end
+        }
+
+        function lightenAndConvert(colourValue) {
+          let newColour = Math.round(colourValue + (255 - colourValue) * 0.3); // Lighten floating tasks by 20% -> not my formula
+          newColour = newColour.toString(16).padStart(2, "0");
+          return newColour;
+        }
+        baseColour = `#${lightenAndConvert(r)}${lightenAndConvert(g)}${lightenAndConvert(b)}${a ? a : "FF"}`;
+      } else {
+        baseColour = "#FF0000FF";
+      }
+
       outputItems.push({
         id: `task:${item["task_id"]}`,
         title: item["name"],
@@ -129,7 +151,7 @@ async function formatItems(items, userId) {
             item["duration_minutes"],
           ),
         }, // Return base colour in case of failures
-        color: getCalendarColour(calendars, item["calendar_id"]) || "#FF0000FF", // TODO: Modify colour based on type of task
+        color: baseColour, // TODO: Modify colour based on type of task
       });
     } else {
       outputItems.push({
