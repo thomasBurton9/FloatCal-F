@@ -34,6 +34,7 @@ export default function DailyCalendar({ setPage, userId }) {
   }, [currentDate]); // Maybe move this to actual date switcher to only changes dates when picker is closed
 
   const [items, setItems] = useState([]); // Need id, title, start, end, color, + recurrenceRule
+
   useEffect(() => {
     async function loadItems() {
       try {

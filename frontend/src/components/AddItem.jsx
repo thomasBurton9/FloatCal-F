@@ -408,6 +408,7 @@ async function handleAddItem(
       });
       setCurrentModal("schedulingError");
       onItemAdded();
+      return;
     }
   } else if (itemType === "Fixed") {
     if (
