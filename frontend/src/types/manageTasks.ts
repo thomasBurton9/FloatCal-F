@@ -43,6 +43,12 @@ export type ScheduledTaskListProps = {
   calendars: Calendar[];
   onTaskPress: (task: Task) => void;
 };
+
+export type CompletedTaskListProps = {
+  completedTasks: OrganizedTasks;
+  calendars: Calendar[];
+  onTaskPress: (task: Task) => void;
+};
 export type UnscheduledTaskListProps = {
   unscheduledTasks: OrganizedTasks;
   calendars: Calendar[];

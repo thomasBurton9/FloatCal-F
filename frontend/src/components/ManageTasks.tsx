@@ -15,6 +15,10 @@ import type {
 import { ScheduledTaskList } from "./componentScreens/ScheduledTasks";
 import { UnScheduledTaskList } from "./componentScreens/UnScheduledTasks";
 import { CompletedTaskList } from "./componentScreens/CompletedTasks";
+
+// TODO: Major error with completing tasks resulting in errors if frontend state does not update.
+// TODO: Decide whether a unified file is needed for the shared functions in the child files
+
 export default function ManageTasks({
   isVisible,
   setCurrentModal,
@@ -105,11 +109,6 @@ export default function ManageTasks({
     return tempCompletedTasks;
   }, [tasks]);
   // TODO: Implement backend + frontend checking for tasks.
-  //
-  // Commented to prevent warning for not using
-  // const completedTasks = useMemo(() => {
-  //   return {};
-  // }, []);
 
   function currentView() {
     if (taskType === "Scheduled") {
@@ -133,7 +132,13 @@ export default function ManageTasks({
         </>
       );
     } else {
-      return <CompletedTaskList></CompletedTaskList>;
+      return (
+        <CompletedTaskList
+          completedTasks={completedTasks}
+          calendars={calendars}
+          onTaskPress={handleTaskPress}
+        ></CompletedTaskList>
+      );
     }
   }
   return (

@@ -54,7 +54,12 @@ export function ScheduledTaskList({
   );
 }
 
-function TasksOnDate({ date, tasks, onReorder, onTaskPress }: TaskOnDateProps) {
+export function TasksOnDate({
+  date,
+  tasks,
+  onReorder,
+  onTaskPress,
+}: TaskOnDateProps) {
   return (
     <View style={styles.tasksOnDateContainer}>
       <View style={styles.dateHeader}>
