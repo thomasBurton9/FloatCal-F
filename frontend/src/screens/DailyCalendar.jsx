@@ -202,6 +202,7 @@ function BottomBar({
   currentModal,
   setCurrentModal,
   onItemAdded,
+  onItemPress,
 }) {
   const [schedulingErrorTask, setSchedulingErrorTask] = useState(null);
   // const [schedulingErrorTask, setSchedulingErrorTask] = useState({
@@ -239,6 +240,7 @@ function BottomBar({
         isVisible={currentModal === "manageTasks"}
         setCurrentModal={setCurrentModal}
         userId={userId}
+        onItemPress={onItemPress}
       ></ManageTasks>
       {schedulingErrorTask ? (
         <SchedulingError

@@ -1,7 +1,10 @@
+import { FloatingTask } from "./calendarItems";
+
 export type ManageTaskProps = {
   isVisible: boolean;
   setCurrentModal: (currentModal: string | null) => void;
   userId: number;
+  onItemPress: (task: FloatingTask) => void;
 };
 
 export type TaskType = "Scheduled" | "Unscheduled" | "Completed";
@@ -37,20 +40,24 @@ export type TaskTypeSwitcherProps = {
 export type ScheduledTaskListProps = {
   scheduledTasks: OrganizedTasks;
   calendars: Calendar[];
+  onTaskPress: (task: Task) => void;
 };
 export type UnscheduledTaskListProps = {
   unscheduledTasks: OrganizedTasks;
   calendars: Calendar[];
+  onTaskPress: (task: Task) => void;
 };
 
 export type TaskOnDateProps = {
   date: string;
   tasks: Task[];
   onReorder: (tasks: Task[]) => void;
+  onTaskPress: (task: Task) => void;
 };
 export type IndividualTaskRowProps = {
   task: Task;
   drag: () => void;
+  onTaskPress: (task: Task) => void;
 };
 
 export type SchedulingErrorProps = {

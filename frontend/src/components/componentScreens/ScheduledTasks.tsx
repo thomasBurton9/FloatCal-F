@@ -13,7 +13,11 @@ import type {
 } from "../../types/manageTasks";
 import { handleTaskComplete } from "../../helpers/completionLog";
 
-export function ScheduledTaskList({ scheduledTasks }: ScheduledTaskListProps) {
+export function ScheduledTaskList({
+  scheduledTasks,
+  calendars,
+  onTaskPress,
+}: ScheduledTaskListProps) {
   const [orderedTasks, setOrderedTasks] = useState(scheduledTasks); // Allow for the drag functionality to change the order of tasks -> Currently non functional in terms of actually choosing times
 
   useEffect(() => {
@@ -43,13 +47,14 @@ export function ScheduledTaskList({ scheduledTasks }: ScheduledTaskListProps) {
               [date]: data,
             }))
           }
+          onTaskPress={onTaskPress}
         ></TasksOnDate>
       ))}
     </NestableScrollContainer>
   );
 }
 
-function TasksOnDate({ date, tasks, onReorder }: TaskOnDateProps) {
+function TasksOnDate({ date, tasks, onReorder, onTaskPress }: TaskOnDateProps) {
   return (
     <View style={styles.tasksOnDateContainer}>
       <View style={styles.dateHeader}>
@@ -63,14 +68,22 @@ function TasksOnDate({ date, tasks, onReorder }: TaskOnDateProps) {
         scrollEnabled={false}
         keyExtractor={(task) => `${task.calendar_id}:${task.task_id}`}
         renderItem={({ item, drag }) => (
-          <IndividualTaskRow task={item} drag={drag} />
+          <IndividualTaskRow
+            task={item}
+            drag={drag}
+            onTaskPress={onTaskPress}
+          />
         )}
         onDragEnd={({ data }) => onReorder(data)}
       ></NestableDraggableFlatList>
     </View>
   );
 }
-function IndividualTaskRow({ task, drag }: IndividualTaskRowProps) {
+function IndividualTaskRow({
+  task,
+  drag,
+  onTaskPress,
+}: IndividualTaskRowProps) {
   // Basically identical checkbox logic as UnScheduledTasks
   const [completedStatus, setCompletedStatus] = useState(task.completed);
 
@@ -79,10 +92,10 @@ function IndividualTaskRow({ task, drag }: IndividualTaskRowProps) {
   }, [task.completed]);
   return (
     <View style={styles.individualTaskRowContainer}>
-      <View style={styles.taskText}>
+      <Pressable style={styles.taskText} onPress={() => onTaskPress(task)}>
         <Text style={styles.taskName}>{task.name}</Text>
         <Text style={styles.taskDuration}>{task.duration_minutes}m</Text>
-      </View>
+      </Pressable>
       {/* Currently not fully functional TODO:*/}
       <Checkbox
         value={completedStatus}

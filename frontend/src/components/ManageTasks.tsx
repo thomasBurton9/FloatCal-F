@@ -19,11 +19,23 @@ export default function ManageTasks({
   isVisible,
   setCurrentModal,
   userId,
+  onItemPress,
 }: ManageTaskProps) {
   const [tasks, setTasks] = useState<OrganizedTasks>({});
   const [taskType, setTaskType] = useState<TaskType>("Scheduled"); // Scheduled || Unscheduled || Completed
   const [calendars, setCalendars] = useState<Calendar[]>([]); // Need calendars as well to properly colour each task
 
+  // Using nested function to avoid having to pass multiple args
+  function handleTaskPress(task: Task) {
+    const calendar = calendars.find(
+      (calendar) => calendar.calendar_id === task.calendar_id,
+    ); // Find the string name of the calendar and not simply the id
+
+    onItemPress({
+      ...task,
+      calendar_name: calendar?.name ?? "Unkown Calendar", // As calendar[name] could be null, a fallback is used.
+    });
+  }
   useEffect(() => {
     async function loadCalendars() {
       const calendarData = await fetchCalendars(userId);
@@ -86,6 +98,7 @@ export default function ManageTasks({
           <ScheduledTaskList
             scheduledTasks={scheduledTasks}
             calendars={calendars}
+            onTaskPress={handleTaskPress}
           ></ScheduledTaskList>
         </>
       );
@@ -95,6 +108,7 @@ export default function ManageTasks({
           <UnScheduledTaskList
             unscheduledTasks={unscheduledTasks}
             calendars={calendars}
+            onTaskPress={handleTaskPress}
           ></UnScheduledTaskList>
         </>
       );
