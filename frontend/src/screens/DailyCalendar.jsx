@@ -90,6 +90,7 @@ export default function DailyCalendar({ setPage, userId }) {
           }}
           returnModal={returnModal}
           setReturnModal={setReturnModal}
+          onChangedData={() => setItemAddedTrigger(!itemAddedTrigger)} // Update the calendar when changing data
         ></ItemInfoModal>
       </View>
     </>

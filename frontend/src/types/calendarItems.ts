@@ -32,4 +32,5 @@ export type ItemInfoModalProps = {
   setCurrentModal: (currentModal: string | null) => void;
   returnModal: string | null;
   setReturnModal: (returnModal: string | null) => void;
+  onChangedData: () => void;
 };

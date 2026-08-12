@@ -1,4 +1,12 @@
-import { Image, Modal, Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  Alert,
+  Image,
+  Modal,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import type { ImageSourcePropType } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import type { CalendarItem, ItemInfoModalProps } from "../types/calendarItems";
@@ -7,6 +15,7 @@ import calendarIcon from "../../assets/calendar_icon64x64.png";
 import clockIcon from "../../assets/clock_icon64x64.png";
 import recurrenceIcon from "../../assets/recurrence_icon64x64.png";
 import reminderIcon from "../../assets/reminder_bell_icon64x64.png";
+import { deleteItem } from "../api/itemApi";
 
 // TODO: Make it align perfectly with design tools
 export default function ItemInfoModal({
@@ -15,6 +24,7 @@ export default function ItemInfoModal({
   setCurrentModal,
   returnModal,
   setReturnModal,
+  onChangedData,
 }: ItemInfoModalProps) {
   function closeModal() {
     setCurrentModal(returnModal);
@@ -40,14 +50,28 @@ export default function ItemInfoModal({
               <Text style={styles.editButtonText}>Edit</Text>
             </Pressable>
           </View>
-          {item ? <ItemDetails item={item} /> : null}
+          {item ? (
+            <ItemDetails
+              item={item}
+              onClose={closeModal}
+              onChangedData={onChangedData}
+            />
+          ) : null}
         </View>
       </SafeAreaView>
     </Modal>
   );
 }
 
-function ItemDetails({ item }: { item: CalendarItem }) {
+function ItemDetails({
+  item,
+  onClose,
+  onChangedData,
+}: {
+  item: CalendarItem;
+  onClose: () => void;
+  onChangedData: () => void;
+}) {
   const isTask = "duration_minutes" in item; // Checks if the key duration_minutes is in the item object
   const time = isTask
     ? `${formatTaskTime(item)} (${formatDuration(item.duration_minutes)})`
@@ -85,6 +109,31 @@ function ItemDetails({ item }: { item: CalendarItem }) {
             <Text style={styles.notes}>{item.notes}</Text>
           </View>
         ) : null}
+        <View style={styles.deleteButtonRow}>
+          <Pressable
+            style={styles.deleteButton}
+            onPress={async () => {
+              const itemType = isTask ? "task" : "event";
+              const itemId = isTask ? item.task_id : item.event_id;
+              const result = await deleteItem(
+                item.calendar_id,
+                itemId,
+                itemType,
+              );
+              if (result.success) {
+                onChangedData();
+                onClose();
+                Alert.alert("Item deleted successfully");
+              } else {
+                Alert.alert("Error deleting item", "Please try again");
+              }
+            }}
+          >
+            <Text style={styles.deleteButtonText}>
+              Delete {isTask ? "Task" : "Event"}
+            </Text>
+          </Pressable>
+        </View>
       </View>
     </View>
   );
@@ -294,5 +343,21 @@ const styles = StyleSheet.create({
   },
   notes: {
     fontSize: 17,
+  },
+  deleteButtonRow: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  deleteButton: {
+    backgroundColor: "red",
+    paddingVertical: 7,
+    paddingHorizontal: 10,
+    borderStyle: "solid",
+    borderWidth: 2,
+    borderRadius: 5,
+  },
+  deleteButtonText: {
+    fontSize: 17,
+    textAlign: "center",
   },
 });
