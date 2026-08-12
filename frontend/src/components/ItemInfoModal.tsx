@@ -12,9 +12,12 @@ export default function ItemInfoModal({
   isVisible,
   item,
   setCurrentModal,
+  returnModal,
+  setReturnModal,
 }: ItemInfoModalProps) {
   function closeModal() {
-    setCurrentModal(null);
+    setCurrentModal(returnModal);
+    setReturnModal(null);
   }
 
   return (

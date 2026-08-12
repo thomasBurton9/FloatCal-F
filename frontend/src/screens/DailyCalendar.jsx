@@ -22,6 +22,7 @@ export default function DailyCalendar({ setPage, userId }) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [currentModal, setCurrentModal] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null); // Current selected item -> Used for task info popup
+  const [returnModal, setReturnModal] = useState(null);
 
   const calendarRef = useRef(null);
   const [itemAddedTrigger, setItemAddedTrigger] = useState(false);
@@ -61,6 +62,7 @@ export default function DailyCalendar({ setPage, userId }) {
             setSelectedItem(item);
             setCurrentModal("itemInfo");
           }}
+          setReturnModal={setReturnModal}
         ></CalendarView>
         <BottomBar
           setPage={setPage}
@@ -74,6 +76,7 @@ export default function DailyCalendar({ setPage, userId }) {
           currentModal={currentModal}
           setCurrentModal={setCurrentModal}
           onItemAdded={() => setItemAddedTrigger(!itemAddedTrigger)}
+          setReturnModal={setReturnModal}
         ></BottomBar>
         <ItemInfoModal
           isVisible={currentModal === "itemInfo"}
@@ -84,6 +87,8 @@ export default function DailyCalendar({ setPage, userId }) {
               setSelectedItem(null);
             }
           }}
+          returnModal={returnModal}
+          setReturnModal={setReturnModal}
         ></ItemInfoModal>
       </View>
     </>
@@ -164,6 +169,7 @@ function CalendarView({
   setCurrentDate,
   calendarRef,
   onItemPress,
+  setReturnModal,
 }) {
   return (
     <>
@@ -179,7 +185,10 @@ function CalendarView({
           overlapType="no-overlap" // TODO: Look back to client feedback to see if changing to 'overlap' makes sense
           initialDate={formatDate(currentDate)}
           events={items}
-          onPressEvent={(event) => onItemPress(event.calendarItem)}
+          onPressEvent={(event) => {
+            setReturnModal(null); // Make sure after closing the itemInfo, it returns to the home daily view (technically not necessary)
+            onItemPress(event.calendarItem);
+          }}
           onDateChanged={(date) => {
             console.log(date);
             console.log(typeof date);
@@ -203,6 +212,7 @@ function BottomBar({
   setCurrentModal,
   onItemAdded,
   onItemPress,
+  setReturnModal,
 }) {
   const [schedulingErrorTask, setSchedulingErrorTask] = useState(null);
   // const [schedulingErrorTask, setSchedulingErrorTask] = useState({
@@ -241,6 +251,7 @@ function BottomBar({
         setCurrentModal={setCurrentModal}
         userId={userId}
         onItemPress={onItemPress}
+        setReturnModal={setReturnModal}
       ></ManageTasks>
       {schedulingErrorTask ? (
         <SchedulingError

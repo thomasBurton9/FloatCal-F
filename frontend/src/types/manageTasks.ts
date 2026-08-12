@@ -5,6 +5,7 @@ export type ManageTaskProps = {
   setCurrentModal: (currentModal: string | null) => void;
   userId: number;
   onItemPress: (task: FloatingTask) => void;
+  setReturnModal: (modal: string) => void;
 };
 
 export type TaskType = "Scheduled" | "Unscheduled" | "Completed";

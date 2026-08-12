@@ -30,4 +30,6 @@ export type ItemInfoModalProps = {
   isVisible: boolean;
   item: CalendarItem | null;
   setCurrentModal: (currentModal: string | null) => void;
+  returnModal: string | null;
+  setReturnModal: (returnModal: string | null) => void;
 };

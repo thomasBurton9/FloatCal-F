@@ -20,6 +20,7 @@ export default function ManageTasks({
   setCurrentModal,
   userId,
   onItemPress,
+  setReturnModal,
 }: ManageTaskProps) {
   const [tasks, setTasks] = useState<OrganizedTasks>({});
   const [taskType, setTaskType] = useState<TaskType>("Scheduled"); // Scheduled || Unscheduled || Completed
@@ -31,6 +32,7 @@ export default function ManageTasks({
       (calendar) => calendar.calendar_id === task.calendar_id,
     ); // Find the string name of the calendar and not simply the id
 
+    setReturnModal("manageTasks");
     onItemPress({
       ...task,
       calendar_name: calendar?.name ?? "Unkown Calendar", // As calendar[name] could be null, a fallback is used.
