@@ -9,13 +9,21 @@ import {
 } from "react-native";
 import type { ImageSourcePropType } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import type { CalendarItem, ItemInfoModalProps } from "../types/calendarItems";
+import type {
+  CalendarItem,
+  itemEditDraft,
+  ItemInfoModalProps,
+  updatesType,
+} from "../types/calendarItems";
 import { addMinutesToDateTime, extractTime } from "../helpers/dateHelpers";
 import calendarIcon from "../../assets/calendar_icon64x64.png";
 import clockIcon from "../../assets/clock_icon64x64.png";
 import recurrenceIcon from "../../assets/recurrence_icon64x64.png";
 import reminderIcon from "../../assets/reminder_bell_icon64x64.png";
 import { deleteItem } from "../api/itemApi";
+import { useEffect, useState } from "react";
+import ItemEditForm from "./ItemEditForm";
+import { updateItem } from "../api/itemsApi";
 
 // TODO: Make it align perfectly with design tools
 export default function ItemInfoModal({
@@ -26,6 +34,75 @@ export default function ItemInfoModal({
   setReturnModal,
   onChangedData,
 }: ItemInfoModalProps) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState<itemEditDraft | null>(null);
+
+  function beginEditing() {
+    if (!item) {
+      return;
+    }
+
+    setDraft(calendarItemToDraft(item));
+    setEditing(true);
+  }
+
+  function cancelEditing() {
+    setDraft(null);
+    setEditing(false);
+  }
+
+  async function saveChanges() {
+    if (!item || !draft) {
+      console.error("No item available");
+      return;
+    }
+    const isTask = "duration_minutes" in item;
+
+    let payload: updatesType = {
+      name: draft.name,
+      date: draft.date,
+      notes: draft.notes,
+      recurrence_rule: draft.recurrence_rule,
+      reminder: draft.reminder,
+    };
+
+    if ("duration_minutes" in draft) {
+      // Not using isTask given, typying worries about values being null
+      payload.duration_minutes = draft.duration_minutes;
+      payload.preferred_window = draft.preferred_window;
+      payload.scheduled_start = draft.scheduled_start;
+      payload.manually_scheduled = draft.manually_scheduled;
+    } else {
+      payload.start_time = draft.start_time;
+      payload.end_time = draft.end_time;
+    }
+
+    const itemId = isTask ? item.task_id : item.event_id;
+    const itemType = isTask ? "task" : "event";
+
+    const result = await updateItem(
+      item.calendar_id,
+      itemId,
+      itemType,
+      payload,
+    );
+
+    if (!result.success) {
+      Alert.alert("Error updating item");
+      return;
+    } else {
+      onChangedData();
+      // Maybe somehow slow stuff down here -> Given the data does not reload in time
+      Alert.alert("Editing Item success");
+      cancelEditing();
+      return;
+    }
+  }
+  useEffect(() => {
+    setEditing(false); // Un needed?
+    setDraft(item ? calendarItemToDraft(item) : null);
+  }, [item, isVisible]); // Reset the draft if a new item is opened
+
   function closeModal() {
     setCurrentModal(returnModal);
     setReturnModal(null);
@@ -42,27 +119,46 @@ export default function ItemInfoModal({
       <SafeAreaView style={styles.itemInfoModal} edges={["top", "bottom"]}>
         <View style={styles.itemInfoContainer}>
           <View style={styles.topBar}>
-            <Pressable style={styles.closeButton} onPress={closeModal}>
-              <Text style={styles.closeButtonText}>X</Text>
-            </Pressable>
-            {/*<Text style={styles.title}>Item Information</Text>*/}
-            <Pressable style={styles.editButton}>
-              <Text style={styles.editButtonText}>Edit</Text>
-            </Pressable>
+            {editing ? (
+              <>
+                <Pressable style={styles.editButton} onPress={cancelEditing}>
+                  <Text style={styles.editButtonText}>Cancel</Text>
+                </Pressable>
+                <Pressable style={styles.editButton} onPress={saveChanges}>
+                  <Text style={styles.editButtonText}>Save</Text>
+                </Pressable>
+              </>
+            ) : (
+              <>
+                <Pressable style={styles.closeButton} onPress={closeModal}>
+                  <Text style={styles.closeButtonText}>X</Text>
+                </Pressable>
+                <Pressable style={styles.editButton} onPress={beginEditing}>
+                  <Text style={styles.editButtonText}>Edit</Text>
+                </Pressable>
+              </>
+            )}
           </View>
           {item ? (
-            <ItemDetails
-              item={item}
-              onClose={closeModal}
-              onChangedData={onChangedData}
-            />
+            editing && draft ? (
+              <ItemEditForm
+                item={item}
+                draft={draft}
+                setDraft={setDraft}
+              ></ItemEditForm>
+            ) : (
+              <ItemDetails
+                item={item}
+                onClose={closeModal}
+                onChangedData={onChangedData}
+              />
+            )
           ) : null}
         </View>
       </SafeAreaView>
     </Modal>
   );
 }
-
 function ItemDetails({
   item,
   onClose,
@@ -159,6 +255,9 @@ function InfoRow({
   );
 }
 
+function calendarItemToDraft(item: CalendarItem): CalendarItem {
+  return item; // QUICK TODO:
+}
 // Takes in a duration and formats it as HH:MM
 function formatDuration(duration: number): string {
   const hours = Math.floor(duration / 60);

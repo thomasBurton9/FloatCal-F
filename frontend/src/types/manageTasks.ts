@@ -1,4 +1,4 @@
-import { FloatingTask } from "./calendarItems";
+import { FloatingTask, RecurrenceRule } from "./calendarItems";
 
 export type ManageTaskProps = {
   isVisible: boolean;
@@ -17,7 +17,7 @@ export type Task = {
   date: string;
   duration_minutes: number;
   notes?: string;
-  recurrence_rule?: string;
+  recurrence_rule?: RecurrenceRule | null;
   reminder: boolean;
   preferred_window?: string;
   scheduled_start?: string; // Though it stores time, it does not use date but time. This might need to be changed

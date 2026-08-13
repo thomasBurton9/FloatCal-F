@@ -1,8 +1,8 @@
 import type { itemTypeType, updatesType } from "../types/calendarItems";
 import { API_URL } from "../constants";
 import { CompletionApiResult } from "../types/api/completionApi";
+
 // Item type is either "task" or "event"
-//
 export async function updateItem(
   calendarId: number,
   itemId: number,

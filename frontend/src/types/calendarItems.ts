@@ -1,3 +1,6 @@
+export type RecurrenceRule =
+  "daily" | "weekly" | "fortnightly" | "monthly" | "yearly";
+
 export type FixedEvent = {
   event_id: number;
   calendar_id: number;
@@ -7,7 +10,7 @@ export type FixedEvent = {
   start_time: string;
   end_time: string;
   notes?: string;
-  recurrence_rule?: string;
+  recurrence_rule?: RecurrenceRule | null;
   reminder: boolean;
 };
 
@@ -19,9 +22,11 @@ export type FloatingTask = {
   date: string;
   duration_minutes: number;
   notes?: string;
-  recurrence_rule?: string;
+  recurrence_rule?: RecurrenceRule | null;
   reminder: boolean;
-  scheduled_start?: string;
+  scheduled_start?: string | null;
+  preferred_window?: string | null;
+  manually_scheduled: boolean;
 };
 
 export type CalendarItem = FixedEvent | FloatingTask;
@@ -41,8 +46,7 @@ export type updatesType = {
   name?: string;
   date?: string;
   notes?: string | null;
-  recurrence_rule?:
-    "daily" | "weekly" | "fortnightly" | "monthly" | "yearly" | null;
+  recurrence_rule?: RecurrenceRule | null;
   reminder?: boolean;
   start_time?: string;
   end_time?: string;
@@ -52,10 +56,10 @@ export type updatesType = {
   manually_scheduled?: boolean;
 };
 
-export type itemEditDraft = any;
+export type itemEditDraft = CalendarItem; // QUICK TODO:
 
 export type itemEditFormProps = {
   item: CalendarItem;
-  draft: itemEditDraft;
-  setDraft: (newItem: itemEditDraft | null) => void;
+  draft: CalendarItem;
+  setDraft: (newItem: CalendarItem | null) => void;
 };
