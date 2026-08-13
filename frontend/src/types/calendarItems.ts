@@ -34,3 +34,28 @@ export type ItemInfoModalProps = {
   setReturnModal: (returnModal: string | null) => void;
   onChangedData: () => void;
 };
+
+export type itemTypeType = "task" | "event";
+
+export type updatesType = {
+  name?: string;
+  date?: string;
+  notes?: string | null;
+  recurrence_rule?:
+    "daily" | "weekly" | "fortnightly" | "monthly" | "yearly" | null;
+  reminder?: boolean;
+  start_time?: string;
+  end_time?: string;
+  duration_minutes?: number;
+  preferred_window?: string | null;
+  scheduled_start?: string | null;
+  manually_scheduled?: boolean;
+};
+
+export type itemEditDraft = any;
+
+export type itemEditFormProps = {
+  item: CalendarItem;
+  draft: itemEditDraft;
+  setDraft: (newItem: itemEditDraft | null) => void;
+};
