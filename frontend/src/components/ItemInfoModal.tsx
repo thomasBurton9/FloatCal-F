@@ -24,6 +24,7 @@ import { deleteItem } from "../api/itemApi";
 import { useEffect, useState } from "react";
 import ItemEditForm from "./ItemEditForm";
 import { updateItem } from "../api/itemsApi";
+import { SecondTopBarProps } from "../types/itemInfo";
 
 // TODO: Make it align perfectly with design tools
 export default function ItemInfoModal({
@@ -159,6 +160,17 @@ export default function ItemInfoModal({
     </Modal>
   );
 }
+
+export function SecondTopBar({ isTask, itemName }: SecondTopBarProps) {
+
+  return <>
+    <View style={styles.secondTopBar}>
+      <Text style={styles.itemName}>{itemName}</Text>
+      <Text style={styles.itemType}>{isTask ? "Floating" : "Fixed"}</Text>
+    </View>
+  </>
+}
+
 function ItemDetails({
   item,
   onClose,
@@ -175,10 +187,10 @@ function ItemDetails({
 
   return (
     <View style={styles.itemDetails}>
-      <View style={styles.secondTopBar}>
-        <Text style={styles.itemName}>{item.name}</Text>
-        <Text style={styles.itemType}>{isTask ? "Floating" : "Fixed"}</Text>
-      </View>
+      <SecondTopBar
+        isTask={isTask}
+        itemName={item.name}>
+      </SecondTopBar>
       <View style={styles.itemDetailsContent}>
         <View style={styles.infoRow}>
           <Text style={styles.dateLabel}>{formatDate(item.date)}</Text>
