@@ -97,24 +97,22 @@ export default function AddItem({
           <SafeAreaView edges={["top"]} style={styles.addItemModal}>
             <View style={styles.addItemModalContainer}>
               <View style={styles.topBar}>
-                <Pressable onPress={() => setCurrentModal(null)}>
+                <Pressable
+                  style={styles.closeButton}
+                  onPress={() => setCurrentModal(null)}
+                >
                   <Text
                     // TODO: Change styles for X button inline with the working ones from ManageCalendars/ManageTasks
                     style={{
-                      minWidth: 30,
-                      minHeight: 30,
-                      justifyContent: "center",
                       textAlign: "center",
-                      alignItems: "center",
-                      borderStyle: "solid",
-                      borderRadius: "100%",
-                      borderWidth: 2,
+                      fontSize: 22,
+                      lineHeight: 30,
                     }}
                   >
                     X
                   </Text>
                 </Pressable>
-                <Text>Add Task</Text>
+                <Text style={styles.title}>Add Task</Text>
               </View>
               <ItemTypeSwitcher
                 itemType={itemType}
@@ -494,10 +492,13 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 50,
     backgroundColor: "rgba(0, 0, 0, 0.12)", // If kept white it will just blend in with the modal
+    paddingBottom: 0,
+    marginBottom: 0,
   },
   addItemModalContainer: {
-    width: "100%",
-    maxHeight: "95%",
+    width: "97%",
+    maxHeight: "100%",
+    alignSelf: "center",
     alignItems: "center", // Center content horizontally
     // justifyContent: "center", // Center content vertically
     backgroundColor: "white",
@@ -507,6 +508,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 12,
     borderWidth: 2,
     padding: 16,
+    paddingTop: 0,
   },
   itemTypeSwitcher: {
     flexDirection: "row",
@@ -521,7 +523,14 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   topBar: {
-    flexDirection: "row",
+    // flexDirection: "row",
+    alignSelf: "center",
+    // alignItems: "center",
+    width: "100%",
+    position: "relative",
+    height: 65,
+    justifyContent: "center",
+    paddingBottom: 20,
   },
   itemType: {
     padding: 10,
@@ -567,5 +576,26 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10,
     alignItems: "center",
+  },
+  closeButton: {
+    top: "60%", // Currently aligned using trial and error TODO: Make permament / responsive
+
+    width: 34, // This is not responsive either
+    height: 34,
+
+    // Make Button circular
+    borderStyle: "solid",
+    borderWidth: 2,
+    borderRadius: 100,
+
+    // Center child text in the middle
+    alignItems: "center",
+    justifyContent: "center",
+
+    zIndex: 1, // Make this element go to the top -> It becomes non functional when removed
+  },
+  title: {
+    fontSize: 27,
+    textAlign: "center",
   },
 });
