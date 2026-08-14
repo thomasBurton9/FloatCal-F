@@ -11,6 +11,7 @@ import {
   formatDate,
   timeStringToDate,
 } from "../helpers/dateHelpers";
+import { Dropdown } from "react-native-element-dropdown";
 
 export default function ItemEditForm({
   item,
@@ -22,6 +23,13 @@ export default function ItemEditForm({
     Boolean(draft["recurrence_rule"]),
   );
 
+  const recurrenceRuleDropDownData = [
+    { label: "Daily", value: "daily" },
+    { label: "Weekly", value: "weekly" },
+    { label: "Fortnightly", value: "fortnightly" },
+    { label: "Monthly", value: "monthly" },
+    { label: "Yearly", value: "yearly" },
+  ];
   // Changes should be like draft.name or draft.date
   function updateDraft(changes: Partial<CalendarItem>) {
     setDraft({ ...draft, ...changes });
@@ -128,27 +136,19 @@ export default function ItemEditForm({
           ></Switch>
           {recurrenceOn ? (
             <>
-              {/* Current bug preventing recurrence from being entered due to the check*/}
               <View>
-                <TextInput
+                <Dropdown
+                  labelField="label"
+                  valueField="value"
+                  data={recurrenceRuleDropDownData}
+                  placeholder={"Select Item"}
                   value={draft.recurrence_rule ?? ""}
-                  placeholder="daily, weekly, fortnightly, monthly or yearly"
-                  onChangeText={(recurrence_rule) => {
-                    if (
-                      [
-                        "daily",
-                        "weekly",
-                        "fortnightly",
-                        "monthly",
-                        "yearly",
-                      ].includes(recurrence_rule)
-                    ) {
-                      updateDraft({
-                        recurrence_rule: recurrence_rule as RecurrenceRule,
-                      }); // Have to make sure that the types match
-                    }
+                  onChange={(option) => {
+                    updateDraft({
+                      recurrence_rule: option.value as RecurrenceRule,
+                    });
                   }}
-                ></TextInput>
+                ></Dropdown>
               </View>
             </>
           ) : null}
