@@ -1,7 +1,7 @@
 import os
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Iterator
+from collections.abc import Iterator
 
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
@@ -16,6 +16,7 @@ from db.models.items import FixedEvent, FloatingTask
 from db.models.reminders import CompletionLog, Reminder
 from db.models.settings import Setting
 from db.models.users import User
+from db.models.invites import Invite
 
 # Inform typechecker that the imports above are used.
 __all__ = [
@@ -27,6 +28,7 @@ __all__ = [
     "Reminder",
     "Setting",
     "User",
+    "Invite",
 ]
 
 

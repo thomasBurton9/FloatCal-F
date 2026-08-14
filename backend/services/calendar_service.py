@@ -107,6 +107,7 @@ def schedule_floating_task(calendar_id: int, date: dt.date, task_id: int):
     except ValueError as e:
         raise ValueError(str(e))
 
+    # the calendar's owner's settings are used and not the user's who requested the schedule
     user_id: int = calendar_info.created_by_user_id
     try:
         settings: Setting = get_settings(user_id)
