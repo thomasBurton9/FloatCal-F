@@ -1,6 +1,6 @@
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useState } from "react";
-import { Switch, Text, TextInput, View } from "react-native";
+import { StyleSheet, Switch, Text, TextInput, View } from "react-native";
 import type {
   CalendarItem,
   itemEditFormProps,
@@ -36,133 +36,176 @@ export default function ItemEditForm({
   }
   return (
     <>
-      <View>
-        <Text>Name</Text>
-        <TextInput
-          value={draft.name}
-          maxLength={63}
-          onChangeText={(name) => updateDraft({ name })}
-        ></TextInput>
-      </View>
-      <View>
-        <Text>Date</Text>
-        <DateTimePicker
-          value={new Date(draft.date)} // Check if works
-          mode="date"
-          onChange={(_, date) => {
-            if (!date) {
-              return;
-            }
-            console.log(date);
-            // QUICK TODO: Make sure the format gets automatically converted
-            updateDraft({ date: formatDate(date) });
-          }}
-        ></DateTimePicker>
-      </View>
-      {isTask ? (
-        <>
-          <View>
-            <Text>Duration</Text>
-            <TextInput
-              value={String(draft.duration_minutes)}
-              placeholder="1-1440"
-              inputMode="numeric"
-              onChangeText={(duration_minutes) => {
-                if (!isNaN(parseInt(duration_minutes))) {
-                  // Validate inputs
-                  updateDraft({ duration_minutes: parseInt(duration_minutes) });
-                }
-              }}
-            ></TextInput>
-          </View>
-          {/*<View>
+      <View style={styles.editForm}>
+        <View style={styles.individualEditableSetting}>
+          <Text style={styles.editableSettingTitle}>Name</Text>
+          <TextInput
+            style={styles.textInputStyle}
+            value={draft.name}
+            maxLength={63}
+            onChangeText={(name) => updateDraft({ name })}
+          ></TextInput>
+        </View>
+        <View style={styles.individualEditableSetting}>
+          <Text style={styles.editableSettingTitle}>Date</Text>
+          <DateTimePicker
+            value={new Date(draft.date)} // Check if works
+            mode="date"
+            onChange={(_, date) => {
+              if (!date) {
+                return;
+              }
+              console.log(date);
+              // QUICK TODO: Make sure the format gets automatically converted
+              updateDraft({ date: formatDate(date) });
+            }}
+          ></DateTimePicker>
+        </View>
+        {isTask ? (
+          <>
+            <View style={styles.individualEditableSetting}>
+              <Text style={styles.editableSettingTitle}>Duration</Text>
+              <TextInput
+                style={styles.textInputStyle}
+                value={String(draft.duration_minutes)}
+                placeholder="1-1440"
+                inputMode="numeric"
+                onChangeText={(duration_minutes) => {
+                  if (!isNaN(parseInt(duration_minutes))) {
+                    // Validate inputs
+                    updateDraft({
+                      duration_minutes: parseInt(duration_minutes),
+                    });
+                  }
+                }}
+              ></TextInput>
+            </View>
+            {/*<View>
             <Text>Preferred Window</Text>
             {/*<Dropdown></Dropdown  QUICK TODO: Resolve
           </View> */}
-        </>
-      ) : (
-        <>
-          <View>
-            <Text>Start Time</Text>
-            <DateTimePicker
-              value={timeStringToDate(draft.start_time)}
-              mode="time"
-              is24Hour={true}
-              onChange={(_, start_time) => {
-                if (!start_time) {
-                  return;
-                }
-                updateDraft({ start_time: extractTime(start_time) });
-              }}
-            ></DateTimePicker>
-          </View>
-          <View>
-            <Text>End Time</Text>
-            <DateTimePicker
-              value={timeStringToDate(draft.end_time)}
-              mode="time"
-              is24Hour={true}
-              onChange={(_, end_time) => {
-                if (!end_time) {
-                  return;
-                }
-                updateDraft({ end_time: extractTime(end_time) });
-              }}
-            ></DateTimePicker>
-          </View>
-        </>
-      )}
-      <View>
-        <Text>Notes</Text>
-        <TextInput
-          value={draft.notes}
-          onChangeText={(notes) => {
-            updateDraft({ notes });
-          }}
-        ></TextInput>
-      </View>
-      <View>
-        <Text>Recurrence</Text>
-        <View>
-          <Switch
-            value={recurrenceOn}
-            onValueChange={(newValue) => {
-              setRecurrenceOn(newValue);
+          </>
+        ) : (
+          <>
+            <View style={styles.individualEditableSetting}>
+              <Text style={styles.editableSettingTitle}>Start Time</Text>
+              <DateTimePicker
+                value={timeStringToDate(draft.start_time)}
+                mode="time"
+                is24Hour={true}
+                onChange={(_, start_time) => {
+                  if (!start_time) {
+                    return;
+                  }
+                  updateDraft({ start_time: extractTime(start_time) });
+                }}
+              ></DateTimePicker>
+            </View>
+            <View style={styles.individualEditableSetting}>
+              <Text style={styles.editableSettingTitle}>End Time</Text>
+              <DateTimePicker
+                value={timeStringToDate(draft.end_time)}
+                mode="time"
+                is24Hour={true}
+                onChange={(_, end_time) => {
+                  if (!end_time) {
+                    return;
+                  }
+                  updateDraft({ end_time: extractTime(end_time) });
+                }}
+              ></DateTimePicker>
+            </View>
+          </>
+        )}
+        <View style={styles.individualEditableSetting}>
+          <Text style={styles.editableSettingTitle}>Notes</Text>
+          <TextInput
+            maxLength={319}
+            multiline={true}
+            style={[styles.textInputStyle, styles.notesTextInput]}
+            value={draft.notes}
+            onChangeText={(notes) => {
+              updateDraft({ notes });
+            }}
+          ></TextInput>
+        </View>
+        <View style={styles.individualEditableSetting}>
+          <Text style={styles.editableSettingTitle}>Recurrence</Text>
+          <View style={styles.recurrenceField}>
+            <Switch
+              value={recurrenceOn}
+              onValueChange={(newValue) => {
+                setRecurrenceOn(newValue);
 
-              if (!newValue) {
-                updateDraft({ recurrence_rule: null });
-              }
+                if (!newValue) {
+                  updateDraft({ recurrence_rule: null });
+                }
+              }}
+            ></Switch>
+            {recurrenceOn ? (
+              <>
+                <View>
+                  <Dropdown
+                    style={styles.dropdown}
+                    labelField="label"
+                    valueField="value"
+                    data={recurrenceRuleDropDownData}
+                    placeholder={"Select Recurrence Rule"}
+                    value={draft.recurrence_rule ?? ""}
+                    onChange={(option) => {
+                      updateDraft({
+                        recurrence_rule: option.value as RecurrenceRule,
+                      });
+                    }}
+                  ></Dropdown>
+                </View>
+              </>
+            ) : null}
+          </View>
+        </View>
+        <View style={styles.individualEditableSetting}>
+          <Text style={styles.editableSettingTitle}>Reminder</Text>
+          <Switch
+            value={draft.reminder}
+            onValueChange={(reminder) => {
+              updateDraft({ reminder });
             }}
           ></Switch>
-          {recurrenceOn ? (
-            <>
-              <View>
-                <Dropdown
-                  labelField="label"
-                  valueField="value"
-                  data={recurrenceRuleDropDownData}
-                  placeholder={"Select Item"}
-                  value={draft.recurrence_rule ?? ""}
-                  onChange={(option) => {
-                    updateDraft({
-                      recurrence_rule: option.value as RecurrenceRule,
-                    });
-                  }}
-                ></Dropdown>
-              </View>
-            </>
-          ) : null}
         </View>
-      </View>
-      <View>
-        <Text>Reminder</Text>
-        <Switch
-          value={draft.reminder}
-          onValueChange={(reminder) => {
-            updateDraft({ reminder });
-          }}
-        ></Switch>
       </View>
     </>
   );
 }
+
+const styles = StyleSheet.create({
+  editForm: {
+    padding: 10,
+  },
+  individualEditableSetting: {
+    flexDirection: "column",
+    gap: 5,
+  },
+  editableSettingTitle: {
+    fontSize: 20,
+  },
+  textInputStyle: {
+    borderStyle: "solid",
+    borderWidth: 2,
+    borderRadius: 10,
+    padding: 5,
+    fontSize: 15,
+  },
+  notesTextInput: {
+    minHeight: 50,
+  },
+  dropdown: {
+    minHeight: 34,
+    borderStyle: "solid",
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 5,
+  },
+  recurrenceField: {
+    gap: 10,
+  },
+});
