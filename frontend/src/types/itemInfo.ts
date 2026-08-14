@@ -1,4 +1,4 @@
 export type SecondTopBarProps = {
-  isTask: boolean,
-  itemName: string,
-}
+  isTask: boolean;
+  itemName: string;
+};

@@ -162,13 +162,14 @@ export default function ItemInfoModal({
 }
 
 export function SecondTopBar({ isTask, itemName }: SecondTopBarProps) {
-
-  return <>
-    <View style={styles.secondTopBar}>
-      <Text style={styles.itemName}>{itemName}</Text>
-      <Text style={styles.itemType}>{isTask ? "Floating" : "Fixed"}</Text>
-    </View>
-  </>
+  return (
+    <>
+      <View style={styles.secondTopBar}>
+        <Text style={styles.itemName}>{itemName}</Text>
+        <Text style={styles.itemType}>{isTask ? "Floating" : "Fixed"}</Text>
+      </View>
+    </>
+  );
 }
 
 function ItemDetails({
@@ -187,10 +188,7 @@ function ItemDetails({
 
   return (
     <View style={styles.itemDetails}>
-      <SecondTopBar
-        isTask={isTask}
-        itemName={item.name}>
-      </SecondTopBar>
+      <SecondTopBar isTask={isTask} itemName={item.name}></SecondTopBar>
       <View style={styles.itemDetailsContent}>
         <View style={styles.infoRow}>
           <Text style={styles.dateLabel}>{formatDate(item.date)}</Text>

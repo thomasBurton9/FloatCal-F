@@ -218,5 +218,5 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingTop: 12,
     gap: 2,
-  }
+  },
 });
