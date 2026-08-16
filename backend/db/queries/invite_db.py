@@ -42,7 +42,14 @@ def get_invites_to_user(user_id: int) -> list[Invite]:
 
 # potentially not needed by frontend
 def get_invites_from_user(user_id: int) -> list[Invite]:
-    raise NotImplementedError
+    get_invite_statement = select(Invite).where(Invite.invite_from_user_id == user_id)
+
+    with get_db() as session:
+        invites: Sequence[Invite] = (
+            session.execute(get_invite_statement).scalars().all()
+        )
+
+        return list(invites)
 
 
 # user id required to make sure only the owner can request the id
