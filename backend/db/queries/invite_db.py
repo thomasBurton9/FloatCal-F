@@ -1,7 +1,9 @@
 from sqlalchemy import select
 from typing_extensions import Sequence
 
+from db.models.calendars import Calendar
 from db.models.invites import Invite
+from db.queries.calendar_db import get_calendar_info
 from db.session import get_db
 
 
@@ -53,7 +55,18 @@ def get_invites_from_user(user_id: int) -> list[Invite]:
 
 
 # user id required to make sure only the owner can request the id
-
-
 def get_invites_for_calendar(user_id: int, calendar_id: int) -> list[Invite]:
-    raise NotImplementedError
+    calendar: Calendar = get_calendar_info(calendar_id)
+    if not calendar or calendar.created_by_user_id != user_id:
+        raise ValueError("The invites can only be accessed by the owner")
+
+    get_invite_statement = select(Invite).where(
+        Invite.invite_calendar_id == calendar_id
+    )
+
+    with get_db() as session:
+        invites: Sequence[Invite] = (
+            session.execute(get_invite_statement).scalars().all()
+        )
+
+        return list(invites)
