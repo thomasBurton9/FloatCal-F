@@ -56,3 +56,7 @@ def get_user_info_api(user_id: int):
         return user_info
     except ValueError as e:
         raise HTTPException(422, str(e))
+
+
+def list_users_public_api():
+    raise NotImplementedError
