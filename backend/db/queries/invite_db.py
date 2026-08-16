@@ -1,4 +1,5 @@
 from sqlalchemy import select
+from typing_extensions import Sequence
 
 from db.models.invites import Invite
 from db.session import get_db
@@ -29,7 +30,14 @@ def respond_to_invite(user_id: int, invite_id: int, accepted: bool):
 
 
 def get_invites_to_user(user_id: int) -> list[Invite]:
-    raise NotImplementedError
+    get_invite_statement = select(Invite).where(Invite.invite_to_user_id == user_id)
+
+    with get_db() as session:
+        invites: Sequence[Invite] = (
+            session.execute(get_invite_statement).scalars().all()
+        )
+
+        return list(invites)
 
 
 # potentially not needed by frontend
