@@ -20,6 +20,7 @@ import {
   createFloatingTask,
 } from "../api/itemApi.js";
 import { SafeAreaView } from "react-native-safe-area-context"; // Modal does not respect the safearea view from App.jsx
+import { BLUE_COLOUR } from "../constants.js";
 
 export default function AddItem({
   isVisible,
@@ -517,7 +518,7 @@ const styles = StyleSheet.create({
     borderWidth: 3,
   },
   currentType: {
-    backgroundColor: "blue",
+    backgroundColor: BLUE_COLOUR,
   },
   nonCurrentType: {
     backgroundColor: "white",
@@ -570,7 +571,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
   },
   addItemButton: {
-    backgroundColor: "blue",
+    backgroundColor: BLUE_COLOUR,
     borderStyle: "solid",
     borderWidth: 1,
     borderRadius: 10,

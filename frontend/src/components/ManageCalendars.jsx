@@ -21,6 +21,7 @@ import ColorPicker, {
   OpacitySlider,
   Panel1,
 } from "reanimated-color-picker";
+import { BLUE_COLOUR } from "../constants";
 
 export default function ManageCalendars({
   isVisible,
@@ -387,7 +388,7 @@ const styles = StyleSheet.create({
     marginVertical: 8,
   },
   createCalendarSubmit: {
-    backgroundColor: "blue",
+    backgroundColor: BLUE_COLOUR,
     borderStyle: "solid",
     borderWidth: 1,
     borderRadius: 10,

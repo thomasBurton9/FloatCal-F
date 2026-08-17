@@ -7,7 +7,7 @@ import {
   Image,
 } from "react-native";
 import { useState } from "react";
-import { API_URL } from "../constants.js";
+import { API_URL, BLUE_COLOUR } from "../constants.js";
 
 export default function AuthenticationScreen({ onLogin }) {
   const [authenticationMode, setAuthenticationMode] = useState("Login");
@@ -337,14 +337,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     borderStyle: "solid",
     borderRadius: 10,
-    borderWidth: 3,
+    borderWidth: 2,
   },
   screen: {
     alignItems: "center", // Center content horizontally
     justifyContent: "center", // Center content vertically
   },
   currentMode: {
-    backgroundColor: "blue", // In the future move this too a dedicated theme file with chosen themed colours
+    backgroundColor: BLUE_COLOUR, // In the future move this too a dedicated theme file with chosen themed colours -> And all other colours
   },
   nonCurrentMode: {
     backgroundColor: "white",
@@ -399,7 +399,7 @@ const styles = StyleSheet.create({
 
   submitButton: {
     margin: 5, // Outside the button
-    backgroundColor: "blue",
+    backgroundColor: BLUE_COLOUR,
     borderStyle: "solid",
     borderRadius: 5,
     borderWidth: 1,
