@@ -59,6 +59,6 @@ def get_user_info_api(user_id: int):
         raise HTTPException(422, str(e))
 
 
-@router.get("/list_users", response_model=UserInfo)
+@router.get("/list_users", response_model=list[UserInfo])
 def list_users_public_api():
     return list_users_public()

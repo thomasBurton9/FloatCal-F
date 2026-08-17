@@ -1,3 +1,5 @@
+from fastapi import APIRouter, HTTPException
+
 from db.queries.calendar_db import check_calendar_exists
 from db.queries.invite_db import (
     get_invites_for_calendar,
@@ -7,7 +9,6 @@ from db.queries.invite_db import (
     respond_to_invite,
 )
 from db.queries.user_db import check_user_exists
-from fastapi import APIRouter, HTTPException
 
 router = APIRouter(prefix="/api")
 
@@ -23,7 +24,12 @@ def invite_user_to_calendar_api(
     if not check_user_exists(user_to_invite_id):
         raise HTTPException(404, "user_id does not exist")
 
-    return invite_user_to_calendar(user_invite_from_id, user_to_invite_id, calendar_id)
+    try:
+        return invite_user_to_calendar(
+            user_invite_from_id, user_to_invite_id, calendar_id
+        )
+    except ValueError as e:
+        raise HTTPException(422, str(e))
 
 
 @router.put("/respond_to_invite/{user_id}/{invite_id}")
