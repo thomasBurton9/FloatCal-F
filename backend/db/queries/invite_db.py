@@ -19,7 +19,21 @@ def invite_user_to_calendar(
         .where(Invite.invite_calendar_id == calendar_id)
         .where(Invite.status != "declined")
     )
+
+    get_calendar_statement = select(Calendar.created_by_user_id).where(
+        Calendar.calendar_id == calendar_id
+    )
     with get_db() as session:
+        created_user_calendar_id: int | None = session.execute(
+            get_calendar_statement
+        ).scalar()
+
+        if not created_user_calendar_id:
+            raise ValueError("Calendar with specified id does not exist")
+
+        if created_user_calendar_id != user_invite_from_id:
+            raise ValueError("Only the creator of a calendar can invite someone to it")
+
         invite: Invite | None = session.execute(search_for_invite_statement).scalar()
 
         if invite:
