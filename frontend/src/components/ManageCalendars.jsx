@@ -14,6 +14,7 @@ import {
   BackButton,
   CalendarDetailsScreen,
 } from "./calendars/CalendarDetailsScreen";
+import { InvitesScreen } from "./calendars/InvitesScreen";
 import {
   createCalendar,
   fetchCalendars,
@@ -81,6 +82,7 @@ export default function ManageCalendars({
     if (currentView === "invites") {
       return <InvitesScreen setCurrentView={setCurrentView}></InvitesScreen>;
     }
+    // When a calendar is selected
     return (
       <CalendarDetailsScreen
         selectedCalendar={selectedCalendar}
@@ -291,14 +293,4 @@ export async function handleRemoveCalendar(
   const calendarData = await fetchCalendars(userId);
   setCalendars(calendarData);
   setCurrentView("list");
-}
-
-// Currently non functional screen to list invites from others -> TODO: May need new backend db table
-function InvitesScreen({ setCurrentView }) {
-  return (
-    <View style={styles.placeholderView}>
-      <BackButton setCurrentView={setCurrentView}></BackButton>
-      <Text style={styles.placeholderTitle}>Invites</Text>
-    </View>
-  );
 }
