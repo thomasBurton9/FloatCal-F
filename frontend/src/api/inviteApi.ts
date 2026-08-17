@@ -70,3 +70,31 @@ export async function respondToInvite(
     };
   }
 }
+
+export async function checkInvitesToUser(userId: number) {
+  try {
+    const checkInvitesUrl = API_URL + String(userId) + "/invites_to_user/";
+
+    const response = await fetch(checkInvitesUrl, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("Error checking invites: ", data);
+      return { success: false, error: data.detail };
+    }
+
+    // Check the return shape first TODO: Quick
+    // Should be list[Invite]
+    return { success: true, result: data };
+  } catch (error) {
+    console.error("Error checking invites: ", error);
+    return {
+      success: false,
+    };
+  }
+}
