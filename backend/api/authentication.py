@@ -6,6 +6,7 @@ from db.queries.user_db import (
     create_user,
     delete_user,
     get_user_info,
+    list_users_public,
 )
 from schemas.user_schemas import CreateUser, DeleteUser, UserInfo, UserLogin
 
@@ -58,5 +59,6 @@ def get_user_info_api(user_id: int):
         raise HTTPException(422, str(e))
 
 
+@router.get("/list_users", response_model=UserInfo)
 def list_users_public_api():
-    raise NotImplementedError
+    return list_users_public()
