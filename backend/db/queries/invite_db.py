@@ -8,9 +8,18 @@ from db.session import get_db
 
 
 def invite_user_to_calendar(
-    user_invite_from_id: int, user_to_invite_id, calendar_id: int
+    user_invite_from_id: int, user_to_invite_id: int, calendar_id: int
 ) -> int:
-    raise NotImplementedError
+    with get_db() as session:
+        new_invite: Invite = Invite(
+            invite_from_user_id=user_invite_from_id,
+            invite_to_user_id=user_to_invite_id,
+            invite_calendar_id=calendar_id,
+        )
+        session.add(new_invite)
+        session.commit()
+
+        return new_invite.invite_id
 
 
 def respond_to_invite(user_id: int, invite_id: int, accepted: bool):
