@@ -1,5 +1,6 @@
+from collections.abc import Sequence
+
 from sqlalchemy import select
-from typing_extensions import Sequence
 
 from db.models.calendars import Calendar
 from db.models.invites import Invite
