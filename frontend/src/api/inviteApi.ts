@@ -73,7 +73,7 @@ export async function respondToInvite(
 
 export async function checkInvitesToUser(userId: number) {
   try {
-    const checkInvitesUrl = API_URL + String(userId) + "/invites_to_user/";
+    const checkInvitesUrl = API_URL + "/" + String(userId) + "/invites_to_user";
 
     const response = await fetch(checkInvitesUrl, {
       method: "GET",
