@@ -51,6 +51,8 @@ def respond_to_invite(user_id: int, invite_id: int, accepted: bool):
         if not invite:
             raise ValueError("Invite with specified id's does not exist")
 
+        if invite.status != "open":
+            raise ValueError("You can only respond to unresponded invites")
         invite.status = "accepted" if accepted else "declined"
 
         if accepted:
