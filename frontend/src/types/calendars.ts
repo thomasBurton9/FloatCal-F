@@ -7,6 +7,10 @@ export type CalendarDetailsScreenProps = {
 
 export type InvitesScreenProps = {
   setCurrentView: (view: currentView) => void;
+  userId: number;
+  currentView: currentView;
 };
 export type currentView = "details" | "create" | "invites" | "list";
 export type Calendar = any;
+
+export type Invite = any;
