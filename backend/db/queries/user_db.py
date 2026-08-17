@@ -1,4 +1,4 @@
-from typing import Sequence, List
+from collections.abc import Sequence
 
 from pwdlib import PasswordHash
 from pwdlib.hashers.argon2 import Argon2Hasher
@@ -38,7 +38,7 @@ def get_user_info(user_id: int) -> UserInfo:
 
 
 # Making a calendar also results in a membership record
-def get_user_calendars(user_id: int) -> List[Calendar]:
+def get_user_calendars(user_id: int) -> list[Calendar]:
     user_member_calendar_statement = select(CalendarMember.calendar_id).where(
         CalendarMember.user_id == user_id
     )
@@ -58,7 +58,7 @@ def get_user_calendars(user_id: int) -> List[Calendar]:
         return list(calendars)
 
 
-def get_user_calendar_ids(user_id: int) -> List[int]:
+def get_user_calendar_ids(user_id: int) -> list[int]:
     user_member_calendar_statement = select(CalendarMember.calendar_id).where(
         CalendarMember.user_id == user_id
     )
@@ -205,3 +205,17 @@ def authenticate_user(data: UserLogin) -> int:
         if not valid_password:
             raise ValueError("Invalid password")
         return user.user_id
+
+
+def list_users_public() -> list[UserInfo]:
+    select_users_statement = select(User)
+
+    with get_db() as session:
+        users: Sequence[User] = session.execute(select_users_statement).scalars().all()
+
+        return [
+            UserInfo(
+                user_id=user.user_id, email=user.email, display_name=user.display_name
+            )
+            for user in users
+        ]
