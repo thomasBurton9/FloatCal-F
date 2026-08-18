@@ -197,7 +197,7 @@ async function handleLeaveCalendar(
     if (result.error) {
       Alert.alert(result.error);
     } else {
-      Alert.alert("Error removing calendar member");
+      Alert.alert("Error leaving calendar");
     }
   } else {
     Alert.alert("Successfully left calendar");
