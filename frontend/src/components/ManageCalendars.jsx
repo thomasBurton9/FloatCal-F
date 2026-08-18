@@ -36,6 +36,7 @@ export default function ManageCalendars({
   const [currentView, setCurrentView] = useState("list"); // "details" || "create" || "invites" || "list" -> Swaps the current screen displayed
   const [selectedCalendar, setSelectedCalendar] = useState(null); // Used when user wants to get info on a calendar
 
+  const [reloadCalendars, setReloadCalendars] = useState(false);
   useEffect(() => {
     async function loadCalendars() {
       const calendarData = await fetchCalendars(userId);
@@ -45,7 +46,7 @@ export default function ManageCalendars({
     if (isVisible && userId) {
       loadCalendars();
     }
-  }, [isVisible, userId]);
+  }, [isVisible, userId, reloadCalendars]);
 
   // Runs only when calendars or userId changes.
   const ownCalendars = useMemo(
@@ -85,6 +86,8 @@ export default function ManageCalendars({
           setCurrentView={setCurrentView}
           userId={userId}
           currentView={currentView}
+          reloadCalendars={reloadCalendars}
+          setReloadCalendars={setReloadCalendars}
         ></InvitesScreen>
       );
     }

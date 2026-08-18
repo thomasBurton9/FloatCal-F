@@ -9,6 +9,8 @@ export type InvitesScreenProps = {
   setCurrentView: (view: currentView) => void;
   userId: number;
   currentView: currentView;
+  reloadCalendars: boolean;
+  setReloadCalendars: (value: boolean) => void;
 };
 export type currentView = "details" | "create" | "invites" | "list";
 export type Calendar = any;
@@ -27,4 +29,6 @@ export type InviteProps = {
   invite: Invite;
   reload: boolean;
   setReload: (value: boolean) => void;
+  reloadCalendars: boolean;
+  setReloadCalendars: (value: boolean) => void;
 };

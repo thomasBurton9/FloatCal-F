@@ -14,6 +14,8 @@ export function InvitesScreen({
   setCurrentView,
   userId,
   currentView,
+  reloadCalendars,
+  setReloadCalendars,
 }: InvitesScreenProps) {
   const [invites, setInvites] = useState<Invite[]>([]);
 
@@ -55,6 +57,8 @@ export function InvitesScreen({
             invite={invite}
             reload={reloadInvites}
             setReload={setReloadInvites}
+            reloadCalendars={reloadCalendars}
+            setReloadCalendars={setReloadCalendars}
           ></InviteSection>
         ))}
       </View>
@@ -62,7 +66,13 @@ export function InvitesScreen({
   );
 }
 
-function InviteSection({ invite, reload, setReload }: InviteProps) {
+function InviteSection({
+  invite,
+  reload,
+  setReload,
+  reloadCalendars,
+  setReloadCalendars,
+}: InviteProps) {
   return (
     <>
       <View>
@@ -76,6 +86,8 @@ function InviteSection({ invite, reload, setReload }: InviteProps) {
               true,
               reload,
               setReload,
+              reloadCalendars,
+              setReloadCalendars,
             );
           }}
         >
@@ -89,6 +101,8 @@ function InviteSection({ invite, reload, setReload }: InviteProps) {
               false,
               reload,
               setReload,
+              reloadCalendars,
+              setReloadCalendars,
             );
           }}
         >
@@ -105,6 +119,8 @@ async function handleResponse(
   accepted: boolean,
   reload: boolean,
   setReload: (reload: boolean) => void,
+  reloadCalendars: boolean,
+  setReloadCalendars: (reloadCalendars: boolean) => void,
 ) {
   const result = await respondToInvite(userId, inviteId, accepted);
 
@@ -117,6 +133,7 @@ async function handleResponse(
   } else {
     Alert.alert("Successfully responded to invite");
     setReload(!reload);
+    setReloadCalendars(!reloadCalendars);
     return;
   }
 }
