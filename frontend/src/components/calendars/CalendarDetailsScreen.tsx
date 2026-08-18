@@ -76,6 +76,7 @@ export function CalendarDetailsScreen({
           }}
         ></View>
       </View>
+      <Text style={{ fontSize: 24 }}>Members</Text>
       {members.map((member) => (
         <IndividualMember
           key={member.user_id}
