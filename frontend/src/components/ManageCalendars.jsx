@@ -98,6 +98,8 @@ export default function ManageCalendars({
         setCurrentView={setCurrentView}
         userId={userId}
         setCalendars={setCalendars}
+        reloadCalendars={reloadCalendars}
+        setReloadCalendars={setReloadCalendars}
       ></CalendarDetailsScreen>
     );
   }

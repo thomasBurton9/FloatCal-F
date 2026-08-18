@@ -155,10 +155,11 @@ export async function removeCalendarMember(calendarId, userId) {
 
     if (!response.ok) {
       console.error("Error removing calendar member", data);
-      return;
+      return { success: false, error: data.detail };
     }
-    return data;
+    return { success: true };
   } catch (error) {
     console.error("Error removing calendar member: ", error);
+    return { success: false };
   }
 }

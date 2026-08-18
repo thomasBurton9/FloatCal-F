@@ -3,6 +3,8 @@ export type CalendarDetailsScreenProps = {
   setCurrentView: (view: currentView) => void;
   userId: number;
   setCalendars: (calendar: Calendar) => void;
+  reloadCalendars: boolean;
+  setReloadCalendars: (value: boolean) => void;
 };
 
 export type InvitesScreenProps = {
