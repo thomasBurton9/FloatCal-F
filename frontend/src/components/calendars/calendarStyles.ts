@@ -185,4 +185,40 @@ export const styles = StyleSheet.create({
     alignItems: "center",
   },
   inviteDeclineText: {},
+
+  // Individual Member
+  individualMember: {
+    flexDirection: "row",
+    padding: 10,
+    borderStyle: "solid",
+    borderWidth: 1.5,
+    borderRadius: 10,
+    // gap: 100,
+    justifyContent: "space-between",
+    width: "90%",
+  },
+  individualMemberInfo: {
+    flexDirection: "column",
+    gap: 5,
+  },
+  individualMemberName: {
+    fontSize: 28,
+  },
+  individualMemberEmail: {
+    fontSize: 20,
+  },
+  individualMemberButton: {
+    backgroundColor: "red",
+    borderRadius: 10,
+    borderStyle: "solid",
+    borderWidth: 1.25,
+    textAlign: "center",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 10,
+    width: 100,
+  },
+  individualMemberButtonText: {
+    fontSize: 20,
+  },
 });

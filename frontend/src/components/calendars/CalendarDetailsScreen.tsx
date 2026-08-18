@@ -75,6 +75,14 @@ export function CalendarDetailsScreen({
           }}
         ></View>
       </View>
+      {members.map((member) => (
+        <IndividualMember
+          key={member.user_id}
+          member={member}
+          isEditable={ownCalendar}
+          isOwner={selectedCalendar.created_by_user_id === member.user_id}
+        ></IndividualMember>
+      ))}
       {/* TODO: Add confirmation for deletion in the future*/}
       {/* Display delete dialog only for user created calendars */}
       {/* TODO: Add 'leave calendar' dialog instead */}
@@ -108,37 +116,40 @@ export function CalendarDetailsScreen({
           <Text>Leave Calendar</Text>
         </Pressable>
       )}
-      {members.map((member) => (
-        <IndividualMember
-          key={member.user_id}
-          member={member}
-          isEditable={ownCalendar}
-          isOwner={selectedCalendar.created_by_user_id === member.user_id}
-        ></IndividualMember>
-      ))}
     </View>
   );
 }
 
 function IndividualMember({ member, isEditable, isOwner }: SharedMemberProps) {
   let buttonText;
+  let backgroundColour;
 
   if (isOwner) {
     buttonText = "Owner";
+    backgroundColour = "white";
   } else if (isEditable) {
     buttonText = "Remove";
+    backgroundColour = "red";
   } else {
     buttonText = "Member";
+    backgroundColour = "white";
   }
+  // TODO: Long emails / names
   return (
     <>
-      <View>
-        <View>
-          <Text>{member.display_name}</Text>
-          <Text>{member.email}</Text>
+      <View style={styles.individualMember}>
+        <View style={styles.individualMemberInfo}>
+          <Text style={styles.individualMemberName}>{member.display_name}</Text>
+          <Text style={styles.individualMemberEmail}>{member.email}</Text>
         </View>
-        <Pressable disabled={!isEditable && !isOwner}>
-          <Text>{buttonText}</Text>
+        <Pressable
+          style={[
+            styles.individualMemberButton,
+            { backgroundColor: backgroundColour },
+          ]}
+          disabled={!isEditable && !isOwner}
+        >
+          <Text style={styles.individualMemberButtonText}>{buttonText}</Text>
         </Pressable>
       </View>
     </>
