@@ -1,4 +1,4 @@
-import { Alert, Pressable, Text, View } from "react-native";
+import { Alert, Pressable, ScrollView, Text, View } from "react-native";
 import type {
   Invite,
   InviteProps,
@@ -46,22 +46,24 @@ export function InvitesScreen({
 
   return (
     <>
-      <View style={styles.placeholderView}>
-        <BackButton setCurrentView={setCurrentView}></BackButton>
-        <Text style={styles.placeholderTitle}>Invites</Text>
-      </View>
-      <View>
-        {invitesFiltered.map((invite) => (
-          <InviteSection
-            key={invite.invite_id}
-            invite={invite}
-            reload={reloadInvites}
-            setReload={setReloadInvites}
-            reloadCalendars={reloadCalendars}
-            setReloadCalendars={setReloadCalendars}
-          ></InviteSection>
-        ))}
-      </View>
+      <ScrollView>
+        <View style={styles.placeholderView}>
+          <BackButton setCurrentView={setCurrentView}></BackButton>
+          <Text style={[styles.invitesTitle]}>Invites</Text>
+        </View>
+        <View style={styles.inviteList}>
+          {invitesFiltered.map((invite) => (
+            <InviteSection
+              key={invite.invite_id}
+              invite={invite}
+              reload={reloadInvites}
+              setReload={setReloadInvites}
+              reloadCalendars={reloadCalendars}
+              setReloadCalendars={setReloadCalendars}
+            ></InviteSection>
+          ))}
+        </View>
+      </ScrollView>
     </>
   );
 }
@@ -75,10 +77,11 @@ function InviteSection({
 }: InviteProps) {
   return (
     <>
-      <View>
-        <Text>Calendar Name</Text>
-        <Text>Invited by Name</Text>
+      <View style={styles.inviteSection}>
+        <Text style={styles.inviteCalendarName}>Calendar Name</Text>
+        <Text style={styles.inviteUserName}>Invited by Name</Text>
         <Pressable
+          style={styles.inviteAcceptButton}
           onPress={() => {
             handleResponse(
               invite.invite_to_user_id,
@@ -91,9 +94,10 @@ function InviteSection({
             );
           }}
         >
-          <Text>Accept</Text>
+          <Text style={styles.inviteAcceptText}>Accept</Text>
         </Pressable>
         <Pressable
+          style={styles.inviteDeclineButton}
           onPress={() => {
             handleResponse(
               invite.invite_to_user_id,
@@ -106,7 +110,7 @@ function InviteSection({
             );
           }}
         >
-          <Text>Decline</Text>
+          <Text style={styles.inviteDeclineText}>Decline</Text>
         </Pressable>
       </View>
     </>

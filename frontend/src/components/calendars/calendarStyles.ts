@@ -141,4 +141,48 @@ export const styles = StyleSheet.create({
   placeholderTitle: {
     fontSize: 24,
   },
+
+  // INVITE SCREEN
+  invitesTitle: {
+    fontSize: 24,
+    marginBottom: 10,
+  },
+  inviteList: {
+    gap: 10,
+  },
+  inviteSection: {
+    flexDirection: "column",
+    padding: 10,
+    borderStyle: "solid",
+    borderWidth: 1.5,
+    borderRadius: 10,
+    gap: 5,
+  },
+  inviteCalendarName: {
+    fontWeight: "bold",
+  },
+  inviteUserName: {},
+  inviteAcceptButton: {
+    backgroundColor: "blue",
+    padding: 10,
+    borderRadius: 10,
+    textAlign: "center",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 5,
+  },
+  inviteAcceptText: {
+    color: "white",
+  },
+  inviteDeclineButton: {
+    backgroundColor: "white",
+    padding: 10,
+    borderRadius: 10,
+    borderStyle: "solid",
+    borderWidth: 1,
+    textAlign: "center",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  inviteDeclineText: {},
 });
