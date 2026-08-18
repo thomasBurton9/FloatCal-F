@@ -44,7 +44,13 @@ export async function respondToInvite(
 ) {
   try {
     const respondToInviteUrl =
-      API_URL + "/respond_to_invite/" + String(userId) + "/" + String(inviteId);
+      API_URL +
+      "/respond_to_invite/" +
+      String(userId) +
+      "/" +
+      String(inviteId) +
+      "?accepted=" +
+      String(accepted);
 
     const response = await fetch(respondToInviteUrl, {
       method: "PUT",
