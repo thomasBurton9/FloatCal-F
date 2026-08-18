@@ -80,7 +80,13 @@ export default function ManageCalendars({
       );
     }
     if (currentView === "invites") {
-      return <InvitesScreen setCurrentView={setCurrentView}></InvitesScreen>;
+      return (
+        <InvitesScreen
+          setCurrentView={setCurrentView}
+          userId={userId}
+          currentView={currentView}
+        ></InvitesScreen>
+      );
     }
     // When a calendar is selected
     return (
