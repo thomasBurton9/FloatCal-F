@@ -15,7 +15,7 @@ export type InvitesScreenProps = {
   setReloadCalendars: (value: boolean) => void;
 };
 export type currentView = "details" | "create" | "invites" | "list";
-export type Calendar = any;
+export type Calendar = any; // name, calendar_id, colour, created_by_user_id
 
 export type Invite = {
   invite_id: number;

@@ -6,6 +6,9 @@ import type {
 import { handleRemoveCalendar } from "../ManageCalendars";
 import { styles } from "./calendarStyles";
 import { removeCalendarMember } from "../../api/calendarApi";
+import { useEffect, useState } from "react";
+import { SharedMemberProps, UserInfo } from "../../types/userInfo";
+import { fetchCalendarMemberEntryInfo } from "../../api/memberApi";
 
 // Button to return to main manage calendar screen
 export function BackButton({
@@ -28,6 +31,27 @@ export function CalendarDetailsScreen({
 }: CalendarDetailsScreenProps) {
   // What happens if selectedCalendar is null (it shouldn't but what if?)
   const ownCalendar = userId === selectedCalendar?.created_by_user_id;
+  const [members, setMembers] = useState<UserInfo[]>([]);
+
+  useEffect(() => {
+    async function loadMembers() {
+      const inviteData = await fetchCalendarMemberEntryInfo(
+        selectedCalendar.calendar_id,
+      );
+      if (inviteData.success) {
+        setMembers(inviteData.result);
+      } else {
+        if (inviteData.error) {
+          Alert.alert(inviteData.error);
+        } else {
+          Alert.alert("Error checking members");
+        }
+      }
+    }
+    if (userId && selectedCalendar) {
+      loadMembers();
+    }
+  }, [userId, selectedCalendar]);
 
   return (
     <View style={styles.placeholderView}>
@@ -84,10 +108,42 @@ export function CalendarDetailsScreen({
           <Text>Leave Calendar</Text>
         </Pressable>
       )}
+      {members.map((member) => (
+        <IndividualMember
+          key={member.user_id}
+          member={member}
+          isEditable={ownCalendar}
+          isOwner={selectedCalendar.created_by_user_id === member.user_id}
+        ></IndividualMember>
+      ))}
     </View>
   );
 }
 
+function IndividualMember({ member, isEditable, isOwner }: SharedMemberProps) {
+  let buttonText;
+
+  if (isOwner) {
+    buttonText = "Owner";
+  } else if (isEditable) {
+    buttonText = "Remove";
+  } else {
+    buttonText = "Member";
+  }
+  return (
+    <>
+      <View>
+        <View>
+          <Text>{member.display_name}</Text>
+          <Text>{member.email}</Text>
+        </View>
+        <Pressable disabled={!isEditable && !isOwner}>
+          <Text>{buttonText}</Text>
+        </Pressable>
+      </View>
+    </>
+  );
+}
 async function handleLeaveCalendar(
   userId: number,
   calendarId: number,
