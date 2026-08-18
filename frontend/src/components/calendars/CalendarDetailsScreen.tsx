@@ -32,6 +32,7 @@ export function CalendarDetailsScreen({
   // What happens if selectedCalendar is null (it shouldn't but what if?)
   const ownCalendar = userId === selectedCalendar?.created_by_user_id;
   const [members, setMembers] = useState<UserInfo[]>([]);
+  const [reloadMembers, setReloadMembers] = useState(false);
 
   useEffect(() => {
     async function loadMembers() {
@@ -51,7 +52,7 @@ export function CalendarDetailsScreen({
     if (userId && selectedCalendar) {
       loadMembers();
     }
-  }, [userId, selectedCalendar]);
+  }, [userId, selectedCalendar, reloadMembers]);
 
   return (
     <View style={styles.placeholderView}>
@@ -81,6 +82,9 @@ export function CalendarDetailsScreen({
           member={member}
           isEditable={ownCalendar}
           isOwner={selectedCalendar.created_by_user_id === member.user_id}
+          calendarId={selectedCalendar.calendar_id}
+          reloadMembers={reloadMembers}
+          setReloadMembers={setReloadMembers}
         ></IndividualMember>
       ))}
       {/* TODO: Add confirmation for deletion in the future*/}
@@ -120,19 +124,43 @@ export function CalendarDetailsScreen({
   );
 }
 
-function IndividualMember({ member, isEditable, isOwner }: SharedMemberProps) {
+function IndividualMember({
+  member,
+  isEditable,
+  isOwner,
+  calendarId,
+  reloadMembers,
+  setReloadMembers,
+}: SharedMemberProps) {
   let buttonText;
   let backgroundColour;
+  let onPress;
 
   if (isOwner) {
     buttonText = "Owner";
     backgroundColour = "white";
+    onPress = () => null;
   } else if (isEditable) {
     buttonText = "Remove";
     backgroundColour = "red";
+    onPress = async () => {
+      const result = await removeCalendarMember(calendarId, member.user_id);
+
+      if (!result.success) {
+        if (result.error) {
+          Alert.alert(result.error);
+        } else {
+          Alert.alert("Error removing user from calendar");
+        }
+      } else {
+        Alert.alert("Member removed successfully");
+        setReloadMembers(!reloadMembers);
+      }
+    };
   } else {
     buttonText = "Member";
     backgroundColour = "white";
+    onPress = () => null;
   }
   // TODO: Long emails / names
   return (
@@ -143,6 +171,7 @@ function IndividualMember({ member, isEditable, isOwner }: SharedMemberProps) {
           <Text style={styles.individualMemberEmail}>{member.email}</Text>
         </View>
         <Pressable
+          onPress={onPress}
           style={[
             styles.individualMemberButton,
             { backgroundColor: backgroundColour },
