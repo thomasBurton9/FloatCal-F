@@ -177,7 +177,7 @@ function IndividualMember({
             styles.individualMemberButton,
             { backgroundColor: backgroundColour },
           ]}
-          disabled={!isEditable && !isOwner}
+          disabled={!isEditable || isOwner}
         >
           <Text style={styles.individualMemberButtonText}>{buttonText}</Text>
         </Pressable>
