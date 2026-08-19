@@ -6,7 +6,7 @@ export const styles = StyleSheet.create({
     backgroundColor: "#FF0000FF",
     padding: 10,
     borderStyle: "solid",
-    borderWidth: 2,
+    borderWidth: 1.5,
     borderRadius: 10,
   },
   calendarNameInput: {
@@ -220,5 +220,51 @@ export const styles = StyleSheet.create({
   },
   individualMemberButtonText: {
     fontSize: 20,
+  },
+
+  // DROPDOWN
+
+  inviteMemberTitle: {
+    fontSize: 24,
+  },
+  userDropDown: {
+    minWidth: 260,
+    borderStyle: "solid",
+    borderWidth: 1.5,
+    borderRadius: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    gap: 0,
+  },
+  dropDownItem: {
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    // minWidth: 260,
+    // borderStyle: "solid",
+    // borderRadius: 10,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    // borderLeftWidth: 1.5,
+    // borderRightWidth: 1.5,
+    // minHeight: 48,
+  },
+  dropDownName: {
+    fontWeight: "bold",
+  },
+  dropDownEmail: {
+    fontSize: 13,
+  },
+
+  // DROPDOWN SUBMIT BUTTON
+
+  sendInviteButton: {
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    backgroundColor: "blue",
+    borderRadius: 10,
+    borderWidth: 1.5,
+    borderStyle: "solid",
+  },
+  sendInviteText: {
+    fontSize: 16,
   },
 });

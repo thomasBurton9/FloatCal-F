@@ -6,9 +6,12 @@ import type {
 import { handleRemoveCalendar } from "../ManageCalendars";
 import { styles } from "./calendarStyles";
 import { removeCalendarMember } from "../../api/calendarApi";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { SharedMemberProps, UserInfo } from "../../types/userInfo";
 import { fetchCalendarMemberEntryInfo } from "../../api/memberApi";
+import { Dropdown } from "react-native-element-dropdown";
+import { listUsers } from "../../api/userApi";
+import { inviteUser } from "../../api/inviteApi";
 
 // Button to return to main manage calendar screen
 export function BackButton({
@@ -33,6 +36,8 @@ export function CalendarDetailsScreen({
   const ownCalendar = userId === selectedCalendar?.created_by_user_id;
   const [members, setMembers] = useState<UserInfo[]>([]);
   const [reloadMembers, setReloadMembers] = useState(false);
+  const [users, setUsers] = useState<UserInfo[]>([]);
+  const [currentUser, setCurrentUser] = useState<number | null>(null);
 
   useEffect(() => {
     async function loadMembers() {
@@ -53,6 +58,34 @@ export function CalendarDetailsScreen({
       loadMembers();
     }
   }, [userId, selectedCalendar, reloadMembers]);
+
+  useEffect(() => {
+    async function loadUsers() {
+      const userData = await listUsers();
+      if (userData.success) {
+        setUsers(userData.result);
+      } else {
+        if (userData.error) {
+          Alert.alert(userData.error);
+        } else {
+          Alert.alert("Error finding users");
+        }
+      }
+    }
+
+    if (userId) {
+      loadUsers();
+    }
+  }, [userId, reloadMembers]);
+
+  // TODO: Does not check if user has already been invited -> Allows for duplicate invites
+  const filteredUsers = useMemo(
+    () =>
+      users.filter(
+        (user) => !members.some((member) => user.user_id === member.user_id),
+      ),
+    [users, members],
+  );
 
   return (
     <View style={styles.placeholderView}>
@@ -92,19 +125,67 @@ export function CalendarDetailsScreen({
       {/* Display delete dialog only for user created calendars */}
       {/* TODO: Add 'leave calendar' dialog instead */}
       {ownCalendar ? (
-        <Pressable
-          style={styles.deleteButton}
-          onPress={() =>
-            handleRemoveCalendar(
-              userId,
-              selectedCalendar.calendar_id,
-              setCalendars,
-              setCurrentView,
-            )
-          }
-        >
-          <Text>Delete Calendar</Text>
-        </Pressable>
+        <>
+          <Text style={styles.inviteMemberTitle}>Invite Member</Text>
+          <Dropdown
+            containerStyle={{ marginTop: -2 }}
+            style={styles.userDropDown}
+            data={filteredUsers}
+            labelField="display_name"
+            valueField="user_id"
+            value={currentUser}
+            placeholder="Select user to invite"
+            renderItem={(user) => (
+              <View style={styles.dropDownItem}>
+                <Text style={styles.dropDownName}>{user.display_name}</Text>
+                <Text style={styles.dropDownEmail}>{user.email}</Text>
+              </View>
+            )}
+            onChange={(user) => {
+              setCurrentUser(user.user_id);
+            }}
+          ></Dropdown>
+          <Pressable
+            onPress={async () => {
+              if (currentUser) {
+                const result = await inviteUser(
+                  userId,
+                  currentUser,
+                  selectedCalendar.calendar_id,
+                );
+                if (!result.success) {
+                  if (result.error) {
+                    Alert.alert(result.error);
+                  } else {
+                    Alert.alert("Error inviting user");
+                  }
+                } else {
+                  Alert.alert("Successfully invited user");
+                  setReloadMembers(!reloadMembers);
+                }
+              } else {
+                Alert.alert("You need to select a user to invite them");
+              }
+            }}
+            style={styles.sendInviteButton}
+          >
+            {" "}
+            <Text style={styles.sendInviteText}>Send Invite</Text>
+          </Pressable>
+          <Pressable
+            style={styles.deleteButton}
+            onPress={() =>
+              handleRemoveCalendar(
+                userId,
+                selectedCalendar.calendar_id,
+                setCalendars,
+                setCurrentView,
+              )
+            }
+          >
+            <Text>Delete Calendar</Text>
+          </Pressable>
+        </>
       ) : (
         <Pressable
           style={styles.deleteButton}
