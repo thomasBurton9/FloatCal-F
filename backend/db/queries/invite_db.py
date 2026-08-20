@@ -4,8 +4,10 @@ from sqlalchemy import select
 
 from db.models.calendars import Calendar, CalendarMember
 from db.models.invites import Invite
+from db.models.users import User
 from db.queries.calendar_db import get_calendar_info
 from db.session import get_db
+from schemas.invite_schemas import InviteWithInfo
 
 
 def invite_user_to_calendar(
@@ -88,6 +90,45 @@ def get_invites_to_user(user_id: int) -> list[Invite]:
         )
 
         return list(invites)
+
+
+def get_invites_to_user_info(user_id: int) -> list[InviteWithInfo]:
+    get_invite_statement = select(Invite).where(Invite.invite_to_user_id == user_id)
+
+    with get_db() as session:
+        invites: Sequence[Invite] = (
+            session.execute(get_invite_statement).scalars().all()
+        )
+
+        calendar_ids: list[int] = [invite.invite_calendar_id for invite in invites]
+        get_calendar_statement = select(Calendar).where(
+            Calendar.calendar_id.in_(calendar_ids)
+        )
+        calendars: Sequence[Calendar] = (
+            session.execute(get_calendar_statement).scalars().all()
+        )
+
+        user_ids: list[int] = [invite.invite_from_user_id for invite in invites]
+        get_user_statement = select(User).where(User.user_id.in_(user_ids))
+        users: Sequence[User] = session.execute(get_user_statement).scalars().all()
+
+        calendar_names: dict[int, str] = {
+            calendar.calendar_id: calendar.name for calendar in calendars
+        }
+        user_names: dict[int, str] = {user.user_id: user.display_name for user in users}
+
+        return [
+            InviteWithInfo(
+                invite_id=invite.invite_id,
+                invite_from_user_id=invite.invite_from_user_id,
+                invite_calendar_id=invite.invite_calendar_id,
+                invite_to_user_id=invite.invite_to_user_id,
+                status=invite.status,
+                calendar_name=calendar_names[invite.invite_calendar_id],
+                inviter_display_name=user_names[invite.invite_from_user_id],
+            )
+            for invite in invites
+        ]
 
 
 # potentially not needed by frontend
