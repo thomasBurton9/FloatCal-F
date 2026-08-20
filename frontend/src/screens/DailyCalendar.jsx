@@ -15,6 +15,7 @@ import ManageTasks from "../components/ManageTasks";
 import SchedulingError from "../components/SchedulingError";
 import ItemInfoModal from "../components/ItemInfoModal";
 import { lightenHex } from "../helpers/colourHelpers";
+import { calendarItemFromDragEvent } from "../helpers/calendarDrag";
 
 // Calendar at the top
 // Then bottombar 1/5th or 1/6th
@@ -25,6 +26,7 @@ export default function DailyCalendar({ setPage, userId }) {
   const [selectedItem, setSelectedItem] = useState(null); // Current selected item -> Used for task info popup
   const [returnModal, setReturnModal] = useState(null);
   const [addItemPreset, setAddItemPreset] = useState(null);
+  const [editedPreset, setEditedPreset] = useState(null);
 
   function handleDragCreateEvent(event) {
     const startDateTime = event?.start?.dateTime;
@@ -52,6 +54,19 @@ export default function DailyCalendar({ setPage, userId }) {
       endTime: new Date(endTime),
     });
     setCurrentModal("addItem");
+  }
+
+  function handleDragEdit(event) {
+    const editedItem = calendarItemFromDragEvent(event);
+
+    if (!editedItem || !event?.calendarItem) {
+      return;
+    }
+
+    setSelectedItem(event.calendarItem);
+    setEditedPreset(editedItem);
+    setReturnModal(null);
+    setCurrentModal("itemInfo");
   }
 
   const calendarRef = useRef(null);
@@ -90,10 +105,12 @@ export default function DailyCalendar({ setPage, userId }) {
           setCurrentDate={setCurrentDate}
           currentDate={currentDate}
           onItemPress={(item) => {
+            setEditedPreset(null);
             setSelectedItem(item);
             setCurrentModal("itemInfo");
           }}
           onDragCreateEvent={handleDragCreateEvent}
+          onDragEdit={handleDragEdit}
           setReturnModal={setReturnModal}
         ></CalendarView>
         <BottomBar
@@ -102,6 +119,7 @@ export default function DailyCalendar({ setPage, userId }) {
           currentDate={currentDate}
           setCurrentDate={setCurrentDate}
           onItemPress={(item) => {
+            setEditedPreset(null);
             setSelectedItem(item);
             setCurrentModal("itemInfo");
           }}
@@ -117,12 +135,16 @@ export default function DailyCalendar({ setPage, userId }) {
           item={selectedItem}
           setCurrentModal={(modal) => {
             setCurrentModal(modal);
+            if (modal !== "itemInfo") {
+              setEditedPreset(null);
+            }
             if (modal === null) {
               setSelectedItem(null);
             }
           }}
           returnModal={returnModal}
           setReturnModal={setReturnModal}
+          editedPreset={editedPreset}
           onChangedData={() => setItemAddedTrigger(!itemAddedTrigger)} // Update the calendar when changing data
         ></ItemInfoModal>
       </View>
@@ -213,6 +235,7 @@ function CalendarView({
   calendarRef,
   onItemPress,
   onDragCreateEvent,
+  onDragEdit,
   setReturnModal,
 }) {
   return (
@@ -220,12 +243,13 @@ function CalendarView({
       <View style={style.mainCalendarContainer}>
         <CalendarContainer
           onDragCreateEventEnd={onDragCreateEvent}
+          onDragEventEnd={onDragEdit}
           ref={calendarRef}
           numberOfDays={1}
           scrollByDay={true}
           firstDay={7}
           allowDragToCreate={true}
-          allowDragToEdit={true} // TODO: Implement the event handlers
+          allowDragToEdit={true}
           allowPinchToZoom={true}
           overlapType="no-overlap" // TODO: Look back to client feedback to see if changing to 'overlap' makes sense
           initialDate={formatDate(currentDate)}

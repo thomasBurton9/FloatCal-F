@@ -33,6 +33,7 @@ export default function ItemInfoModal({
   setCurrentModal,
   returnModal,
   setReturnModal,
+  editedPreset,
   onChangedData,
 }: ItemInfoModalProps) {
   const [editing, setEditing] = useState(false);
@@ -100,9 +101,9 @@ export default function ItemInfoModal({
     }
   }
   useEffect(() => {
-    setEditing(false); // Un needed?
-    setDraft(item ? calendarItemToDraft(item) : null);
-  }, [item, isVisible]); // Reset the draft if a new item is opened
+    setEditing(Boolean(isVisible && editedPreset && item)); // if opened due to drag to edit -> open editing
+    setDraft(editedPreset ?? (item ? calendarItemToDraft(item) : null));
+  }, [item, isVisible, editedPreset]); // Reset the draft if a new item is opened
 
   function closeModal() {
     setCurrentModal(returnModal);
