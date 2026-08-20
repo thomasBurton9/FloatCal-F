@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-
+import { BLUE_COLOUR } from "../../constants";
 export const styles = StyleSheet.create({
   deleteButton: {
     color: "#FF0000FF",
@@ -29,7 +29,7 @@ export const styles = StyleSheet.create({
     marginVertical: 8,
   },
   createCalendarSubmit: {
-    backgroundColor: "blue",
+    backgroundColor: BLUE_COLOUR,
     borderStyle: "solid",
     borderWidth: 1,
     borderRadius: 10,
@@ -259,7 +259,7 @@ export const styles = StyleSheet.create({
   sendInviteButton: {
     paddingHorizontal: 20,
     paddingVertical: 10,
-    backgroundColor: "blue",
+    backgroundColor: BLUE_COLOUR,
     borderRadius: 10,
     borderWidth: 1.5,
     borderStyle: "solid",
