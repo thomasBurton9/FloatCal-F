@@ -136,7 +136,9 @@ export default function AddItem({
                     X
                   </Text>
                 </Pressable>
-                <Text style={styles.title}>Add Task</Text>
+                <Text style={styles.title}>
+                  {itemType === "Floating" ? "Add Task" : "Add Event"}
+                </Text>
               </View>
               <ItemTypeSwitcher
                 itemType={itemType}
