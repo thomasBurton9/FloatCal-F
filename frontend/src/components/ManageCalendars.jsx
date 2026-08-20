@@ -209,6 +209,7 @@ function CreateCalendarScreen({ setCurrentView, userId, setCalendars }) {
         }
       ></TextInput>
       {/* Potentially swap to native ios picker if styling does not work out*/}
+      {/* TODO: Potentially change to grid based/ chosen colours instead of free choice */}
       <Text style={styles.colorPickerText}>Choose Calendar Colour</Text>
       <ColorPicker
         style={styles.colorPicker}
