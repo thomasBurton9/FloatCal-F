@@ -25,10 +25,20 @@ export type Invite = {
   status: InviteStatus;
 };
 
+export type InvitePopulated = {
+  invite_id: number;
+  invite_from_user_id: number;
+  invite_calendar_id: number;
+  invite_to_user_id: number;
+  status: InviteStatus;
+  calendar_name: string;
+  inviter_display_name: string;
+};
+
 export type InviteStatus = "open" | "accepted" | "declined";
 
 export type InviteProps = {
-  invite: Invite;
+  invite: InvitePopulated;
   reload: boolean;
   setReload: (value: boolean) => void;
   reloadCalendars: boolean;

@@ -160,6 +160,7 @@ export const styles = StyleSheet.create({
   },
   inviteCalendarName: {
     fontWeight: "bold",
+    fontSize: 20,
   },
   inviteUserName: {},
   inviteAcceptButton: {

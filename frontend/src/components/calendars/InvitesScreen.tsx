@@ -1,13 +1,13 @@
 import { Alert, Pressable, ScrollView, Text, View } from "react-native";
 import type {
-  Invite,
+  InvitePopulated,
   InviteProps,
   InvitesScreenProps,
 } from "../../types/calendars";
 import { BackButton } from "./CalendarDetailsScreen";
 import { styles } from "./calendarStyles";
 import { useEffect, useMemo, useState } from "react";
-import { checkInvitesToUser, respondToInvite } from "../../api/inviteApi";
+import { checkInvitesToUserInfo, respondToInvite } from "../../api/inviteApi";
 
 // Currently non functional screen to list invites from others -> TODO: May need new backend db table
 export function InvitesScreen({
@@ -17,13 +17,13 @@ export function InvitesScreen({
   reloadCalendars,
   setReloadCalendars,
 }: InvitesScreenProps) {
-  const [invites, setInvites] = useState<Invite[]>([]);
+  const [invites, setInvites] = useState<InvitePopulated[]>([]);
 
   const [reloadInvites, setReloadInvites] = useState(false);
 
   useEffect(() => {
     async function loadInvites() {
-      const inviteData = await checkInvitesToUser(userId);
+      const inviteData = await checkInvitesToUserInfo(userId);
       if (inviteData.success) {
         setInvites(inviteData.result);
       } else {
@@ -78,8 +78,10 @@ function InviteSection({
   return (
     <>
       <View style={styles.inviteSection}>
-        <Text style={styles.inviteCalendarName}>Calendar Name</Text>
-        <Text style={styles.inviteUserName}>Invited by Name</Text>
+        <Text style={styles.inviteCalendarName}>{invite.calendar_name}</Text>
+        <Text style={styles.inviteUserName}>
+          Invited by {invite.inviter_display_name}
+        </Text>
         <Pressable
           style={styles.inviteAcceptButton}
           onPress={() => {
