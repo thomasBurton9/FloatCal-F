@@ -3,13 +3,18 @@ import {
   Pressable,
   ScrollView,
   Alert,
-  StyleSheet,
   Text,
   TextInput,
   View,
 } from "react-native";
 import { useEffect, useMemo, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { styles } from "./calendars/calendarStyles";
+import {
+  BackButton,
+  CalendarDetailsScreen,
+} from "./calendars/CalendarDetailsScreen";
+import { InvitesScreen } from "./calendars/InvitesScreen";
 import {
   createCalendar,
   fetchCalendars,
@@ -21,7 +26,6 @@ import ColorPicker, {
   OpacitySlider,
   Panel1,
 } from "reanimated-color-picker";
-import { BLUE_COLOUR } from "../constants";
 
 export default function ManageCalendars({
   isVisible,
@@ -32,6 +36,7 @@ export default function ManageCalendars({
   const [currentView, setCurrentView] = useState("list"); // "details" || "create" || "invites" || "list" -> Swaps the current screen displayed
   const [selectedCalendar, setSelectedCalendar] = useState(null); // Used when user wants to get info on a calendar
 
+  const [reloadCalendars, setReloadCalendars] = useState(false);
   useEffect(() => {
     async function loadCalendars() {
       const calendarData = await fetchCalendars(userId);
@@ -41,7 +46,7 @@ export default function ManageCalendars({
     if (isVisible && userId) {
       loadCalendars();
     }
-  }, [isVisible, userId]);
+  }, [isVisible, userId, reloadCalendars]);
 
   // Runs only when calendars or userId changes.
   const ownCalendars = useMemo(
@@ -76,14 +81,25 @@ export default function ManageCalendars({
       );
     }
     if (currentView === "invites") {
-      return <InvitesScreen setCurrentView={setCurrentView}></InvitesScreen>;
+      return (
+        <InvitesScreen
+          setCurrentView={setCurrentView}
+          userId={userId}
+          currentView={currentView}
+          reloadCalendars={reloadCalendars}
+          setReloadCalendars={setReloadCalendars}
+        ></InvitesScreen>
+      );
     }
+    // When a calendar is selected
     return (
       <CalendarDetailsScreen
         selectedCalendar={selectedCalendar}
         setCurrentView={setCurrentView}
         userId={userId}
         setCalendars={setCalendars}
+        reloadCalendars={reloadCalendars}
+        setReloadCalendars={setReloadCalendars}
       ></CalendarDetailsScreen>
     );
   }
@@ -275,57 +291,7 @@ async function handleCreateCalendar(
   setCurrentView("list");
 }
 // Screen with information about one singular calendar
-function CalendarDetailsScreen({
-  selectedCalendar,
-  setCurrentView,
-  userId,
-  setCalendars,
-}) {
-  return (
-    <View style={styles.placeholderView}>
-      <BackButton setCurrentView={setCurrentView}></BackButton>
-      <Text style={styles.placeholderTitle}>
-        {"Name: "} {/* Using curly brace syntax to keep the space after name */}
-        {/* Fall back to calendar details if a calendar is not loaded */}
-        {selectedCalendar ? selectedCalendar.name : "Calendar Details"}
-      </Text>
-      <View
-        style={{
-          flexDirection: "row",
-        }}
-      >
-        <Text>Colour: </Text>
-        <View
-          style={{
-            width: 100,
-            height: 20,
-            backgroundColor: selectedCalendar.colour,
-          }}
-        ></View>
-      </View>
-      {/* TODO: Add confirmation for deletion in the future*/}
-      {/* Display delete dialog only for user created calendars */}
-      {/* TODO: Add 'leave calendar' dialog instead */}
-      {selectedCalendar.created_by_user_id === userId ? (
-        <Pressable
-          style={styles.deleteButton}
-          onPress={() =>
-            handleRemoveCalendar(
-              userId,
-              selectedCalendar.calendar_id,
-              setCalendars,
-              setCurrentView,
-            )
-          }
-        >
-          <Text>Delete Calendar</Text>
-        </Pressable>
-      ) : null}
-    </View>
-  );
-}
-
-async function handleRemoveCalendar(
+export async function handleRemoveCalendar(
   userId,
   calendarId,
   setCalendars,
@@ -340,165 +306,3 @@ async function handleRemoveCalendar(
   setCalendars(calendarData);
   setCurrentView("list");
 }
-
-// Currently non functional screen to list invites from others -> TODO: May need new backend db table
-function InvitesScreen({ setCurrentView }) {
-  return (
-    <View style={styles.placeholderView}>
-      <BackButton setCurrentView={setCurrentView}></BackButton>
-      <Text style={styles.placeholderTitle}>Invites</Text>
-    </View>
-  );
-}
-
-// Button to return to main manage calendar screen
-function BackButton({ setCurrentView }) {
-  return (
-    <Pressable style={styles.backButton} onPress={() => setCurrentView("list")}>
-      <Text>Back</Text>
-    </Pressable>
-  );
-}
-
-const styles = StyleSheet.create({
-  deleteButton: {
-    color: "#FF0000FF",
-    backgroundColor: "#FF0000FF",
-    padding: 10,
-    borderStyle: "solid",
-    borderWidth: 2,
-    borderRadius: 10,
-  },
-  calendarNameInput: {
-    width: "80%",
-    minHeight: 40,
-    borderStyle: "solid",
-    borderWidth: 2,
-    borderRadius: 6,
-    paddingHorizontal: 8,
-  },
-  colorPickerText: {
-    fontSize: 18,
-  },
-  colorPicker: {
-    width: "60%", // Required to show element properly
-    height: 300,
-  },
-  colorPreview: {
-    height: 30,
-    marginVertical: 8,
-  },
-  createCalendarSubmit: {
-    backgroundColor: BLUE_COLOUR,
-    borderStyle: "solid",
-    borderWidth: 1,
-    borderRadius: 10,
-    padding: 10,
-    alignItems: "center",
-  },
-  createCalendarSubmitText: {
-    color: "white",
-  },
-  manageCalendarsModal: {
-    paddingBottom: 0,
-    marginBottom: 0,
-    flex: 1,
-    paddingTop: 40,
-    backgroundColor: "rgba(0, 0, 0, 0.12)",
-  },
-  manageCalendarsContainer: {
-    width: "97%",
-    // maxWidth: 600, TODO: May be needed for different views: i.e. Ipad
-    maxHeight: "100%",
-    flex: 1,
-    alignSelf: "center",
-    backgroundColor: "white",
-    borderStyle: "solid",
-    borderWidth: 2,
-    borderRadius: 40,
-    padding: 12,
-    paddingTop: 0,
-  },
-  // Somehow the styling actually worked
-  topBar: {
-    width: "100%",
-    alignSelf: "center",
-    position: "relative",
-    height: 55,
-    justifyContent: "center",
-  },
-  closeButton: {
-    top: "60%", // Currently aligned using trial and error TODO: Make permament / responsive
-
-    width: 34, // This is not responsive either
-    height: 34,
-
-    // Make Button circular
-    borderStyle: "solid",
-    borderWidth: 2,
-    borderRadius: 100,
-
-    // Center child text in the middle
-    alignItems: "center",
-    justifyContent: "center",
-
-    zIndex: 1, // Make this element go to the top -> It becomes non functional when removed
-  },
-  closeButtonText: {
-    textAlign: "center",
-    fontSize: 22,
-    lineHeight: 30,
-  },
-  title: {
-    fontSize: 27,
-    textAlign: "center",
-  },
-  calendarList: {
-    width: "100%",
-    paddingHorizontal: 6,
-  },
-  sectionTitle: {
-    marginTop: 18,
-    marginBottom: 8,
-    fontSize: 24,
-  },
-  calendarButton: {
-    minHeight: 56,
-    marginBottom: 3,
-    borderStyle: "solid",
-    borderWidth: 2,
-    borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  calendarButtonText: {
-    fontSize: 22,
-  },
-  secondaryButton: {
-    minHeight: 54,
-    marginBottom: 14,
-    borderStyle: "solid",
-    borderWidth: 2,
-    borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  secondaryButtonText: {
-    fontSize: 22,
-  },
-  placeholderView: {
-    alignItems: "center",
-    gap: 20,
-    paddingTop: 20,
-  },
-  backButton: {
-    alignSelf: "flex-start",
-    padding: 8,
-    borderStyle: "solid",
-    borderWidth: 1,
-    borderRadius: 6,
-  },
-  placeholderTitle: {
-    fontSize: 24,
-  },
-});

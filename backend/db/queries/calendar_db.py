@@ -7,11 +7,13 @@ from sqlalchemy import delete, select
 from db.models.calendars import Calendar, CalendarMember
 from db.models.items import FixedEvent, FloatingTask
 from db.models.reminders import CompletionLog
+from db.models.users import User
 from db.queries.item_db import remove_event_session, remove_task_session
 from db.session import get_db
 from models.calendar_items import FloatingTaskWithCompletion
 from schemas.calendar_schemas import CreateCalendar
 from schemas.item_schemas import CreateFixedEvent, CreateFloatingTask
+from schemas.user_schemas import UserInfo
 
 
 # Could change to a more efficient way
@@ -350,7 +352,6 @@ def get_calendar_info(calendar_id: int) -> Calendar:
 
 
 def get_calendar_member_entries(calendar_id: int) -> list[CalendarMember]:
-    from db.session import get_db
 
     calendar_member_statement = select(CalendarMember).where(
         CalendarMember.calendar_id == calendar_id
@@ -361,3 +362,31 @@ def get_calendar_member_entries(calendar_id: int) -> list[CalendarMember]:
             session.execute(calendar_member_statement).scalars().all()
         )
         return list(calendar_member_entries)
+
+
+def get_calendar_member_entry_info(calendar_id: int) -> list[UserInfo]:
+
+    calendar_member_statement = select(CalendarMember).where(
+        CalendarMember.calendar_id == calendar_id
+    )
+
+    with get_db() as session:
+        calendar_member_entries: Sequence[CalendarMember] = (
+            session.execute(calendar_member_statement).scalars().all()
+        )
+
+        user_ids: list[int] = [member.user_id for member in calendar_member_entries]
+
+        user_info_statement = select(User).where(User.user_id.in_(user_ids))
+
+        user_info: Sequence[User] = session.execute(user_info_statement).scalars().all()
+
+        user_info_short: list[UserInfo] = [
+            UserInfo(
+                user_id=user.user_id,
+                email=user.email,
+                display_name=user.display_name,
+            )
+            for user in user_info
+        ]
+        return user_info_short

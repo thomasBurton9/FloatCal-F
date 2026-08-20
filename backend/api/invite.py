@@ -5,6 +5,7 @@ from db.queries.invite_db import (
     get_invites_for_calendar,
     get_invites_from_user,
     get_invites_to_user,
+    get_invites_to_user_info,
     invite_user_to_calendar,
     respond_to_invite,
 )
@@ -49,6 +50,14 @@ def get_invites_to_user_api(user_id: int):
         raise HTTPException(404, "user_id does not exist")
 
     return get_invites_to_user(user_id)
+
+
+@router.get("/{user_id}/invites_to_user_info")
+def get_invites_to_user_info_api(user_id: int):
+    if not check_user_exists(user_id):
+        raise HTTPException(404, "user_id does not exist")
+
+    return get_invites_to_user_info(user_id)
 
 
 # potentially not needed by frontend

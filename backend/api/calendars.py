@@ -7,6 +7,7 @@ from db.queries.calendar_db import (
     check_calendar_exists,
     check_member_in_calendar,
     get_calendar_member_entries,
+    get_calendar_member_entry_info,
     list_items_for_calendar_date,
     list_tasks_for_calendar_date,
     list_tasks_for_calendar_date_range,
@@ -49,6 +50,14 @@ def get_calendar_member_entries_api(calendar_id: int):
     if not check_calendar_exists(calendar_id):
         raise HTTPException(404, "The calendar with that calendar_id does not exist")
     return get_calendar_member_entries(calendar_id)
+
+
+@router.get("/{calendar_id}/member_entries_info")
+def get_calendar_member_entry_info_api(calendar_id: int):
+    if not check_calendar_exists(calendar_id):
+        raise HTTPException(404, "The calendar with that calendar_id does not exist")
+
+    return get_calendar_member_entry_info(calendar_id)
 
 
 @router.delete("/remove_item/{calendar_id}/{item_id}")
