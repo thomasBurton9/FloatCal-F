@@ -30,6 +30,7 @@ import { SecondTopBarProps } from "../types/itemInfo";
 export default function ItemInfoModal({
   isVisible,
   item,
+  setSelectedItem,
   setCurrentModal,
   returnModal,
   setReturnModal,
@@ -94,6 +95,7 @@ export default function ItemInfoModal({
       return;
     } else {
       onChangedData();
+      setSelectedItem(draft);
       // Maybe somehow slow stuff down here -> Given the data does not reload in time
       Alert.alert("Editing Item success");
       cancelEditing();

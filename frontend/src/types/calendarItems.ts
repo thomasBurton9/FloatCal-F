@@ -34,6 +34,7 @@ export type CalendarItem = FixedEvent | FloatingTask;
 export type ItemInfoModalProps = {
   isVisible: boolean;
   item: CalendarItem | null;
+  setSelectedItem: (selectedItem: CalendarItem | null) => void;
   setCurrentModal: (currentModal: string | null) => void;
   returnModal: string | null;
   setReturnModal: (returnModal: string | null) => void;

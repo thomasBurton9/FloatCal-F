@@ -133,6 +133,7 @@ export default function DailyCalendar({ setPage, userId }) {
         <ItemInfoModal
           isVisible={currentModal === "itemInfo"}
           item={selectedItem}
+          setSelectedItem={setSelectedItem}
           setCurrentModal={(modal) => {
             setCurrentModal(modal);
             if (modal !== "itemInfo") {
