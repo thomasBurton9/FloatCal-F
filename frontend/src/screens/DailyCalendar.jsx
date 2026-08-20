@@ -24,6 +24,35 @@ export default function DailyCalendar({ setPage, userId }) {
   const [currentModal, setCurrentModal] = useState(null);
   const [selectedItem, setSelectedItem] = useState(null); // Current selected item -> Used for task info popup
   const [returnModal, setReturnModal] = useState(null);
+  const [addItemPreset, setAddItemPreset] = useState(null);
+
+  function handleDragCreateEvent(event) {
+    const startDateTime = event?.start?.dateTime;
+    const endDateTime = event?.end?.dateTime;
+
+    if (!startDateTime || !endDateTime) {
+      return;
+    }
+
+    const startTime = new Date(startDateTime);
+    const endTime = new Date(endDateTime);
+
+    if (
+      Number.isNaN(startTime.getTime()) ||
+      Number.isNaN(endTime.getTime()) ||
+      endTime <= startTime
+    ) {
+      return;
+    }
+
+    setAddItemPreset({
+      itemType: "Fixed",
+      date: new Date(startTime),
+      startTime: new Date(startTime),
+      endTime: new Date(endTime),
+    });
+    setCurrentModal("addItem");
+  }
 
   const calendarRef = useRef(null);
   const [itemAddedTrigger, setItemAddedTrigger] = useState(false);
@@ -64,6 +93,7 @@ export default function DailyCalendar({ setPage, userId }) {
             setSelectedItem(item);
             setCurrentModal("itemInfo");
           }}
+          onDragCreateEvent={handleDragCreateEvent}
           setReturnModal={setReturnModal}
         ></CalendarView>
         <BottomBar
@@ -78,6 +108,8 @@ export default function DailyCalendar({ setPage, userId }) {
           currentModal={currentModal}
           setCurrentModal={setCurrentModal}
           onItemAdded={() => setItemAddedTrigger(!itemAddedTrigger)}
+          addItemPreset={addItemPreset}
+          clearAddItemPreset={() => setAddItemPreset(null)}
           setReturnModal={setReturnModal}
         ></BottomBar>
         <ItemInfoModal
@@ -180,12 +212,14 @@ function CalendarView({
   setCurrentDate,
   calendarRef,
   onItemPress,
+  onDragCreateEvent,
   setReturnModal,
 }) {
   return (
     <>
       <View style={style.mainCalendarContainer}>
         <CalendarContainer
+          onDragCreateEventEnd={onDragCreateEvent}
           ref={calendarRef}
           numberOfDays={1}
           scrollByDay={true}
@@ -222,6 +256,8 @@ function BottomBar({
   currentModal,
   setCurrentModal,
   onItemAdded,
+  addItemPreset,
+  clearAddItemPreset,
   onItemPress,
   setReturnModal,
 }) {
@@ -237,6 +273,10 @@ function BottomBar({
       <BottomLeftNavigation
         setPage={setPage}
         setCurrentModal={setCurrentModal}
+        onOpenAddItem={() => {
+          clearAddItemPreset();
+          setCurrentModal("addItem");
+        }}
       ></BottomLeftNavigation>
       <DatePicker
         currentDate={currentDate}
@@ -251,6 +291,8 @@ function BottomBar({
         userId={userId}
         onItemAdded={onItemAdded}
         setSchedulingErrorTask={setSchedulingErrorTask}
+        initialPreset={addItemPreset}
+        clearInitialPreset={clearAddItemPreset}
       ></AddItem>
       <ManageCalendars
         isVisible={currentModal === "manageCalendars"}
@@ -276,14 +318,11 @@ function BottomBar({
   );
 }
 
-function BottomLeftNavigation({ setPage, setCurrentModal }) {
+function BottomLeftNavigation({ setPage, setCurrentModal, onOpenAddItem }) {
   return (
     <View style={style.bottomLeftNavigation}>
       <Pressable style={style.smallButton}>
-        <Text
-          style={style.smallButtonAdd}
-          onPress={() => setCurrentModal("addItem")}
-        >
+        <Text style={style.smallButtonAdd} onPress={onOpenAddItem}>
           +
         </Text>
       </Pressable>

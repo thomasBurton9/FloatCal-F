@@ -22,18 +22,8 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context"; // Modal does not respect the safearea view from App.jsx
 import { BLUE_COLOUR } from "../constants.js";
 
-export default function AddItem({
-  isVisible,
-  setCurrentModal,
-  userId,
-  onItemAdded,
-  setSchedulingErrorTask,
-}) {
-  const [itemType, setItemType] = useState("Floating");
-  const [calendars, setCalendars] = useState([]);
-  const [preferredWindowOptions, setPreferredWindowOptions] = useState([]);
-
-  const [itemFields, setItemFields] = useState({
+function createEmptyItemFields() {
+  return {
     name: "",
     date: new Date(),
     duration: "",
@@ -45,7 +35,37 @@ export default function AddItem({
     recurrenceOn: false,
     recurrenceRule: "",
     remindersOn: false,
-  });
+  };
+}
+
+export default function AddItem({
+  isVisible,
+  setCurrentModal,
+  userId,
+  onItemAdded,
+  setSchedulingErrorTask,
+  initialPreset,
+  clearInitialPreset,
+}) {
+  const [itemType, setItemType] = useState("Floating");
+  const [calendars, setCalendars] = useState([]);
+  const [preferredWindowOptions, setPreferredWindowOptions] = useState([]);
+
+  const [itemFields, setItemFields] = useState(createEmptyItemFields);
+
+  useEffect(() => {
+    if (!isVisible || !initialPreset) {
+      return;
+    }
+
+    setItemType(initialPreset.itemType);
+    setItemFields({
+      ...createEmptyItemFields(),
+      date: new Date(initialPreset.date),
+      startTime: new Date(initialPreset.startTime),
+      endTime: new Date(initialPreset.endTime),
+    });
+  }, [isVisible, initialPreset]);
 
   useEffect(() => {
     async function loadCalendars() {
@@ -100,7 +120,10 @@ export default function AddItem({
               <View style={styles.topBar}>
                 <Pressable
                   style={styles.closeButton}
-                  onPress={() => setCurrentModal(null)}
+                  onPress={() => {
+                    clearInitialPreset();
+                    setCurrentModal(null);
+                  }}
                 >
                   <Text
                     // TODO: Change styles for X button inline with the working ones from ManageCalendars/ManageTasks
@@ -289,6 +312,7 @@ export default function AddItem({
                       setItemFields,
                       onItemAdded,
                       setSchedulingErrorTask,
+                      clearInitialPreset,
                     )
                   }
                 >
@@ -321,6 +345,7 @@ async function handleAddItem(
   setItemFields,
   onItemAdded,
   setSchedulingErrorTask,
+  clearInitialPreset,
 ) {
   const recurrenceRules = [
     "daily",
@@ -392,19 +417,7 @@ async function handleAddItem(
         calendarId: itemFields.calendar,
       });
 
-      setItemFields({
-        name: "",
-        date: new Date(),
-        duration: "",
-        startTime: new Date(),
-        endTime: new Date(),
-        notes: "",
-        preferredWindow: "",
-        calendar: "",
-        recurrenceOn: false,
-        recurrenceRule: "",
-        remindersOn: false,
-      });
+      setItemFields(createEmptyItemFields());
       setCurrentModal("schedulingError");
       onItemAdded();
       return;
@@ -438,19 +451,8 @@ async function handleAddItem(
     return;
   }
 
-  setItemFields({
-    name: "",
-    date: new Date(),
-    duration: "",
-    startTime: new Date(),
-    endTime: new Date(),
-    notes: "",
-    preferredWindow: "",
-    calendar: "",
-    recurrenceOn: false,
-    recurrenceRule: "",
-    remindersOn: false,
-  });
+  setItemFields(createEmptyItemFields());
+  clearInitialPreset();
   setCurrentModal(null);
   onItemAdded();
 }
