@@ -164,7 +164,6 @@ export const styles = StyleSheet.create({
   },
   inviteUserName: {},
   inviteAcceptButton: {
-    backgroundColor: "blue",
     padding: 10,
     borderRadius: 10,
     textAlign: "center",

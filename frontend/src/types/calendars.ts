@@ -32,6 +32,7 @@ export type InvitePopulated = {
   invite_to_user_id: number;
   status: InviteStatus;
   calendar_name: string;
+  calendar_colour: string;
   inviter_display_name: string;
 };
 

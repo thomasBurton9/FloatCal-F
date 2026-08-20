@@ -115,6 +115,9 @@ def get_invites_to_user_info(user_id: int) -> list[InviteWithInfo]:
         calendar_names: dict[int, str] = {
             calendar.calendar_id: calendar.name for calendar in calendars
         }
+        calendar_colours: dict[int, str] = {
+            calendar.calendar_id: calendar.colour for calendar in calendars
+        }
         user_names: dict[int, str] = {user.user_id: user.display_name for user in users}
 
         return [
@@ -125,6 +128,7 @@ def get_invites_to_user_info(user_id: int) -> list[InviteWithInfo]:
                 invite_to_user_id=invite.invite_to_user_id,
                 status=invite.status,
                 calendar_name=calendar_names[invite.invite_calendar_id],
+                calendar_colour=calendar_colours[invite.invite_calendar_id],
                 inviter_display_name=user_names[invite.invite_from_user_id],
             )
             for invite in invites

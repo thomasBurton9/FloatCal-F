@@ -16,4 +16,6 @@ class InviteWithInfo(BaseModel):
 
     calendar_name: str
 
+    calendar_colour: str
+
     inviter_display_name: str

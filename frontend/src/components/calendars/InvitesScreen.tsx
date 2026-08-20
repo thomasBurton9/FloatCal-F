@@ -83,7 +83,10 @@ function InviteSection({
           Invited by {invite.inviter_display_name}
         </Text>
         <Pressable
-          style={styles.inviteAcceptButton}
+          style={[
+            styles.inviteAcceptButton,
+            { backgroundColor: invite.calendar_colour },
+          ]}
           onPress={() => {
             handleResponse(
               invite.invite_to_user_id,
