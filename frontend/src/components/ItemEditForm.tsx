@@ -20,12 +20,13 @@ export default function ItemEditForm({
   setDraft,
 }: itemEditFormProps) {
   const isTask = "duration_minutes" in draft;
-  const isScheduled = Boolean(isTask && draft.scheduled_start);
+  const [isScheduled, setIsScheduled] = useState(
+    Boolean(isTask && draft.scheduled_start),
+  );
   console.log("Is scheduled", isScheduled);
   const [recurrenceOn, setRecurrenceOn] = useState(
     Boolean(draft["recurrence_rule"]),
   );
-
   const recurrenceRuleDropDownData = [
     { label: "Daily", value: "daily" },
     { label: "Weekly", value: "weekly" },
@@ -85,11 +86,22 @@ export default function ItemEditForm({
                   }}
                 ></TextInput>
               </View>
-              {isScheduled ? (
-                <View style={styles.individualEditableSetting}>
-                  <Text style={styles.editableSettingTitle}>
-                    Scheduled Start
-                  </Text>
+              <View style={styles.individualEditableSetting}>
+                <Text style={styles.editableSettingTitle}>Scheduled Start</Text>
+                <Switch
+                  value={isScheduled}
+                  onValueChange={(newValue) => {
+                    setIsScheduled(newValue);
+
+                    if (!newValue) {
+                      updateDraft({
+                        scheduled_start: null,
+                        manually_scheduled: false,
+                      });
+                    }
+                  }}
+                ></Switch>
+                {isScheduled ? (
                   <DateTimePicker
                     value={timeStringToDate(
                       draft.scheduled_start
@@ -104,11 +116,12 @@ export default function ItemEditForm({
                       }
                       updateDraft({
                         scheduled_start: extractTime(scheduledStart),
+                        manually_scheduled: true,
                       });
                     }}
                   ></DateTimePicker>
-                </View>
-              ) : null}
+                ) : null}
+              </View>
               {/*<View>
             <Text>Preferred Window</Text>
             {/*<Dropdown></Dropdown  QUICK TODO: Resolve
