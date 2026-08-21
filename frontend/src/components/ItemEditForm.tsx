@@ -1,5 +1,5 @@
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { StyleSheet, Switch, Text, TextInput, View } from "react-native";
 import type {
   CalendarItem,
@@ -20,10 +20,18 @@ export default function ItemEditForm({
   setDraft,
 }: itemEditFormProps) {
   const isTask = "duration_minutes" in draft;
+  const [isScheduled, setIsScheduled] = useState(
+    Boolean(isTask && draft.scheduled_start),
+  );
+
+  useEffect(() => {
+    setIsScheduled(Boolean(isTask && draft.scheduled_start));
+  }, [isTask, draft]);
+
+  console.log("Is scheduled", isScheduled);
   const [recurrenceOn, setRecurrenceOn] = useState(
     Boolean(draft["recurrence_rule"]),
   );
-
   const recurrenceRuleDropDownData = [
     { label: "Daily", value: "daily" },
     { label: "Weekly", value: "weekly" },
@@ -82,6 +90,47 @@ export default function ItemEditForm({
                     }
                   }}
                 ></TextInput>
+              </View>
+              <View style={styles.individualEditableSetting}>
+                <Text style={styles.editableSettingTitle}>Scheduled Start</Text>
+                <Switch
+                  value={isScheduled}
+                  onValueChange={(newValue) => {
+                    setIsScheduled(newValue);
+
+                    if (!newValue) {
+                      updateDraft({
+                        scheduled_start: null,
+                        manually_scheduled: false,
+                      });
+                    } else {
+                      updateDraft({
+                        scheduled_start: "00:00:00",
+                        manually_scheduled: true,
+                      });
+                    }
+                  }}
+                ></Switch>
+                {isScheduled ? (
+                  <DateTimePicker
+                    value={timeStringToDate(
+                      draft.scheduled_start
+                        ? draft.scheduled_start
+                        : "00:00:00",
+                    )} // Add default
+                    mode="time"
+                    is24Hour={true}
+                    onChange={(_, scheduledStart) => {
+                      if (!scheduledStart) {
+                        return;
+                      }
+                      updateDraft({
+                        scheduled_start: extractTime(scheduledStart),
+                        manually_scheduled: true,
+                      });
+                    }}
+                  ></DateTimePicker>
+                ) : null}
               </View>
               {/*<View>
             <Text>Preferred Window</Text>

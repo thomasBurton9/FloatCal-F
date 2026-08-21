@@ -30,9 +30,11 @@ import { SecondTopBarProps } from "../types/itemInfo";
 export default function ItemInfoModal({
   isVisible,
   item,
+  setSelectedItem,
   setCurrentModal,
   returnModal,
   setReturnModal,
+  editedPreset,
   onChangedData,
 }: ItemInfoModalProps) {
   const [editing, setEditing] = useState(false);
@@ -93,6 +95,7 @@ export default function ItemInfoModal({
       return;
     } else {
       onChangedData();
+      setSelectedItem(draft);
       // Maybe somehow slow stuff down here -> Given the data does not reload in time
       Alert.alert("Editing Item success");
       cancelEditing();
@@ -100,9 +103,9 @@ export default function ItemInfoModal({
     }
   }
   useEffect(() => {
-    setEditing(false); // Un needed?
-    setDraft(item ? calendarItemToDraft(item) : null);
-  }, [item, isVisible]); // Reset the draft if a new item is opened
+    setEditing(Boolean(isVisible && editedPreset && item)); // if opened due to drag to edit -> open editing
+    setDraft(editedPreset ?? (item ? calendarItemToDraft(item) : null));
+  }, [item, isVisible, editedPreset]); // Reset the draft if a new item is opened
 
   function closeModal() {
     setCurrentModal(returnModal);
