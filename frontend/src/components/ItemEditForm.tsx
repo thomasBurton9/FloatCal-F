@@ -1,5 +1,5 @@
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { StyleSheet, Switch, Text, TextInput, View } from "react-native";
 import type {
   CalendarItem,
@@ -23,6 +23,11 @@ export default function ItemEditForm({
   const [isScheduled, setIsScheduled] = useState(
     Boolean(isTask && draft.scheduled_start),
   );
+
+  useEffect(() => {
+    setIsScheduled(Boolean(isTask && draft.scheduled_start));
+  }, [isTask, draft]);
+
   console.log("Is scheduled", isScheduled);
   const [recurrenceOn, setRecurrenceOn] = useState(
     Boolean(draft["recurrence_rule"]),
@@ -97,6 +102,11 @@ export default function ItemEditForm({
                       updateDraft({
                         scheduled_start: null,
                         manually_scheduled: false,
+                      });
+                    } else {
+                      updateDraft({
+                        scheduled_start: "00:00:00",
+                        manually_scheduled: true,
                       });
                     }
                   }}
