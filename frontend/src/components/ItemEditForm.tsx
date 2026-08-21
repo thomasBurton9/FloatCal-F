@@ -20,6 +20,8 @@ export default function ItemEditForm({
   setDraft,
 }: itemEditFormProps) {
   const isTask = "duration_minutes" in draft;
+  const isScheduled = Boolean(isTask && draft.scheduled_start);
+  console.log("Is scheduled", isScheduled);
   const [recurrenceOn, setRecurrenceOn] = useState(
     Boolean(draft["recurrence_rule"]),
   );
@@ -83,6 +85,30 @@ export default function ItemEditForm({
                   }}
                 ></TextInput>
               </View>
+              {isScheduled ? (
+                <View style={styles.individualEditableSetting}>
+                  <Text style={styles.editableSettingTitle}>
+                    Scheduled Start
+                  </Text>
+                  <DateTimePicker
+                    value={timeStringToDate(
+                      draft.scheduled_start
+                        ? draft.scheduled_start
+                        : "00:00:00",
+                    )} // Add default
+                    mode="time"
+                    is24Hour={true}
+                    onChange={(_, scheduledStart) => {
+                      if (!scheduledStart) {
+                        return;
+                      }
+                      updateDraft({
+                        scheduled_start: extractTime(scheduledStart),
+                      });
+                    }}
+                  ></DateTimePicker>
+                </View>
+              ) : null}
               {/*<View>
             <Text>Preferred Window</Text>
             {/*<Dropdown></Dropdown  QUICK TODO: Resolve
