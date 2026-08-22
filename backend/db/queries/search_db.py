@@ -74,7 +74,7 @@ def search_items(
             session.execute(get_task_statement).scalars().all()
         )
 
-        updated_events = []
+        updated_events: list[FixedSearchEvent] = []
 
         for event in events:
             new_event = FixedSearchEvent(
@@ -91,7 +91,7 @@ def search_items(
             )
             updated_events.append(new_event)
 
-        updated_tasks = []
+        updated_tasks: list[FloatingSearchTask] = []
 
         for task in tasks:
             new_task = FloatingSearchTask(
@@ -109,7 +109,25 @@ def search_items(
                 manually_scheduled=task.manually_scheduled,
             )
             updated_tasks.append(new_task)
-        return [
+
+        combined_list: list[FloatingSearchTask | FixedSearchEvent] = [
             *updated_events,
             *updated_tasks,
-        ]  # Currently all events are returned at the start, before all tasks
+        ]
+
+        def sort_helper(key: FloatingSearchTask | FixedSearchEvent):
+            return key.date
+
+        combined_list.sort(key=sort_helper)
+
+        today = date.today()
+
+        upcoming_list: list[FloatingSearchTask | FixedSearchEvent] = [
+            item for item in combined_list if item.date >= today
+        ]
+        past_list: list[FloatingSearchTask | FixedSearchEvent] = [
+            item for item in combined_list if item.date < today
+        ]
+        return (
+            upcoming_list + past_list
+        )  # Items today and onwards are outputted first then past events after
