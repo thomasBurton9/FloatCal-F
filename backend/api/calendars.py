@@ -1,11 +1,14 @@
 import datetime as dt
 
+from fastapi import APIRouter, HTTPException
+
 from db.queries.calendar_db import (
     add_fixed_event,
     add_floating_task,
     add_member_to_calendar,
     check_calendar_exists,
     check_member_in_calendar,
+    get_calendar_info,
     get_calendar_member_entries,
     get_calendar_member_entry_info,
     list_items_for_calendar_date,
@@ -14,8 +17,8 @@ from db.queries.calendar_db import (
     list_tasks_for_user_date_range,
     list_tasks_for_user_date_range_base,
     remove_member_from_calendar,
+    update_calendar,
 )
-
 from db.queries.item_db import (
     check_event_exists,
     check_task_exists,
@@ -25,7 +28,7 @@ from db.queries.item_db import (
     update_floating_task,
 )
 from db.queries.user_db import check_user_exists
-from fastapi import APIRouter, HTTPException
+from schemas.calendar_schemas import UpdateCalendar
 from schemas.item_schemas import (
     CreateFixedEvent,
     CreateFloatingTask,
@@ -186,3 +189,21 @@ def remove_member_api(calendar_id: int, user_id: int):
         )
 
     remove_member_from_calendar(calendar_id, user_id)
+
+
+@router.patch("/{user_id}/{calendar_id}/update_calendar")
+def update_calendar_api(user_id: int, calendar_id: int, data: UpdateCalendar):
+    if not check_user_exists(user_id):
+        raise HTTPException(404, "User with specified user id does not exist")
+
+    if not check_calendar_exists(calendar_id):
+        raise HTTPException(404, "Calendar with specified calendar id does not exist")
+
+    if get_calendar_info(calendar_id).created_by_user_id != user_id:
+        raise HTTPException(404, "User is not the owner of the specified calendar")
+
+    try:
+        return update_calendar(user_id, calendar_id, data)
+
+    except ValueError as e:
+        raise HTTPException(422, str(e))

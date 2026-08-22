@@ -11,7 +11,7 @@ from db.models.users import User
 from db.queries.item_db import remove_event_session, remove_task_session
 from db.session import get_db
 from models.calendar_items import FloatingTaskWithCompletion
-from schemas.calendar_schemas import CreateCalendar
+from schemas.calendar_schemas import CreateCalendar, UpdateCalendar
 from schemas.item_schemas import CreateFixedEvent, CreateFloatingTask
 from schemas.user_schemas import UserInfo
 
@@ -390,3 +390,29 @@ def get_calendar_member_entry_info(calendar_id: int) -> list[UserInfo]:
             for user in user_info
         ]
         return user_info_short
+
+
+def update_calendar(user_id: int, calendar_id: int, data: UpdateCalendar):
+    get_calendar_statement = (
+        select(Calendar)
+        .where(Calendar.calendar_id == calendar_id)
+        .where(Calendar.created_by_user_id == user_id)
+    )
+
+    with get_db() as session:
+        calendar: Calendar | None = (
+            session.execute(get_calendar_statement).scalars().one_or_none()
+        )
+
+        # Shouldn't happen -> Should get caught in _api function
+        if calendar is None:
+            raise ValueError(
+                "Calendar does not exist or does not match with the user id"
+            )
+
+        updates = data.model_dump(exclude_unset=True)
+
+        for field, value in updates.items():
+            setattr(calendar, field, value)
+
+        session.commit()
