@@ -240,7 +240,8 @@ function CreateCalendarScreen({ setCurrentView, userId, setCalendars }) {
         {/* <Preview style={styles.colorPreview}></Preview>*/}
         <Panel1 />
         <HueSlider />
-        <OpacitySlider /> {/* TODO: Decide whether to include this */}
+        <OpacitySlider />{" "}
+        {/* TODO: Decide whether to include this, it can make everything look a bit cluttered */}
       </ColorPicker>
       <Pressable
         style={styles.createCalendarSubmit}

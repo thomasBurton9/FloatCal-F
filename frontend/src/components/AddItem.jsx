@@ -127,7 +127,7 @@ export default function AddItem({
                   }}
                 >
                   <Text
-                    // TODO: Change styles for X button inline with the working ones from ManageCalendars/ManageTasks
+                    // Styles for X button align with those from other screens/modals
                     style={{
                       textAlign: "center",
                       fontSize: 22,

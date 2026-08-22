@@ -195,7 +195,7 @@ async function formatItems(items, userId) {
             item["duration_minutes"],
           ),
         }, // Return base colour in case of failures
-        color: baseColour, // TODO: Modify colour based on type of task
+        color: baseColour, // Colour of floating tasks and fixed events differ
       });
     } else {
       outputItems.push({

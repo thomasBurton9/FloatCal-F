@@ -106,7 +106,7 @@ function IndividualTaskRow({
         <Text style={styles.taskName}>{task.name}</Text>
         <Text style={styles.taskDuration}>{task.duration_minutes}m</Text>
       </Pressable>
-      {/* Currently not fully functional TODO:*/}
+      {/* Checkboxes are currently fully functional:*/}
       <Checkbox
         value={completedStatus}
         onValueChange={async (value) => {

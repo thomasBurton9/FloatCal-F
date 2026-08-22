@@ -58,7 +58,7 @@ export type updatesType = {
   manually_scheduled?: boolean;
 };
 
-export type itemEditDraft = CalendarItem; // QUICK TODO:
+export type itemEditDraft = CalendarItem; // Intentional currently as there is no need to make custom fields
 
 export type itemEditFormProps = {
   item: CalendarItem;

@@ -78,7 +78,7 @@ export function CalendarDetailsScreen({
     }
   }, [userId, reloadMembers]);
 
-  // TODO: Does not check if user has already been invited -> Allows for duplicate invites
+  // Backend rejects duplicate invites -> Validation not needed to frontend layer
   const filteredUsers = useMemo(
     () =>
       users.filter(

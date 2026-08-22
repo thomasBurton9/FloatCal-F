@@ -67,7 +67,7 @@ export default function ItemEditForm({
                   return;
                 }
                 console.log(date);
-                // QUICK TODO: Make sure the format gets automatically converted
+                // Format converted to YYYY-MM-DD
                 updateDraft({ date: formatDate(date) });
               }}
             ></DateTimePicker>

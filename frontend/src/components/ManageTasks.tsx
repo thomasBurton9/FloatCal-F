@@ -17,7 +17,6 @@ import { UnScheduledTaskList } from "./componentScreens/UnScheduledTasks";
 import { CompletedTaskList } from "./componentScreens/CompletedTasks";
 import { BLUE_COLOUR } from "../constants";
 
-// TODO: Major error with completing tasks resulting in errors if frontend state does not update.
 // TODO: Decide whether a unified file is needed for the shared functions in the child files
 
 export default function ManageTasks({

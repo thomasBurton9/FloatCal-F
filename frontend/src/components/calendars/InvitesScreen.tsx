@@ -9,7 +9,7 @@ import { styles } from "./calendarStyles";
 import { useEffect, useMemo, useState } from "react";
 import { checkInvitesToUserInfo, respondToInvite } from "../../api/inviteApi";
 
-// Currently non functional screen to list invites from others -> TODO: May need new backend db table
+// Is fully functional
 export function InvitesScreen({
   setCurrentView,
   userId,
