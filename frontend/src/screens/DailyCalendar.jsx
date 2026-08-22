@@ -16,6 +16,7 @@ import SchedulingError from "../components/SchedulingError";
 import ItemInfoModal from "../components/ItemInfoModal";
 import { lightenHex } from "../helpers/colourHelpers";
 import { calendarItemFromDragEvent } from "../helpers/calendarDrag";
+import SearchModal from "../components/SearchModal";
 
 // Calendar at the top
 // Then bottombar 1/5th or 1/6th
@@ -331,6 +332,15 @@ function BottomBar({
         onItemPress={onItemPress}
         setReturnModal={setReturnModal}
       ></ManageTasks>
+      <SearchModal
+        isVisible={currentModal === "search"}
+        setCurrentModal={setCurrentModal}
+        userId={userId}
+        onItemPress={(item) => {
+          setReturnModal("search");
+          onItemPress(item);
+        }}
+      ></SearchModal>
       {schedulingErrorTask ? (
         <SchedulingError
           isVisible={currentModal === "schedulingError"}
