@@ -1,5 +1,12 @@
 import { useEffect, useState, useMemo } from "react";
-import { Text, View, Pressable, Switch, PanResponder } from "react-native";
+import {
+  Text,
+  View,
+  Pressable,
+  Switch,
+  PanResponder,
+  ScrollView,
+} from "react-native";
 import { fetchSettings, updateSettings } from "../api/settingsApi";
 import BufferEditor from "../components/settings/BufferEditor";
 import SchedulingWindowsEditor from "../components/settings/SchedulingWindowsEditor";
@@ -51,97 +58,102 @@ export default function SettingsScreen({ userId, setUserId, setPage }) {
   // settings changes to prevent cascading renders
   return (
     <>
-      <View {...panResponder.panHandlers} style={style.screen}>
-        <Pressable
-          style={style.backButton}
-          onPress={() => setPage("DailyCalendar")}
-        >
-          <Text style={style.backButtonText}>{"<"}</Text>
-        </Pressable>
-        <View>
-          <Text>Settings</Text>
-        </View>
-        <View style={style.settingsSection}>
-          <Text>Scheduler</Text>
-          <SleepWindowEditor
-            userId={userId}
-            settings={settings}
-            setSettings={setSettings}
-            editingKey={editingKey}
-            setEditingKey={setEditingKey}
-            sleepStart={sleepStart}
-            setSleepStart={setSleepStart}
-            sleepEnd={sleepEnd}
-            setSleepEnd={setSleepEnd}
-          />
-          <BufferEditor
-            userId={userId}
-            settings={settings}
-            setSettings={setSettings}
-            editingKey={editingKey}
-            setEditingKey={setEditingKey}
-            bufferMinutes={bufferMinutes}
-            setBufferMinutes={setBufferMinutes}
-          />
-          <SchedulingWindowsEditor
-            userId={userId}
-            settings={settings}
-            setSettings={setSettings}
-            editingKey={editingKey}
-            setEditingKey={setEditingKey}
-            schedulingWindows={schedulingWindows}
-            setSchedulingWindows={setSchedulingWindows}
-          />
-        </View>
-        <View style={style.settingsSection}>
-          <Text>Notifications</Text>
-          {/* Use react native - Switch for this - Done */}
-          <View style={style.individualSetting}>
-            <View style={style.individualSettingRow}>
-              <Text style={style.individualSettingInfo}>Notifications: </Text>
-              <View style={style.editSettingsButton}>
-                <Switch
-                  value={
-                    settings
-                      ? Boolean(settings["notifications_enabled"])
-                      : false // When settings has not been loaded, this defaults to false, however
-                    // The switch will be disabled if settings is not loaded
-                  }
-                  /* Lag may be noticable -> possibly switch to updating local state then calling the api */
-                  onValueChange={async (value) =>
-                    await updateSettings(
-                      userId,
-                      { notifications_enabled: value },
-                      setSettings,
-                    )
-                  }
-                  disabled={settings ? false : true}
-                ></Switch>
+      <ScrollView>
+        <View {...panResponder.panHandlers} style={style.screen}>
+          <Pressable
+            style={style.backButton}
+            onPress={() => setPage("DailyCalendar")}
+          >
+            <Text style={style.backButtonText}>{"<"}</Text>
+          </Pressable>
+          <View>
+            <Text style={style.title}>Settings</Text>
+          </View>
+          <View style={style.settingsSection}>
+            <Text style={style.subTitle}>Scheduler</Text>
+            <SleepWindowEditor
+              userId={userId}
+              settings={settings}
+              setSettings={setSettings}
+              editingKey={editingKey}
+              setEditingKey={setEditingKey}
+              sleepStart={sleepStart}
+              setSleepStart={setSleepStart}
+              sleepEnd={sleepEnd}
+              setSleepEnd={setSleepEnd}
+            />
+            <BufferEditor
+              userId={userId}
+              settings={settings}
+              setSettings={setSettings}
+              editingKey={editingKey}
+              setEditingKey={setEditingKey}
+              bufferMinutes={bufferMinutes}
+              setBufferMinutes={setBufferMinutes}
+            />
+            <SchedulingWindowsEditor
+              userId={userId}
+              settings={settings}
+              setSettings={setSettings}
+              editingKey={editingKey}
+              setEditingKey={setEditingKey}
+              schedulingWindows={schedulingWindows}
+              setSchedulingWindows={setSchedulingWindows}
+            />
+          </View>
+          <View style={style.settingsSection}>
+            <Text style={style.subTitle}>Notifications</Text>
+            {/* Use react native - Switch for this - Done */}
+            <View style={style.individualSetting}>
+              <View style={style.individualSettingRow}>
+                <Text style={style.individualSettingInfo}>Notifications: </Text>
+                <View style={style.editSettingsButton}>
+                  <Switch
+                    value={
+                      settings
+                        ? Boolean(settings["notifications_enabled"])
+                        : false // When settings has not been loaded, this defaults to false, however
+                      // The switch will be disabled if settings is not loaded
+                    }
+                    /* Lag may be noticable -> possibly switch to updating local state then calling the api */
+                    onValueChange={async (value) =>
+                      await updateSettings(
+                        userId,
+                        { notifications_enabled: value },
+                        setSettings,
+                      )
+                    }
+                    disabled={settings ? false : true}
+                  ></Switch>
+                </View>
+              </View>
+            </View>
+            <View style={style.individualSetting}>
+              <View style={style.individualSettingRow}>
+                <Text style={style.individualSettingInfo}>
+                  Sound:{" "}
+                  {settings ? settings["notification_sound"] : "Loading..."}
+                </Text>
+                {/* This won't be implemented currently, given expo go does not support custom notifications
+              if a workaround is found, this buttons functionality will start working*/}
+                {/* TODO: Remove this setting from rendering */}
+                <Pressable style={style.editSettingsButton}>
+                  <Text>{">"}</Text>
+                </Pressable>
               </View>
             </View>
           </View>
-          <View style={style.individualSetting}>
-            <View style={style.individualSettingRow}>
-              <Text style={style.individualSettingInfo}>
-                Sound:{" "}
-                {settings ? settings["notification_sound"] : "Loading..."}
-              </Text>
-              {/* This won't be implemented currently, given expo go does not support custom notifications
-              if a workaround is found, this buttons functionality will start working*/}
-              {/* TODO: Remove this setting from rendering */}
-              <Pressable style={style.editSettingsButton}>
-                <Text>{">"}</Text>
-              </Pressable>
-            </View>
+          <View style={style.settingsSection}>
+            <Text style={style.subTitle}>Account</Text>
+            <Pressable
+              style={style.logoutButton}
+              onPress={() => setUserId(false)}
+            >
+              <Text>Logout</Text>
+            </Pressable>
           </View>
         </View>
-        <View style={style.settingsSection}>
-          <Text>Account</Text>
-          <Pressable onPress={() => setUserId(false)}>
-            <Text>Logout</Text>
-          </Pressable>
-        </View>
-      </View>
+      </ScrollView>
     </>
   );
 }

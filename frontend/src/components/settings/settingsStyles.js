@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import { BLUE_COLOUR } from "../../constants";
 
 export const style = StyleSheet.create({
   screen: {
@@ -130,4 +131,20 @@ export const style = StyleSheet.create({
   },
   // TODO: Add style for delete and add window buttons in scheduling windows
   // TODO: Align the items in the 2 columns, Somehow
+  title: {
+    fontSize: 28,
+    paddingBottom: 10,
+  },
+  subTitle: {
+    fontSize: 20,
+    paddingBottom: 5,
+  },
+  logoutButton: {
+    backgroundColor: BLUE_COLOUR,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    borderStyle: "solid",
+    borderWidth: 1,
+  },
 });
