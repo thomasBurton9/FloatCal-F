@@ -38,21 +38,25 @@ export function UnScheduledTaskList({
       style={styles.unScheduledTaskScroll}
       contentContainerStyle={styles.unScheduledTaskContent}
     >
-      {sortedDates.map((date) => (
-        <TasksOnDate
-          key={date}
-          date={date}
-          tasks={orderedTasks[date]}
-          onReorder={(data) => {
-            setOrderedTasks((currentTasks) => ({
-              ...currentTasks, // Keep all other tasks
-              [date]: data, // But change the one that got reordered
-            }));
-          }}
-          onTaskPress={onTaskPress}
-          onStateUpdate={onStateUpdate}
-        ></TasksOnDate>
-      ))}
+      {sortedDates.length !== 0 ? (
+        sortedDates.map((date) => (
+          <TasksOnDate
+            key={date}
+            date={date}
+            tasks={orderedTasks[date]}
+            onReorder={(data) => {
+              setOrderedTasks((currentTasks) => ({
+                ...currentTasks, // Keep all other tasks
+                [date]: data, // But change the one that got reordered
+              }));
+            }}
+            onTaskPress={onTaskPress}
+            onStateUpdate={onStateUpdate}
+          ></TasksOnDate>
+        ))
+      ) : (
+        <Text style={styles.emptyStateText}>No Unscheduled Tasks Found</Text>
+      )}
     </NestableScrollContainer>
   );
 }
@@ -207,6 +211,11 @@ const styles = StyleSheet.create({
   },
   unScheduledTaskContent: {
     paddingBottom: 20,
+  },
+  emptyStateText: {
+    fontSize: 24,
+    marginTop: 10,
+    textAlign: "center",
   },
   dateHeader: {
     flexDirection: "row",

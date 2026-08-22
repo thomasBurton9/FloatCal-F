@@ -1,6 +1,6 @@
 import type { CompletedTaskListProps } from "../../types/manageTasks";
 import { useEffect, useState, useMemo } from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, Text } from "react-native";
 import { NestableScrollContainer } from "react-native-draggable-flatlist";
 import { TasksOnDate } from "./ScheduledTasks";
 
@@ -32,21 +32,25 @@ export function CompletedTaskList({
         style={styles.scheduledTaskScroll} // Styling for the actual visualised part of container -> e.g. 500px by 500px
         contentContainerStyle={styles.scheduledTaskContent} // Styling for the inner "infinite scroll view"
       >
-        {sortedDates.map((date) => (
-          <TasksOnDate
-            key={date}
-            date={date}
-            tasks={orderedTasks[date]}
-            onReorder={(data) =>
-              setOrderedTasks((currentTasks) => ({
-                ...currentTasks,
-                [date]: data,
-              }))
-            }
-            onTaskPress={onTaskPress}
-            onStateUpdate={onStateUpdate}
-          ></TasksOnDate>
-        ))}
+        {sortedDates.length !== 0 ? (
+          sortedDates.map((date) => (
+            <TasksOnDate
+              key={date}
+              date={date}
+              tasks={orderedTasks[date]}
+              onReorder={(data) =>
+                setOrderedTasks((currentTasks) => ({
+                  ...currentTasks,
+                  [date]: data,
+                }))
+              }
+              onTaskPress={onTaskPress}
+              onStateUpdate={onStateUpdate}
+            ></TasksOnDate>
+          ))
+        ) : (
+          <Text style={styles.emptyStateText}>No Completed Tasks Found</Text>
+        )}
       </NestableScrollContainer>
     </>
   );
@@ -58,5 +62,10 @@ const styles = StyleSheet.create({
   },
   scheduledTaskContent: {
     paddingBottom: 20,
+  },
+  emptyStateText: {
+    fontSize: 24,
+    marginTop: 10,
+    textAlign: "center",
   },
 });
