@@ -8,6 +8,7 @@ import {
   Switch,
   Alert,
   Keyboard,
+  ScrollView,
 } from "react-native";
 import { useEffect, useState } from "react";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -141,191 +142,197 @@ export default function AddItem({
                   {itemType === "Floating" ? "Add Task" : "Add Event"}
                 </Text>
               </View>
-              <ItemTypeSwitcher
-                itemType={itemType}
-                setItemType={setItemType}
-              ></ItemTypeSwitcher>
-              <View style={styles.addItemInputs}>
-                {/* Name */}
-                <View style={styles.individualInput}>
-                  <Text>Name</Text>
-                  <TextInput
-                    value={itemFields.name}
-                    maxLength={63}
-                    style={styles.inputField}
-                    onChangeText={(name) =>
-                      setItemFields({ ...itemFields, name })
-                    }
-                  ></TextInput>
-                </View>
-                {/* Date */}
-                <View style={styles.individualInput}>
-                  <Text>Date</Text>
-                  <DateTimePicker
-                    value={itemFields.date}
-                    mode="date"
-                    onChange={(_, date) => {
-                      if (!date) {
-                        return;
-                      }
-                      setItemFields({ ...itemFields, date });
-                    }}
-                  ></DateTimePicker>
-                </View>
-                {/* Calendar */}
-                <View style={styles.individualInput}>
-                  <Text>Calendar</Text>
-                  <Dropdown
-                    data={calendars}
-                    labelField="name"
-                    valueField="calendar_id"
-                    value={itemFields.calendar}
-                    placeholder="Select calendar"
-                    style={styles.dropdown}
-                    onChange={(calendar) =>
-                      setItemFields({
-                        ...itemFields,
-                        calendar: calendar.calendar_id,
-                      })
-                    }
-                  ></Dropdown>
-                </View>
-                {itemType === "Floating" ? (
-                  <>
-                    {/* Duration */}
-                    <View style={styles.individualInput}>
-                      <Text>Duration in minutes</Text>
-                      <TextInput
-                        value={itemFields.duration}
-                        inputMode="numeric"
-                        placeholder="1-1440"
-                        style={styles.inputField}
-                        onChangeText={(duration) =>
-                          setItemFields({ ...itemFields, duration })
-                        }
-                      ></TextInput>
-                    </View>
-                    {/* Preferred window */}
-                    <View style={styles.individualInput}>
-                      <Text>Preferred window</Text>
-                      <Dropdown
-                        data={preferredWindowOptions}
-                        labelField="name"
-                        valueField="name"
-                        value={itemFields.preferredWindow}
-                        placeholder="No preference"
-                        style={styles.dropdown}
-                        onChange={(preferredWindow) =>
-                          setItemFields({
-                            ...itemFields,
-                            preferredWindow: preferredWindow.name,
-                          })
-                        }
-                      ></Dropdown>
-                    </View>
-                  </>
-                ) : (
-                  <>
-                    {/* Start time */}
-                    <View style={styles.individualInput}>
-                      <Text>Start time</Text>
-                      <DateTimePicker
-                        value={itemFields.startTime}
-                        mode="time"
-                        is24Hour={true}
-                        onChange={(_, startTime) => {
-                          if (!startTime) {
-                            return;
-                          }
-                          setItemFields({ ...itemFields, startTime });
-                        }}
-                      ></DateTimePicker>
-                    </View>
-                    {/* End time */}
-                    <View style={styles.individualInput}>
-                      <Text>End time</Text>
-                      <DateTimePicker
-                        value={itemFields.endTime}
-                        mode="time"
-                        is24Hour={true}
-                        onChange={(_, endTime) => {
-                          if (!endTime) {
-                            return;
-                          }
-                          setItemFields({ ...itemFields, endTime });
-                        }}
-                      ></DateTimePicker>
-                    </View>
-                  </>
-                )}
-                {/* Notes */}
-                <View style={styles.individualInput}>
-                  <Text>Notes</Text>
-                  <TextInput
-                    value={itemFields.notes}
-                    maxLength={319}
-                    multiline={true}
-                    style={styles.inputField}
-                    onChangeText={(notes) =>
-                      setItemFields({ ...itemFields, notes })
-                    }
-                  ></TextInput>
-                </View>
-                {/* Recurrence */}
-                <View style={styles.individualInput}>
-                  <Text>Recurrence</Text>
-                  <Switch
-                    trackColor={{ true: GREEN_COLOUR }}
-                    value={itemFields.recurrenceOn}
-                    onValueChange={(recurrenceOn) =>
-                      setItemFields({ ...itemFields, recurrenceOn })
-                    }
-                  ></Switch>
-                </View>
-                {itemFields.recurrenceOn ? (
+              <ScrollView
+                showsVerticalScrollIndicator={false}
+                style={styles.addItemScrollView}
+                contentContainerStyle={styles.addItemScrollContent}
+              >
+                <ItemTypeSwitcher
+                  itemType={itemType}
+                  setItemType={setItemType}
+                ></ItemTypeSwitcher>
+                <View style={styles.addItemInputs}>
+                  {/* Name */}
                   <View style={styles.individualInput}>
-                    <Text>Recurrence rule</Text>
+                    <Text>Name</Text>
                     <TextInput
-                      value={itemFields.recurrenceRule}
-                      placeholder="daily, weekly, fortnightly, monthly or yearly"
+                      value={itemFields.name}
+                      maxLength={63}
                       style={styles.inputField}
-                      onChangeText={(recurrenceRule) =>
-                        setItemFields({ ...itemFields, recurrenceRule })
+                      onChangeText={(name) =>
+                        setItemFields({ ...itemFields, name })
                       }
                     ></TextInput>
                   </View>
-                ) : null}
-                {/* Reminder */}
-                <View style={styles.individualInput}>
-                  <Text>Reminder</Text>
-                  <Switch
-                    trackColor={{ true: GREEN_COLOUR }}
-                    value={itemFields.remindersOn}
-                    onValueChange={(remindersOn) =>
-                      setItemFields({ ...itemFields, remindersOn })
+                  {/* Date */}
+                  <View style={styles.individualInput}>
+                    <Text>Date</Text>
+                    <DateTimePicker
+                      value={itemFields.date}
+                      mode="date"
+                      onChange={(_, date) => {
+                        if (!date) {
+                          return;
+                        }
+                        setItemFields({ ...itemFields, date });
+                      }}
+                    ></DateTimePicker>
+                  </View>
+                  {/* Calendar */}
+                  <View style={styles.individualInput}>
+                    <Text>Calendar</Text>
+                    <Dropdown
+                      data={calendars}
+                      labelField="name"
+                      valueField="calendar_id"
+                      value={itemFields.calendar}
+                      placeholder="Select calendar"
+                      style={styles.dropdown}
+                      onChange={(calendar) =>
+                        setItemFields({
+                          ...itemFields,
+                          calendar: calendar.calendar_id,
+                        })
+                      }
+                    ></Dropdown>
+                  </View>
+                  {itemType === "Floating" ? (
+                    <>
+                      {/* Duration */}
+                      <View style={styles.individualInput}>
+                        <Text>Duration in minutes</Text>
+                        <TextInput
+                          value={itemFields.duration}
+                          inputMode="numeric"
+                          placeholder="1-1440"
+                          style={styles.inputField}
+                          onChangeText={(duration) =>
+                            setItemFields({ ...itemFields, duration })
+                          }
+                        ></TextInput>
+                      </View>
+                      {/* Preferred window */}
+                      <View style={styles.individualInput}>
+                        <Text>Preferred window</Text>
+                        <Dropdown
+                          data={preferredWindowOptions}
+                          labelField="name"
+                          valueField="name"
+                          value={itemFields.preferredWindow}
+                          placeholder="No preference"
+                          style={styles.dropdown}
+                          onChange={(preferredWindow) =>
+                            setItemFields({
+                              ...itemFields,
+                              preferredWindow: preferredWindow.name,
+                            })
+                          }
+                        ></Dropdown>
+                      </View>
+                    </>
+                  ) : (
+                    <>
+                      {/* Start time */}
+                      <View style={styles.individualInput}>
+                        <Text>Start time</Text>
+                        <DateTimePicker
+                          value={itemFields.startTime}
+                          mode="time"
+                          is24Hour={true}
+                          onChange={(_, startTime) => {
+                            if (!startTime) {
+                              return;
+                            }
+                            setItemFields({ ...itemFields, startTime });
+                          }}
+                        ></DateTimePicker>
+                      </View>
+                      {/* End time */}
+                      <View style={styles.individualInput}>
+                        <Text>End time</Text>
+                        <DateTimePicker
+                          value={itemFields.endTime}
+                          mode="time"
+                          is24Hour={true}
+                          onChange={(_, endTime) => {
+                            if (!endTime) {
+                              return;
+                            }
+                            setItemFields({ ...itemFields, endTime });
+                          }}
+                        ></DateTimePicker>
+                      </View>
+                    </>
+                  )}
+                  {/* Notes */}
+                  <View style={styles.individualInput}>
+                    <Text>Notes</Text>
+                    <TextInput
+                      value={itemFields.notes}
+                      maxLength={319}
+                      multiline={true}
+                      style={styles.inputField}
+                      onChangeText={(notes) =>
+                        setItemFields({ ...itemFields, notes })
+                      }
+                    ></TextInput>
+                  </View>
+                  {/* Recurrence */}
+                  <View style={styles.individualInput}>
+                    <Text>Recurrence</Text>
+                    <Switch
+                      trackColor={{ true: GREEN_COLOUR }}
+                      value={itemFields.recurrenceOn}
+                      onValueChange={(recurrenceOn) =>
+                        setItemFields({ ...itemFields, recurrenceOn })
+                      }
+                    ></Switch>
+                  </View>
+                  {itemFields.recurrenceOn ? (
+                    <View style={styles.individualInput}>
+                      <Text>Recurrence rule</Text>
+                      <TextInput
+                        value={itemFields.recurrenceRule}
+                        placeholder="daily, weekly, fortnightly, monthly or yearly"
+                        style={styles.inputField}
+                        onChangeText={(recurrenceRule) =>
+                          setItemFields({ ...itemFields, recurrenceRule })
+                        }
+                      ></TextInput>
+                    </View>
+                  ) : null}
+                  {/* Reminder */}
+                  <View style={styles.individualInput}>
+                    <Text>Reminder</Text>
+                    <Switch
+                      trackColor={{ true: GREEN_COLOUR }}
+                      value={itemFields.remindersOn}
+                      onValueChange={(remindersOn) =>
+                        setItemFields({ ...itemFields, remindersOn })
+                      }
+                    ></Switch>
+                  </View>
+                  {/* Add Item Button*/}
+                  <Pressable
+                    style={styles.addItemButton}
+                    onPress={() =>
+                      handleAddItem(
+                        itemType,
+                        setCurrentModal,
+                        itemFields,
+                        setItemFields,
+                        onItemAdded,
+                        setSchedulingErrorTask,
+                        clearInitialPreset,
+                      )
                     }
-                  ></Switch>
+                  >
+                    <Text>
+                      {itemType === "Floating" ? "Add Task" : "Add Event"}
+                    </Text>
+                  </Pressable>
                 </View>
-                {/* Add Item Button*/}
-                <Pressable
-                  style={styles.addItemButton}
-                  onPress={() =>
-                    handleAddItem(
-                      itemType,
-                      setCurrentModal,
-                      itemFields,
-                      setItemFields,
-                      onItemAdded,
-                      setSchedulingErrorTask,
-                      clearInitialPreset,
-                    )
-                  }
-                >
-                  <Text>
-                    {itemType === "Floating" ? "Add Task" : "Add Event"}
-                  </Text>
-                </Pressable>
-              </View>
+              </ScrollView>
             </View>
           </SafeAreaView>
         </Pressable>
@@ -523,7 +530,16 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     borderStyle: "solid",
     borderRadius: 10,
-    borderWidth: 3,
+    borderWidth: 2,
+  },
+  addItemScrollView: {
+    width: "100%",
+    flex: 1,
+  },
+  addItemScrollContent: {
+    width: "100%",
+    alignItems: "center",
+    paddingBottom: 500,
   },
   currentType: {
     backgroundColor: BLUE_COLOUR,
@@ -570,6 +586,7 @@ const styles = StyleSheet.create({
     borderStyle: "solid",
     borderWidth: 2,
     borderRadius: 6,
+    padding: 5,
   },
   dropdown: {
     minHeight: 34,

@@ -390,6 +390,7 @@ const styles = StyleSheet.create({
     padding: 10,
     gap: 10,
     width: "100%",
+    alignItems: "center",
   },
   itemName: {
     fontSize: 20,
@@ -402,6 +403,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#156082",
     borderStyle: "solid",
     borderWidth: 2,
+    paddingVertical: 4,
   },
   infoRow: {
     minHeight: 40,
@@ -456,11 +458,12 @@ const styles = StyleSheet.create({
   },
   deleteButton: {
     backgroundColor: RED_WARNING_COLOUR,
-    paddingVertical: 7,
-    paddingHorizontal: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
     borderStyle: "solid",
     borderWidth: 2,
-    borderRadius: 5,
+    borderRadius: 10,
+    marginTop: 10,
   },
   deleteButtonText: {
     fontSize: 17,

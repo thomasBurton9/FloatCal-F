@@ -474,8 +474,10 @@ const style = StyleSheet.create({
   smallButtonAdd: {
     // Align the "+" in the center
     textAlign: "center", // Make sure the + is aligned
-    fontSize: 28,
-    lineHeight: 28,
+    justifyContent: "center",
+    alignItems: "center",
+    fontSize: 32,
+    lineHeight: 33,
   },
   bigButton: {
     width: 91,
