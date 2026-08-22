@@ -46,7 +46,7 @@ export function InvitesScreen({
 
   return (
     <>
-      <ScrollView>
+      <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.placeholderView}>
           <BackButton setCurrentView={setCurrentView}></BackButton>
           <Text style={[styles.invitesTitle]}>Invites</Text>
