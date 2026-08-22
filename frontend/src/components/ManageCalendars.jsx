@@ -94,14 +94,16 @@ export default function ManageCalendars({
     }
     // When a calendar is selected
     return (
-      <CalendarDetailsScreen
-        selectedCalendar={selectedCalendar}
-        setCurrentView={setCurrentView}
-        userId={userId}
-        setCalendars={setCalendars}
-        reloadCalendars={reloadCalendars}
-        setReloadCalendars={setReloadCalendars}
-      ></CalendarDetailsScreen>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <CalendarDetailsScreen
+          selectedCalendar={selectedCalendar}
+          setCurrentView={setCurrentView}
+          userId={userId}
+          setCalendars={setCalendars}
+          reloadCalendars={reloadCalendars}
+          setReloadCalendars={setReloadCalendars}
+        ></CalendarDetailsScreen>
+      </ScrollView>
     );
   }
 

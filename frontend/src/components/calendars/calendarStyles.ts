@@ -268,6 +268,9 @@ export const styles = StyleSheet.create({
   sendInviteText: {
     fontSize: 16,
   },
+  detailColourText: {
+    fontSize: 20,
+  },
 });
 
 export const calendarTheme = {

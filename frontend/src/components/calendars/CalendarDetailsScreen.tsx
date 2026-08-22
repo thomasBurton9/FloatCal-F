@@ -101,7 +101,7 @@ export function CalendarDetailsScreen({
           flexDirection: "row",
         }}
       >
-        <Text>Colour: </Text>
+        <Text style={styles.detailColourText}>Colour: </Text>
         <View
           style={{
             width: 100,
