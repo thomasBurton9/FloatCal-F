@@ -119,6 +119,38 @@ export async function removeCalendar(userId, calendarId) {
   }
 }
 
+export async function updateCalendar(userId, calendarId, updates) {
+  try {
+    const updateCalendarUrl =
+      API_URL +
+      "/" +
+      String(userId) +
+      "/" +
+      String(calendarId) +
+      "/update_calendar";
+    const response = await fetch(updateCalendarUrl, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(updates),
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("Error updating calendar:", data);
+      return { success: false, error: data.detail };
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error updating calendar:", error);
+    return {
+      success: false,
+    };
+  }
+}
+
 export async function addCalendarMember(calendarId, userId) {
   try {
     const addMemberUrl =
