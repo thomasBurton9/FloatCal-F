@@ -1,9 +1,5 @@
 import { StyleSheet } from "react-native";
-import {
-  BLUE_COLOUR,
-  GREEN_COLOUR,
-  RED_WARNING_COLOUR,
-} from "../../constants";
+import { BLUE_COLOUR, GREEN_COLOUR, RED_WARNING_COLOUR } from "../../constants";
 
 export const style = StyleSheet.create({
   screen: {

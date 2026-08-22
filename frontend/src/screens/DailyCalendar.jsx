@@ -19,6 +19,7 @@ import { calendarItemFromDragEvent } from "../helpers/calendarDrag";
 import SearchModal from "../components/SearchModal";
 import ManuallyScheduleTask from "../components/ManuallyScheduleTask";
 import { RED_WARNING_COLOUR } from "../constants.js";
+import { calendarTheme } from "../components/calendars/calendarStyles";
 
 // Calendar at the top
 // Then bottombar 1/5th or 1/6th
@@ -248,6 +249,7 @@ function CalendarView({
     <>
       <View style={style.mainCalendarContainer}>
         <CalendarContainer
+          theme={calendarTheme}
           onDragCreateEventEnd={onDragCreateEvent}
           onDragEventEnd={onDragEdit}
           ref={calendarRef}

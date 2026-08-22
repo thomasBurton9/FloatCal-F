@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { BLUE_COLOUR, RED_WARNING_COLOUR } from "../../constants";
+import { BLUE_COLOUR, RED_WARNING_COLOUR, TEXT_ON_DARK } from "../../constants";
 export const styles = StyleSheet.create({
   deleteButton: {
     backgroundColor: RED_WARNING_COLOUR,
@@ -36,7 +36,7 @@ export const styles = StyleSheet.create({
     alignItems: "center",
   },
   createCalendarSubmitText: {
-    color: "white",
+    color: TEXT_ON_DARK,
   },
   manageCalendarsModal: {
     paddingBottom: 0,
@@ -171,7 +171,7 @@ export const styles = StyleSheet.create({
     marginBottom: 5,
   },
   inviteAcceptText: {
-    color: "white",
+    color: TEXT_ON_DARK,
   },
   inviteDeclineButton: {
     backgroundColor: "white",
@@ -267,3 +267,10 @@ export const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
+
+export const calendarTheme = {
+  colors: {
+    primary: BLUE_COLOUR,
+    onPrimary: TEXT_ON_DARK,
+  },
+};
