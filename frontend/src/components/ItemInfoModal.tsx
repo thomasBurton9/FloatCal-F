@@ -15,7 +15,11 @@ import type {
   ItemInfoModalProps,
   updatesType,
 } from "../types/calendarItems";
-import { addMinutesToDateTime, extractTime } from "../helpers/dateHelpers";
+import {
+  addMinutesToDateTime,
+  extractTime,
+  formatDateUser,
+} from "../helpers/dateHelpers";
 import calendarIcon from "../../assets/calendar_icon64x64.png";
 import clockIcon from "../../assets/clock_icon64x64.png";
 import recurrenceIcon from "../../assets/recurrence_icon64x64.png";
@@ -25,7 +29,6 @@ import { useEffect, useState } from "react";
 import ItemEditForm from "./ItemEditForm";
 import { updateItem } from "../api/itemsApi";
 import { SecondTopBarProps } from "../types/itemInfo";
-
 // TODO: Make it align perfectly with design tools
 export default function ItemInfoModal({
   isVisible,
@@ -194,7 +197,7 @@ function ItemDetails({
       <SecondTopBar isTask={isTask} itemName={item.name}></SecondTopBar>
       <View style={styles.itemDetailsContent}>
         <View style={styles.infoRow}>
-          <Text style={styles.dateLabel}>{formatDate(item.date)}</Text>
+          <Text style={styles.dateLabel}>{formatDateUser(item.date)}</Text>
         </View>
         <InfoRow icon={clockIcon} label="Time:" value={time} />
         <InfoRow
@@ -288,16 +291,6 @@ function getDuration(start_time: string, end_time: string): number {
   const duration = (endHours - startHours) * 60 + (endMinutes - startMinutes);
 
   return duration;
-}
-
-// Inputs YYYY-MM-DD , outputs Day, Mon DD, YYYY
-function formatDate(date: string): string {
-  const [year, month, day] = date.split("-").map(Number);
-  const parsedDate = new Date(year, month - 1, day);
-  const weekday = parsedDate.toLocaleDateString("en-US", { weekday: "long" });
-  const monthName = parsedDate.toLocaleDateString("en-US", { month: "short" }); // i.e. Jan instead of January
-
-  return `${weekday}, ${monthName} ${String(day).padStart(2, "0")}, ${year}`;
 }
 
 function formatTaskTime(

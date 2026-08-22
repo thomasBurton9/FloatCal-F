@@ -1,3 +1,5 @@
+import { weekdayLengthType } from "../types/helpers/dateHelpers";
+
 // Formats date object into api receivable YYYY-MM-DD
 export function formatDate(date: Date | string): string {
   if (!date) {
@@ -53,4 +55,19 @@ export function addMinutesToDateTime(
   const newHours: string = String(newDateTime.getHours()).padStart(2, "0");
   const newMinutes: string = String(newDateTime.getMinutes()).padStart(2, "0"); // 'minutes' has already been declared??
   return `${formatDate(newDateTime)}T${newHours}:${newMinutes}:00`;
+}
+
+// Inputs YYYY-MM-DD , outputs Day, Mon DD, YYYY
+export function formatDateUser(
+  date: string,
+  weekdayLength: weekdayLengthType = "long",
+): string {
+  const [year, month, day] = date.split("-").map(Number);
+  const parsedDate = new Date(year, month - 1, day);
+  const weekday = parsedDate.toLocaleDateString("en-US", {
+    weekday: weekdayLength,
+  });
+  const monthName = parsedDate.toLocaleDateString("en-US", { month: "short" }); // i.e. Jan instead of January
+
+  return `${weekday}, ${monthName} ${String(day).padStart(2, "0")}, ${year}`;
 }

@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from api import authentication, calendars, health, items, users, invite
+from api import authentication, calendars, health, items, users, invite, search
 
 
 app = FastAPI(title="FloatCal API backend")
@@ -12,7 +12,7 @@ app.include_router(items.router)
 app.include_router(users.router)
 app.include_router(authentication.router)
 app.include_router(invite.router)
-
+app.include_router(search.router)
 # Allow testing using react native web
 # origins = [
 #     "http://localhost:8000",
