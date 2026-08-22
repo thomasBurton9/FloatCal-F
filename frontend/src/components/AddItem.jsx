@@ -20,7 +20,7 @@ import {
   createFloatingTask,
 } from "../api/itemApi.js";
 import { SafeAreaView } from "react-native-safe-area-context"; // Modal does not respect the safearea view from App.jsx
-import { BLUE_COLOUR } from "../constants.js";
+import { BLUE_COLOUR, GREEN_COLOUR } from "../constants.js";
 import { formatDate } from "../helpers/dateHelpers.ts";
 
 function createEmptyItemFields() {
@@ -275,6 +275,7 @@ export default function AddItem({
                 <View style={styles.individualInput}>
                   <Text>Recurrence</Text>
                   <Switch
+                    trackColor={{ true: GREEN_COLOUR }}
                     value={itemFields.recurrenceOn}
                     onValueChange={(recurrenceOn) =>
                       setItemFields({ ...itemFields, recurrenceOn })
@@ -298,6 +299,7 @@ export default function AddItem({
                 <View style={styles.individualInput}>
                   <Text>Reminder</Text>
                   <Switch
+                    trackColor={{ true: GREEN_COLOUR }}
                     value={itemFields.remindersOn}
                     onValueChange={(remindersOn) =>
                       setItemFields({ ...itemFields, remindersOn })

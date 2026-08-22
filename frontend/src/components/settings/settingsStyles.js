@@ -1,5 +1,9 @@
 import { StyleSheet } from "react-native";
-import { BLUE_COLOUR, RED_WARNING_COLOUR } from "../../constants";
+import {
+  BLUE_COLOUR,
+  GREEN_COLOUR,
+  RED_WARNING_COLOUR,
+} from "../../constants";
 
 export const style = StyleSheet.create({
   screen: {
@@ -75,8 +79,8 @@ export const style = StyleSheet.create({
     alignItems: "center", // Make sure text is in the centre
   },
   saveEditSettingsButton: {
-    borderColor: "green",
-    backgroundColor: "#00FF0080", // 50% Opacity
+    borderColor: GREEN_COLOUR,
+    backgroundColor: GREEN_COLOUR + "B3", // 70% Opacity
   },
   cancelEditSettingsButton: {
     borderColor: RED_WARNING_COLOUR,

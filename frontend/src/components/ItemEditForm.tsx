@@ -13,6 +13,7 @@ import {
 } from "../helpers/dateHelpers";
 import { Dropdown } from "react-native-element-dropdown";
 import { SecondTopBar } from "./ItemInfoModal";
+import { GREEN_COLOUR } from "../constants";
 
 export default function ItemEditForm({
   item,
@@ -94,6 +95,7 @@ export default function ItemEditForm({
               <View style={styles.individualEditableSetting}>
                 <Text style={styles.editableSettingTitle}>Scheduled Start</Text>
                 <Switch
+                  trackColor={{ true: GREEN_COLOUR }}
                   value={isScheduled}
                   onValueChange={(newValue) => {
                     setIsScheduled(newValue);
@@ -185,6 +187,7 @@ export default function ItemEditForm({
             <Text style={styles.editableSettingTitle}>Recurrence</Text>
             <View style={styles.recurrenceField}>
               <Switch
+                trackColor={{ true: GREEN_COLOUR }}
                 value={recurrenceOn}
                 onValueChange={(newValue) => {
                   setRecurrenceOn(newValue);
@@ -218,6 +221,7 @@ export default function ItemEditForm({
           <View style={styles.individualEditableSetting}>
             <Text style={styles.editableSettingTitle}>Reminder</Text>
             <Switch
+              trackColor={{ true: GREEN_COLOUR }}
               value={draft.reminder}
               onValueChange={(reminder) => {
                 updateDraft({ reminder });

@@ -13,6 +13,7 @@ import SchedulingWindowsEditor from "../components/settings/SchedulingWindowsEdi
 import SleepWindowEditor from "../components/settings/SleepWindowEditor";
 import { style } from "../components/settings/settingsStyles";
 import { handleDeleteAccount } from "../components/settings/deleteAccount";
+import { GREEN_COLOUR } from "../constants";
 
 export default function SettingsScreen({ userId, setUserId, setPage }) {
   const [settings, setSettings] = useState(null);
@@ -110,6 +111,7 @@ export default function SettingsScreen({ userId, setUserId, setPage }) {
                 <Text style={style.individualSettingInfo}>Notifications: </Text>
                 <View style={style.editSettingsButton}>
                   <Switch
+                    trackColor={{ true: GREEN_COLOUR }}
                     value={
                       settings
                         ? Boolean(settings["notifications_enabled"])
