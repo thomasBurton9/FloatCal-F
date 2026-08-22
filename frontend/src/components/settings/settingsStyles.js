@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { BLUE_COLOUR } from "../../constants";
+import { BLUE_COLOUR, RED_WARNING_COLOUR } from "../../constants";
 
 export const style = StyleSheet.create({
   screen: {
@@ -79,8 +79,8 @@ export const style = StyleSheet.create({
     backgroundColor: "#00FF0080", // 50% Opacity
   },
   cancelEditSettingsButton: {
-    borderColor: "red",
-    backgroundColor: "#FF000080",
+    borderColor: RED_WARNING_COLOUR,
+    backgroundColor: RED_WARNING_COLOUR + "99", // 60% opacity
   },
   editSettingsDialog: {
     paddingHorizontal: 20,
@@ -152,7 +152,7 @@ export const style = StyleSheet.create({
     alignItems: "center",
   },
   deleteAccountButton: {
-    backgroundColor: "red",
+    backgroundColor: RED_WARNING_COLOUR,
     paddingVertical: 10,
     paddingHorizontal: 10,
     borderRadius: 10,

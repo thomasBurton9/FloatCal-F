@@ -20,6 +20,7 @@ import {
   fetchCalendars,
   removeCalendar,
 } from "../api/calendarApi";
+import { RED_WARNING_COLOUR } from "../constants";
 import ColorPicker, {
   colorKit,
   HueSlider,
@@ -208,7 +209,7 @@ function CalendarButton({ calendar, setCurrentView, setSelectedCalendar }) {
 function CreateCalendarScreen({ setCurrentView, userId, setCalendars }) {
   const [calendarFields, setCalendarFields] = useState({
     name: "",
-    colour: "#FF0000FF",
+    colour: RED_WARNING_COLOUR + "FF",
   });
 
   return (
@@ -240,7 +241,7 @@ function CreateCalendarScreen({ setCurrentView, userId, setCalendars }) {
         {/* <Preview style={styles.colorPreview}></Preview>*/}
         <Panel1 />
         <HueSlider />
-        <OpacitySlider />{" "}
+        <OpacitySlider />
         {/* TODO: Decide whether to include this, it can make everything look a bit cluttered */}
       </ColorPicker>
       <Pressable
@@ -287,7 +288,7 @@ async function handleCreateCalendar(
   setCalendars(calendarData);
   setCalendarFields({
     name: "",
-    colour: "#FF0000FF",
+    colour: RED_WARNING_COLOUR + "FF",
   });
   setCurrentView("list");
 }

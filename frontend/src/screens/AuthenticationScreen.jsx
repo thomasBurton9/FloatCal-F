@@ -7,7 +7,7 @@ import {
   Image,
 } from "react-native";
 import { useState } from "react";
-import { API_URL, BLUE_COLOUR } from "../constants.js";
+import { API_URL, BLUE_COLOUR, RED_WARNING_COLOUR } from "../constants.js";
 
 export default function AuthenticationScreen({ onLogin }) {
   const [authenticationMode, setAuthenticationMode] = useState("Login");
@@ -377,7 +377,7 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 7,
   },
   errorMessage: {
-    color: "red",
+    color: RED_WARNING_COLOUR,
   },
 
   inputIconRow: {

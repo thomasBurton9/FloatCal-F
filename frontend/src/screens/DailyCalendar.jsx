@@ -18,6 +18,7 @@ import { lightenHex } from "../helpers/colourHelpers";
 import { calendarItemFromDragEvent } from "../helpers/calendarDrag";
 import SearchModal from "../components/SearchModal";
 import ManuallyScheduleTask from "../components/ManuallyScheduleTask";
+import { RED_WARNING_COLOUR } from "../constants.js";
 
 // Calendar at the top
 // Then bottombar 1/5th or 1/6th
@@ -177,7 +178,7 @@ async function formatItems(items, userId) {
       if (baseColour) {
         baseColour = lightenHex(baseColour, 0.3);
       } else {
-        baseColour = "#FF0000FF";
+        baseColour = RED_WARNING_COLOUR + "FF";
       }
 
       outputItems.push({
@@ -207,7 +208,9 @@ async function formatItems(items, userId) {
         },
         start: { dateTime: item["date"] + "T" + item["start_time"] }, // calendar package wants explicit 'T' separator
         end: { dateTime: item["date"] + "T" + item["end_time"] },
-        color: getCalendarColour(calendars, item["calendar_id"]) || "#FF0000FF",
+        color:
+          getCalendarColour(calendars, item["calendar_id"]) ||
+          RED_WARNING_COLOUR + "FF",
       });
     }
   }

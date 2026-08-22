@@ -23,6 +23,7 @@ import {
 import calendarIcon from "../../assets/calendar_icon64x64.png";
 import clockIcon from "../../assets/clock_icon64x64.png";
 import recurrenceIcon from "../../assets/recurrence_icon64x64.png";
+import { RED_WARNING_COLOUR } from "../constants";
 import reminderIcon from "../../assets/reminder_bell_icon64x64.png";
 import { deleteItem } from "../api/itemApi";
 import { useEffect, useState } from "react";
@@ -454,7 +455,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   deleteButton: {
-    backgroundColor: "red",
+    backgroundColor: RED_WARNING_COLOUR,
     paddingVertical: 7,
     paddingHorizontal: 10,
     borderStyle: "solid",

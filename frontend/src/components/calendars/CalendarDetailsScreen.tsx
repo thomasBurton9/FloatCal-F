@@ -12,6 +12,7 @@ import { fetchCalendarMemberEntryInfo } from "../../api/memberApi";
 import { Dropdown } from "react-native-element-dropdown";
 import { listUsers } from "../../api/userApi";
 import { inviteUser } from "../../api/inviteApi";
+import { RED_WARNING_COLOUR } from "../../constants";
 
 // Button to return to main manage calendar screen
 export function BackButton({
@@ -169,7 +170,6 @@ export function CalendarDetailsScreen({
             }}
             style={styles.sendInviteButton}
           >
-            {" "}
             <Text style={styles.sendInviteText}>Send Invite</Text>
           </Pressable>
           <Pressable
@@ -224,7 +224,7 @@ function IndividualMember({
     onPress = () => null;
   } else if (isEditable) {
     buttonText = "Remove";
-    backgroundColour = "red";
+    backgroundColour = RED_WARNING_COLOUR;
     onPress = async () => {
       const result = await removeCalendarMember(calendarId, member.user_id);
 

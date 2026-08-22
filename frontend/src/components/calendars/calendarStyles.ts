@@ -1,9 +1,8 @@
 import { StyleSheet } from "react-native";
-import { BLUE_COLOUR } from "../../constants";
+import { BLUE_COLOUR, RED_WARNING_COLOUR } from "../../constants";
 export const styles = StyleSheet.create({
   deleteButton: {
-    color: "#FF0000FF",
-    backgroundColor: "#FF0000FF",
+    backgroundColor: RED_WARNING_COLOUR,
     padding: 10,
     borderStyle: "solid",
     borderWidth: 1.5,
@@ -208,7 +207,7 @@ export const styles = StyleSheet.create({
     fontSize: 20,
   },
   individualMemberButton: {
-    backgroundColor: "red",
+    backgroundColor: RED_WARNING_COLOUR,
     borderRadius: 10,
     borderStyle: "solid",
     borderWidth: 1.25,
