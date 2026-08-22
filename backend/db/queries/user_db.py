@@ -95,7 +95,7 @@ def create_user(data: CreateUser) -> int:
 
         create_calendar(
             new_user.user_id,
-            CreateCalendar(name="Default", colour="#FF0000E6"),
+            CreateCalendar(name="Default", colour="#6FA8DCE6"),
         )
 
         return new_user.user_id  # Indicate success
