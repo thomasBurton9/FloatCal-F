@@ -84,4 +84,5 @@ export type SchedulingErrorTask = {
   calendarId: number;
   name: string;
   durationMinutes: number;
+  date: string;
 };

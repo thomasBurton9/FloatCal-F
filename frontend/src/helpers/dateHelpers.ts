@@ -71,3 +71,8 @@ export function formatDateUser(
 
   return `${weekday}, ${monthName} ${String(day).padStart(2, "0")}, ${year}`;
 }
+
+// Date time object -> HH:MM
+export function formatTime(time: Date) {
+  return time.toTimeString().slice(0, 5);
+}

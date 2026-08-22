@@ -21,6 +21,7 @@ import {
 } from "../api/itemApi.js";
 import { SafeAreaView } from "react-native-safe-area-context"; // Modal does not respect the safearea view from App.jsx
 import { BLUE_COLOUR } from "../constants.js";
+import { formatDate } from "../helpers/dateHelpers.ts";
 
 function createEmptyItemFields() {
   return {
@@ -417,6 +418,7 @@ async function handleAddItem(
         name: itemFields.name,
         durationMinutes: Number(itemFields.duration), // itemFields.duration is a string input so converting it to a number is required for arithmetic
         calendarId: itemFields.calendar,
+        date: formatDate(itemFields.date),
       });
 
       setItemFields(createEmptyItemFields());

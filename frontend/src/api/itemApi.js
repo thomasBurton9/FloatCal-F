@@ -1,12 +1,8 @@
 import { API_URL } from "../constants";
 import { fetchCalendarIds } from "./calendarApi";
-import { formatDate } from "../helpers/dateHelpers";
+import { formatDate, formatTime } from "../helpers/dateHelpers";
 
 // Similar function used in SettingsScreen.jsx
-function formatTime(time) {
-  return time.toTimeString().slice(0, 5);
-}
-
 export async function automaticallyScheduleTask(task_id, calendar_id, date) {
   try {
     const automaticallyScheduleTaskUrl =

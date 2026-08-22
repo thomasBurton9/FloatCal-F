@@ -63,7 +63,7 @@ export default function SchedulingError({
               </Pressable>
               <Pressable
                 style={[styles.actionButton, styles.recommendedOption]}
-                onPress={() => handleManuallySchedule()}
+                onPress={() => handleManuallySchedule(setCurrentModal)}
               >
                 <Text style={styles.actionButtonText}>
                   Manually Schedule Task
@@ -113,8 +113,10 @@ function handleChangeSettings(
   setPage("Settings");
 }
 
-function handleManuallySchedule(): void {
-  Alert.alert("Not implemented");
+function handleManuallySchedule(
+  setCurrentModal: (currentModal: string | null) => void,
+): void {
+  setCurrentModal("manuallySchedule");
 }
 
 async function handleDeleteTask(
