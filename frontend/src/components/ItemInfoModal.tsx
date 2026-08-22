@@ -3,6 +3,7 @@ import {
   Image,
   Modal,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   View,
@@ -147,21 +148,26 @@ export default function ItemInfoModal({
               </>
             )}
           </View>
-          {item ? (
-            editing && draft ? (
-              <ItemEditForm
-                item={item}
-                draft={draft}
-                setDraft={setDraft}
-              ></ItemEditForm>
-            ) : (
-              <ItemDetails
-                item={item}
-                onClose={closeModal}
-                onChangedData={onChangedData}
-              />
-            )
-          ) : null}
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.infoScrollView}
+          >
+            {item ? (
+              editing && draft ? (
+                <ItemEditForm
+                  item={item}
+                  draft={draft}
+                  setDraft={setDraft}
+                ></ItemEditForm>
+              ) : (
+                <ItemDetails
+                  item={item}
+                  onClose={closeModal}
+                  onChangedData={onChangedData}
+                />
+              )
+            ) : null}
+          </ScrollView>
         </View>
       </SafeAreaView>
     </Modal>
@@ -328,6 +334,9 @@ const styles = StyleSheet.create({
     borderRadius: 40,
     // padding: 12,
     paddingTop: 0,
+  },
+  infoScrollView: {
+    paddingBottom: 300, // So keyboard does not interfere with notes
   },
   topBar: {
     width: "100%",
