@@ -1,4 +1,5 @@
 from collections.abc import Sequence
+from datetime import date
 
 from sqlalchemy import or_, select
 
@@ -10,7 +11,7 @@ from schemas.search_schemas import FixedSearchEvent, FloatingSearchTask
 # ~1kb per event max, 1000 events ~1mb
 # Currently searching for both strings in both notes and names with equal weighting
 def search_items(
-    user_id: int, query: str
+    user_id: int, query: str, current_only: bool = False
 ) -> list[FloatingSearchTask | FixedSearchEvent]:
 
     get_calendar_ids_statement = select(CalendarMember.calendar_id).where(
@@ -57,6 +58,14 @@ def search_items(
                 )
             )
         )
+
+        if current_only:
+            get_event_statement = get_event_statement.where(
+                FixedEvent.date >= date.today()
+            )
+            get_task_statement = get_task_statement.where(
+                FloatingTask.date >= date.today()
+            )
 
         events: Sequence[FixedEvent] = (
             session.execute(get_event_statement).scalars().all()

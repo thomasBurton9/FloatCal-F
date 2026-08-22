@@ -1,9 +1,19 @@
 import { API_URL } from "../constants";
 
-export async function searchItems(userId: number, query: string) {
+export async function searchItems(
+  userId: number,
+  query: string,
+  currentOnly: boolean = false,
+) {
   try {
     const searchItemsUrl =
-      API_URL + "/" + String(userId) + "/search?query=" + String(query);
+      API_URL +
+      "/" +
+      String(userId) +
+      "/search?query=" +
+      String(query) +
+      "&current_only=" +
+      String(currentOnly);
 
     const response = await fetch(searchItemsUrl, {
       method: "GET",
