@@ -23,9 +23,7 @@ export default function AuthenticationScreen({ onLogin }) {
     <>
       <View style={styles.screen}>
         <View>
-          <Text style={{ textAlign: "center" }}>
-            Welcome to {"\n"} Float Cal
-          </Text>
+          <Text style={styles.title}>Welcome to {"\n"} Float Cal</Text>
         </View>
         <AuthenticationModeSwitcher
           mode={authenticationMode}
@@ -52,7 +50,9 @@ export default function AuthenticationScreen({ onLogin }) {
               }
             }}
           >
-            <Text>{authenticationMode === "Login" ? "Login" : "Register"}</Text>
+            <Text style={styles.submitButtonText}>
+              {authenticationMode === "Login" ? "Login" : "Register"}
+            </Text>
           </Pressable>
           {/* Quick button to bypass logic to test application logic quicker*/}
           {/* TODO: Remove once done with button*/}
@@ -82,7 +82,7 @@ function AuthenticationModeSwitcher({ mode, setMode }) {
           ]}
           onPress={() => setMode("Login")}
         >
-          <Text>Login</Text>
+          <Text style={styles.authenticationModeText}>Login</Text>
         </Pressable>
         <Pressable
           /* Use blue colouring when selected, white otherwise */
@@ -93,7 +93,7 @@ function AuthenticationModeSwitcher({ mode, setMode }) {
           ]}
           onPress={() => setMode("Register")}
         >
-          <Text>Register</Text>
+          <Text style={styles.authenticationModeText}>Register</Text>
         </Pressable>
       </View>
     </>
@@ -106,7 +106,7 @@ function AuthenticationFields({ mode, fields, setFields }) {
     <>
       {mode === "Register" ? (
         <View style={styles.inputSection}>
-          <Text>Name</Text>
+          <Text style={styles.inputFieldSubtitle}>Name</Text>
           <View style={styles.inputIconRow}>
             <TextInput
               value={fields.name}
@@ -114,12 +114,13 @@ function AuthenticationFields({ mode, fields, setFields }) {
               autoComplete="name"
               maxLength={24}
               style={[styles.inputField, styles.nameInputField]}
+              placeholder="John Calendar"
             ></TextInput>
           </View>
         </View>
       ) : null}
       <View style={styles.inputSection}>
-        <Text>Email</Text>
+        <Text style={styles.inputFieldSubtitle}>Email</Text>
         <View style={styles.inputIconRow}>
           <TextInput
             value={fields.email}
@@ -137,9 +138,9 @@ function AuthenticationFields({ mode, fields, setFields }) {
         </View>
       </View>
       <View style={styles.inputSection}>
-        <Text>Password</Text>
+        <Text style={styles.inputFieldSubtitle}>Password</Text>
         <View style={styles.inputIconRow}>
-          {/* Currently password is never visible given there is no password toggle */}
+          {/* Password visibility is toggled with the password visibility icon */}
           <TextInput
             value={fields.password}
             onChangeText={(password) => setFields({ ...fields, password })}
@@ -150,6 +151,7 @@ function AuthenticationFields({ mode, fields, setFields }) {
             maxLength={120}
             secureTextEntry={passwordHidden}
             style={styles.inputField}
+            placeholder="*****************"
           ></TextInput>
           {/*Eye Password See View SVG by Gokce Curt, licensed under CC BY 4.0,
             Source: https://www.svgrepo.com/svg/390427/eye-password-see-view, Changes made: converted to png*/}
@@ -173,7 +175,6 @@ function AuthenticationFields({ mode, fields, setFields }) {
 }
 
 // Validate input on the frontend to align with backend pydantic validation
-// Maybe move to zod or other pydantic equivalent in the future
 function validateCreateUser(fields) {
   // Use regular expressions to check if an email is valid -> Currently not perfect logic, however good enough for current scope
   // [a-zA-z0-9._%+-] -> Match any characters from A-Z (any case), from 0-9 or one of [. _ % + -]
@@ -333,15 +334,23 @@ function getAuthenticationErrorMessage(data, type = "Register") {
 }
 
 const styles = StyleSheet.create({
+  title: {
+    textAlign: "center",
+    fontSize: 26,
+    paddingBottom: 20,
+  },
   authenticationSwitcher: {
+    width: "70%",
     flexDirection: "row",
     borderStyle: "solid",
     borderRadius: 10,
     borderWidth: 2,
+    height: 65,
   },
   screen: {
     alignItems: "center", // Center content horizontally
     justifyContent: "center", // Center content vertically
+    gap: 20,
   },
   currentMode: {
     backgroundColor: BLUE_COLOUR, // In the future move this too a dedicated theme file with chosen themed colours -> And all other colours
@@ -352,11 +361,13 @@ const styles = StyleSheet.create({
 
   authenticationMode: {
     padding: 10,
-    width: 100,
+    flex: 1, // Make both modes the exact same size
     alignItems: "center", // Center text horizontally,
     justifyContent: "center", // Center text vertically
   },
-
+  authenticationModeText: {
+    fontSize: 24,
+  },
   loginMode: {
     borderTopLeftRadius: 7, // Should be exactly authenticationSwitcher.borderRadius - authenticationSwitcher.borderWidth
     borderBottomLeftRadius: 7,
@@ -379,15 +390,21 @@ const styles = StyleSheet.create({
   },
 
   inputIcon: {
-    width: 24,
-    height: 24,
+    width: 32,
+    height: 32,
     margin: 5,
+    marginRight: 10,
   },
 
   inputField: {
-    marginLeft: 2,
+    marginLeft: 10,
     minWidth: 0,
     flex: 1,
+    paddingVertical: 15,
+    fontSize: 18,
+  },
+  inputFieldSubtitle: {
+    fontSize: 22,
   },
   nameInputField: {
     minHeight: 34,
@@ -395,15 +412,19 @@ const styles = StyleSheet.create({
   inputSection: {
     flexDirection: "column",
     alignItems: "center",
+    gap: 7,
   },
 
   submitButton: {
     margin: 5, // Outside the button
     backgroundColor: BLUE_COLOUR,
     borderStyle: "solid",
-    borderRadius: 5,
+    borderRadius: 10,
     borderWidth: 1,
-    paddingVertical: 7, // Inside the button
-    paddingHorizontal: 21,
+    paddingVertical: 15, // Inside the button
+    paddingHorizontal: 50,
+  },
+  submitButtonText: {
+    fontSize: 24,
   },
 });
