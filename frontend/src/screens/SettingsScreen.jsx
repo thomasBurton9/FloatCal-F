@@ -131,20 +131,21 @@ export default function SettingsScreen({ userId, setUserId, setPage }) {
                 </View>
               </View>
             </View>
-            <View style={style.individualSetting}>
-              <View style={style.individualSettingRow}>
-                <Text style={style.individualSettingInfo}>
-                  Sound:{" "}
-                  {settings ? settings["notification_sound"] : "Loading..."}
-                </Text>
-                {/* This won't be implemented currently, given expo go does not support custom notifications
-              if a workaround is found, this buttons functionality will start working*/}
-                {/* TODO: Remove this setting from rendering */}
-                <Pressable style={style.editSettingsButton}>
-                  <Text>{">"}</Text>
-                </Pressable>
-              </View>
-            </View>
+            {/*
+              <View style={style.individualSetting}>
+                <View style={style.individualSettingRow}>
+                  <Text style={style.individualSettingInfo}>
+                    Sound:{" "}
+                    {settings ? settings["notification_sound"] : "Loading..."}
+                  </Text>
+                   This won't be implemented currently, given expo go does not support custom notifications
+              if a workaround is found, this buttons functionality will start working
+                 TODO: Remove this setting from rendering
+                  <Pressable style={style.editSettingsButton}>
+                    <Text>{">"}</Text>
+                  </Pressable>
+                </View>
+              </View> */}
           </View>
           <View style={[style.settingsSection, style.accountSection]}>
             <Text style={style.subTitle}>Account</Text>
