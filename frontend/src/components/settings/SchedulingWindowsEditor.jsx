@@ -99,7 +99,7 @@ export default function SchedulingWindowsEditor({
                     </View>
                     <View style={style.sleepTimePicker}>
                       {/*Reusing sleep time style given the formatting is the same for both pickers */}
-                      <Text style={style.sleepDateTimeLabel}>End</Text>{" "}
+                      <Text style={style.sleepDateTimeLabel}>End</Text>
                       {/* This is preferred times picker */}
                       <DateTimePicker
                         style={style.sleepDateTimeInput}
