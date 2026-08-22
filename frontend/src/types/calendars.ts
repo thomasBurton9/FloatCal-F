@@ -1,4 +1,5 @@
 export type CalendarDetailsScreenProps = {
+  setSelectedCalendar: (calendar: Calendar | null) => void;
   selectedCalendar: Calendar | null;
   setCurrentView: (view: currentView) => void;
   userId: number;

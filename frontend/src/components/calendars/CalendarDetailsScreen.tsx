@@ -1,11 +1,11 @@
-import { Alert, Pressable, Text, View } from "react-native";
+import { Alert, Pressable, Text, View, TextInput } from "react-native";
 import type {
   CalendarDetailsScreenProps,
   currentView,
 } from "../../types/calendars";
 import { handleRemoveCalendar } from "../ManageCalendars";
 import { styles } from "./calendarStyles";
-import { removeCalendarMember } from "../../api/calendarApi";
+import { removeCalendarMember, updateCalendar } from "../../api/calendarApi";
 import { useEffect, useMemo, useState } from "react";
 import { SharedMemberProps, UserInfo } from "../../types/userInfo";
 import { fetchCalendarMemberEntryInfo } from "../../api/memberApi";
@@ -13,6 +13,13 @@ import { Dropdown } from "react-native-element-dropdown";
 import { listUsers } from "../../api/userApi";
 import { inviteUser } from "../../api/inviteApi";
 import { RED_WARNING_COLOUR } from "../../constants";
+import { Calendar } from "../../types/manageTasks";
+import ColorPicker, {
+  colorKit,
+  HueSlider,
+  OpacitySlider,
+  Panel1,
+} from "reanimated-color-picker";
 
 // Button to return to main manage calendar screen
 export function BackButton({
@@ -26,6 +33,7 @@ export function BackButton({
 }
 
 export function CalendarDetailsScreen({
+  setSelectedCalendar,
   selectedCalendar,
   setCurrentView,
   userId,
@@ -39,6 +47,9 @@ export function CalendarDetailsScreen({
   const [reloadMembers, setReloadMembers] = useState(false);
   const [users, setUsers] = useState<UserInfo[]>([]);
   const [currentUser, setCurrentUser] = useState<number | null>(null);
+  const [editing, setEditing] = useState(false);
+
+  const [draft, setDraft] = useState<Calendar>(selectedCalendar);
 
   useEffect(() => {
     async function loadMembers() {
@@ -88,119 +99,217 @@ export function CalendarDetailsScreen({
     [users, members],
   );
 
+  async function handleUpdateCalendar() {
+    const result = await updateCalendar(
+      userId,
+      selectedCalendar.calendar_id,
+      draft,
+    );
+
+    if (!result.success) {
+      if (result.error) {
+        Alert.alert(result.error);
+      } else {
+        Alert.alert("Error updating calendar");
+      }
+    } else {
+      Alert.alert("Calendar updated successfully");
+      setSelectedCalendar({
+        ...selectedCalendar,
+        name: draft.name,
+        colour: draft.colour,
+      });
+      setReloadCalendars(!reloadCalendars);
+      setEditing(false);
+    }
+  }
   return (
     <View style={styles.placeholderView}>
-      <BackButton setCurrentView={setCurrentView}></BackButton>
-      <Text style={styles.placeholderTitle}>
-        {"Name: "} {/* Using curly brace syntax to keep the space after name */}
-        {/* Fall back to calendar details if a calendar is not loaded */}
-        {selectedCalendar ? selectedCalendar.name : "Calendar Details"}
-      </Text>
-      <View
-        style={{
-          flexDirection: "row",
-        }}
-      >
-        <Text style={styles.detailColourText}>Colour: </Text>
-        <View
-          style={{
-            width: 100,
-            height: 20,
-            backgroundColor: selectedCalendar.colour,
-          }}
-        ></View>
+      <View style={styles.secondRowCalendars}>
+        {editing ? (
+          <>
+            <Pressable
+              style={styles.cancelButton}
+              onPress={() => {
+                setDraft(selectedCalendar);
+                setEditing(false);
+              }}
+            >
+              <Text>Cancel</Text>
+            </Pressable>
+            <Pressable
+              onPress={() => handleUpdateCalendar()}
+              style={styles.saveButton}
+            >
+              <Text>Save</Text>
+            </Pressable>
+          </>
+        ) : (
+          <>
+            <BackButton setCurrentView={setCurrentView}></BackButton>
+            {ownCalendar ? (
+              <Pressable
+                onPress={() => {
+                  setDraft(selectedCalendar);
+                  setEditing(true);
+                }}
+                style={styles.editButton}
+              >
+                <Text>Edit</Text>
+              </Pressable>
+            ) : null}
+          </>
+        )}
       </View>
-      <Text style={{ fontSize: 24 }}>Members</Text>
-      {members.map((member) => (
-        <IndividualMember
-          key={member.user_id}
-          member={member}
-          isEditable={ownCalendar}
-          isOwner={selectedCalendar.created_by_user_id === member.user_id}
-          calendarId={selectedCalendar.calendar_id}
-          reloadMembers={reloadMembers}
-          setReloadMembers={setReloadMembers}
-        ></IndividualMember>
-      ))}
-      {/* TODO: Add confirmation for deletion in the future*/}
-      {/* Display delete dialog only for user created calendars */}
-      {/* TODO: Add 'leave calendar' dialog instead */}
-      {ownCalendar ? (
+      {editing ? (
         <>
-          <Text style={styles.inviteMemberTitle}>Invite Member</Text>
-          <Dropdown
-            containerStyle={{ marginTop: -2 }}
-            style={styles.userDropDown}
-            data={filteredUsers}
-            labelField="display_name"
-            valueField="user_id"
-            value={currentUser}
-            placeholder="Select user to invite"
-            renderItem={(user) => (
-              <View style={styles.dropDownItem}>
-                <Text style={styles.dropDownName}>{user.display_name}</Text>
-                <Text style={styles.dropDownEmail}>{user.email}</Text>
-              </View>
-            )}
-            onChange={(user) => {
-              setCurrentUser(user.user_id);
-            }}
-          ></Dropdown>
-          <Pressable
-            onPress={async () => {
-              if (currentUser) {
-                const result = await inviteUser(
-                  userId,
-                  currentUser,
-                  selectedCalendar.calendar_id,
-                );
-                if (!result.success) {
-                  if (result.error) {
-                    Alert.alert(result.error);
-                  } else {
-                    Alert.alert("Error inviting user");
-                  }
-                } else {
-                  Alert.alert("Successfully invited user");
-                  setReloadMembers(!reloadMembers);
-                }
-              } else {
-                Alert.alert("You need to select a user to invite them");
-              }
-            }}
-            style={styles.sendInviteButton}
-          >
-            <Text style={styles.sendInviteText}>Send Invite</Text>
-          </Pressable>
-          <Pressable
-            style={styles.deleteButton}
-            onPress={() =>
-              handleRemoveCalendar(
-                userId,
-                selectedCalendar.calendar_id,
-                setCalendars,
-                setCurrentView,
-              )
+          <Text style={styles.editTitle}>Edit Calendar: </Text>
+          <View style={styles.editNameRow}>
+            <Text style={styles.updateCalendarBaseText}>Name: </Text>
+            <TextInput
+              maxLength={16}
+              value={draft.name}
+              onChangeText={(value) => setDraft({ ...draft, name: value })}
+              style={styles.editNameInput}
+            ></TextInput>
+          </View>
+          <Text style={styles.updateCalendarBaseText}>Colour: </Text>
+          <ColorPicker
+            style={styles.colorPicker}
+            value={draft.colour}
+            onCompleteJS={(colour) =>
+              setDraft({
+                ...draft,
+                colour: colorKit.HEX(colour.rgba, true),
+              })
             }
           >
-            <Text>Delete Calendar</Text>
+            <Panel1></Panel1>
+            <HueSlider></HueSlider>
+            <OpacitySlider></OpacitySlider>
+          </ColorPicker>
+          <Pressable
+            style={styles.createCalendarSubmit}
+            onPress={() => handleUpdateCalendar()}
+          >
+            <Text style={styles.createCalendarSubmitText}>Save Calendar</Text>
           </Pressable>
         </>
       ) : (
-        <Pressable
-          style={styles.deleteButton}
-          onPress={() => {
-            handleLeaveCalendar(
-              userId,
-              selectedCalendar.calendar_id,
-              setCurrentView,
-              reloadCalendars,
-              setReloadCalendars,
-            );
-          }}
-        >
-          <Text>Leave Calendar</Text>
-        </Pressable>
+        <>
+          <Text style={styles.placeholderTitle}>
+            {"Name: "}{" "}
+            {/* Using curly brace syntax to keep the space after name */}
+            {/* Fall back to calendar details if a calendar is not loaded */}
+            {selectedCalendar ? selectedCalendar.name : "Calendar Details"}
+          </Text>
+          <View
+            style={{
+              flexDirection: "row",
+            }}
+          >
+            <Text style={styles.detailColourText}>Colour: </Text>
+            <View
+              style={{
+                width: 100,
+                height: 20,
+                backgroundColor: selectedCalendar.colour,
+              }}
+            ></View>
+          </View>
+          <Text style={{ fontSize: 24 }}>Members</Text>
+          {members.map((member) => (
+            <IndividualMember
+              key={member.user_id}
+              member={member}
+              isEditable={ownCalendar}
+              isOwner={selectedCalendar.created_by_user_id === member.user_id}
+              calendarId={selectedCalendar.calendar_id}
+              reloadMembers={reloadMembers}
+              setReloadMembers={setReloadMembers}
+            ></IndividualMember>
+          ))}
+          {/* TODO: Add confirmation for deletion in the future*/}
+          {/* Display delete dialog only for user created calendars */}
+          {/* TODO: Add 'leave calendar' dialog instead */}
+          {ownCalendar ? (
+            <>
+              <Text style={styles.inviteMemberTitle}>Invite Member</Text>
+              <Dropdown
+                containerStyle={{ marginTop: -2 }}
+                style={styles.userDropDown}
+                data={filteredUsers}
+                labelField="display_name"
+                valueField="user_id"
+                value={currentUser}
+                placeholder="Select user to invite"
+                renderItem={(user) => (
+                  <View style={styles.dropDownItem}>
+                    <Text style={styles.dropDownName}>{user.display_name}</Text>
+                    <Text style={styles.dropDownEmail}>{user.email}</Text>
+                  </View>
+                )}
+                onChange={(user) => {
+                  setCurrentUser(user.user_id);
+                }}
+              ></Dropdown>
+              <Pressable
+                onPress={async () => {
+                  if (currentUser) {
+                    const result = await inviteUser(
+                      userId,
+                      currentUser,
+                      selectedCalendar.calendar_id,
+                    );
+                    if (!result.success) {
+                      if (result.error) {
+                        Alert.alert(result.error);
+                      } else {
+                        Alert.alert("Error inviting user");
+                      }
+                    } else {
+                      Alert.alert("Successfully invited user");
+                      setReloadMembers(!reloadMembers);
+                    }
+                  } else {
+                    Alert.alert("You need to select a user to invite them");
+                  }
+                }}
+                style={styles.sendInviteButton}
+              >
+                <Text style={styles.sendInviteText}>Send Invite</Text>
+              </Pressable>
+              <Pressable
+                style={styles.deleteButton}
+                onPress={() =>
+                  handleRemoveCalendar(
+                    userId,
+                    selectedCalendar.calendar_id,
+                    setCalendars,
+                    setCurrentView,
+                  )
+                }
+              >
+                <Text>Delete Calendar</Text>
+              </Pressable>
+            </>
+          ) : (
+            <Pressable
+              style={styles.deleteButton}
+              onPress={() => {
+                handleLeaveCalendar(
+                  userId,
+                  selectedCalendar.calendar_id,
+                  setCurrentView,
+                  reloadCalendars,
+                  setReloadCalendars,
+                );
+              }}
+            >
+              <Text>Leave Calendar</Text>
+            </Pressable>
+          )}
+        </>
       )}
     </View>
   );

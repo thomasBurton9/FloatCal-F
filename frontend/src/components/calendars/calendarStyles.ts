@@ -1,5 +1,10 @@
 import { StyleSheet } from "react-native";
-import { BLUE_COLOUR, RED_WARNING_COLOUR, TEXT_ON_DARK } from "../../constants";
+import {
+  BLUE_COLOUR,
+  GREEN_COLOUR,
+  RED_WARNING_COLOUR,
+  TEXT_ON_DARK,
+} from "../../constants";
 export const styles = StyleSheet.create({
   deleteButton: {
     backgroundColor: RED_WARNING_COLOUR,
@@ -269,6 +274,49 @@ export const styles = StyleSheet.create({
     fontSize: 16,
   },
   detailColourText: {
+    fontSize: 20,
+  },
+
+  // Update calendar
+  secondRowCalendars: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
+    paddingHorizontal: 5,
+  },
+  editButton: {
+    padding: 8,
+    borderRadius: 6,
+    borderWidth: 1,
+  },
+  cancelButton: {
+    padding: 8,
+    borderRadius: 6,
+    borderWidth: 1,
+  },
+  saveButton: {
+    padding: 8,
+    borderRadius: 6,
+    borderWidth: 1,
+    backgroundColor: GREEN_COLOUR,
+  },
+  editNameRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 5,
+  },
+  editNameInput: {
+    borderRadius: 5,
+    borderWidth: 1.5,
+    padding: 5,
+    minWidth: 150,
+  },
+  editTitle: {
+    fontSize: 24,
+  },
+  updateCalendarBaseText: {
     fontSize: 20,
   },
 });

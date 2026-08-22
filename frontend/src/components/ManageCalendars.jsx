@@ -96,6 +96,7 @@ export default function ManageCalendars({
     return (
       <ScrollView showsVerticalScrollIndicator={false}>
         <CalendarDetailsScreen
+          setSelectedCalendar={setSelectedCalendar}
           selectedCalendar={selectedCalendar}
           setCurrentView={setCurrentView}
           userId={userId}
