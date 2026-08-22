@@ -21,7 +21,7 @@ export const styles = StyleSheet.create({
   },
   colorPicker: {
     width: "60%", // Required to show element properly
-    height: 300,
+    maxHeight: 300,
   },
   colorPreview: {
     height: 30,
@@ -32,11 +32,13 @@ export const styles = StyleSheet.create({
     borderStyle: "solid",
     borderWidth: 1,
     borderRadius: 10,
-    padding: 10,
+    paddingVertical: 15,
+    paddingHorizontal: 25,
     alignItems: "center",
   },
   createCalendarSubmitText: {
     color: TEXT_ON_DARK,
+    fontSize: 16,
   },
   manageCalendarsModal: {
     paddingBottom: 0,
