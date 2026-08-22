@@ -7,6 +7,7 @@ import {
   TextInput,
   Image,
   Alert,
+  ScrollView,
 } from "react-native";
 import { SearchModalProps, SearchResultProps } from "../types/search";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -83,15 +84,17 @@ export default function SearchModal({
             >
               <Text>Search</Text>
             </Pressable>
-            <View style={styles.searchResults}>
-              {items.map((item) => (
-                <SearchResult
-                  key={`${item.calendar_id}:${"task_id" in item ? item.task_id + "t" : item.event_id + "e"}`}
-                  item={item}
-                  onPress={() => onItemPress(item)}
-                ></SearchResult>
-              ))}
-            </View>
+            <ScrollView>
+              <View style={styles.searchResults}>
+                {items.map((item) => (
+                  <SearchResult
+                    key={`${item.calendar_id}:${"task_id" in item ? item.task_id + "t" : item.event_id + "e"}`}
+                    item={item}
+                    onPress={() => onItemPress(item)}
+                  ></SearchResult>
+                ))}
+              </View>
+            </ScrollView>
           </View>
         </SafeAreaView>
       </Modal>
