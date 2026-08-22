@@ -12,6 +12,7 @@ import BufferEditor from "../components/settings/BufferEditor";
 import SchedulingWindowsEditor from "../components/settings/SchedulingWindowsEditor";
 import SleepWindowEditor from "../components/settings/SleepWindowEditor";
 import { style } from "../components/settings/settingsStyles";
+import { handleDeleteAccount } from "../components/settings/deleteAccount";
 
 export default function SettingsScreen({ userId, setUserId, setPage }) {
   const [settings, setSettings] = useState(null);
@@ -143,13 +144,19 @@ export default function SettingsScreen({ userId, setUserId, setPage }) {
               </View>
             </View>
           </View>
-          <View style={style.settingsSection}>
+          <View style={[style.settingsSection, style.accountSection]}>
             <Text style={style.subTitle}>Account</Text>
             <Pressable
               style={style.logoutButton}
               onPress={() => setUserId(false)}
             >
               <Text>Logout</Text>
+            </Pressable>
+            <Pressable
+              style={style.deleteAccountButton}
+              onPress={() => handleDeleteAccount(userId, setUserId)}
+            >
+              <Text>Delete Account</Text>
             </Pressable>
           </View>
         </View>
