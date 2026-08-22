@@ -24,7 +24,7 @@ import {
 import calendarIcon from "../../assets/calendar_icon64x64.png";
 import clockIcon from "../../assets/clock_icon64x64.png";
 import recurrenceIcon from "../../assets/recurrence_icon64x64.png";
-import { RED_WARNING_COLOUR } from "../constants";
+import { GREEN_COLOUR, RED_WARNING_COLOUR } from "../constants";
 import reminderIcon from "../../assets/reminder_bell_icon64x64.png";
 import { deleteItem } from "../api/itemApi";
 import { useEffect, useState } from "react";
@@ -133,7 +133,10 @@ export default function ItemInfoModal({
                 <Pressable style={styles.editButton} onPress={cancelEditing}>
                   <Text style={styles.editButtonText}>Cancel</Text>
                 </Pressable>
-                <Pressable style={styles.editButton} onPress={saveChanges}>
+                <Pressable
+                  style={[styles.editButton, { backgroundColor: GREEN_COLOUR }]}
+                  onPress={saveChanges}
+                >
                   <Text style={styles.editButtonText}>Save</Text>
                 </Pressable>
               </>
