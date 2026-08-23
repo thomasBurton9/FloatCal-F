@@ -72,6 +72,14 @@ def get_user_calendar_ids(user_id: int) -> list[int]:
 
 
 def create_user(data: CreateUser) -> int:
+
+    # Define sensible default scheduling windows so users are introduced to scheduling windows immediately
+    DEFAULT_SCHEDULING_WINDOWS = {
+        "Morning": ["06:00:00", "09:00:00"],
+        "Midday": ["11:00:00", "13:00:00"],
+        "Evening": ["18:00:00", "23:00:00"],
+    }
+
     users_with_email_statement = select(User).where(User.email == data.email)
 
     with get_db() as session:
@@ -89,7 +97,9 @@ def create_user(data: CreateUser) -> int:
         session.add(new_user)
         session.flush()
 
-        new_settings: Setting = Setting(user_id=new_user.user_id)
+        new_settings: Setting = Setting(
+            user_id=new_user.user_id, scheduling_windows=DEFAULT_SCHEDULING_WINDOWS
+        )
         session.add(new_settings)
         session.commit()
 
