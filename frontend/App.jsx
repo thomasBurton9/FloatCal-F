@@ -5,7 +5,11 @@ import SettingsScreen from "./src/screens/SettingsScreen";
 import DailyCalendar from "./src/screens/DailyCalendar";
 import { SafeAreaView } from "react-native-safe-area-context"; // Prevent app from using space reserved for the os
 import AsyncStorage from "@react-native-async-storage/async-storage";
-// import { API_URL } from "./src/constants.js"
+import { LogBox } from "react-native";
+
+// Prevent red console errors from showing up on frontend
+// They still appear in the console
+LogBox.ignoreAllLogs();
 
 export default function App() {
   return (
