@@ -14,12 +14,22 @@ def invite_user_to_calendar(
     user_invite_from_id: int, user_to_invite_id: int, calendar_id: int
 ) -> int:
 
+    # Block new invites to a calendar if there is already an open one
+    # However, just because there is an accepted invite doesn't
+    #  mean the user is a member of the calendar (You can leave calendars)
     search_for_invite_statement = (
         select(Invite)
         .where(Invite.invite_from_user_id == user_invite_from_id)
         .where(Invite.invite_to_user_id == user_to_invite_id)
         .where(Invite.invite_calendar_id == calendar_id)
-        .where(Invite.status != "declined")
+        .where(Invite.status == "open")
+    )
+
+    # Check if user is inside the calendar
+    search_for_calendar_membership_statement = (
+        select(CalendarMember)
+        .where(CalendarMember.user_id == user_to_invite_id)
+        .where(CalendarMember.calendar_id == calendar_id)
     )
 
     get_calendar_statement = select(Calendar.created_by_user_id).where(
@@ -36,12 +46,20 @@ def invite_user_to_calendar(
         if created_user_calendar_id != user_invite_from_id:
             raise ValueError("Only the creator of a calendar can invite someone to it")
 
+        # Validate that the user does not have an active invite and is not a member of the calendar
+        # by executing the 2 previous statements
+
         invite: Invite | None = session.execute(search_for_invite_statement).scalar()
 
         if invite:
-            raise ValueError(
-                "User is either already in the selected calendar, or has a pending invite"
-            )
+            raise ValueError("User already has a pending invite to this calendar")
+
+        membership: CalendarMember | None = session.execute(
+            search_for_calendar_membership_statement
+        ).scalar()
+
+        if membership:
+            raise ValueError("User is already a member of this calendar")
 
         new_invite: Invite = Invite(
             invite_from_user_id=user_invite_from_id,
