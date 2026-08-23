@@ -273,6 +273,9 @@ async function handleCreateCalendar(
   setCurrentView,
   setCalendars,
 ) {
+  // Make sure empty names are not allowed
+  calendarFields.name = calendarFields.name.trim();
+
   if (!calendarFields.name || calendarFields.name.length > 16) {
     Alert.alert("Invalid name", "Name must be between 1 and 16 characters.");
     return;

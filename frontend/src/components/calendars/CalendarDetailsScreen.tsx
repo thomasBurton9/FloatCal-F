@@ -100,6 +100,12 @@ export function CalendarDetailsScreen({
   );
 
   async function handleUpdateCalendar() {
+    draft.name = draft.name.trim();
+
+    if (!draft.name || draft.name.length > 16) {
+      Alert.alert("Invalid name", "Name must be between 1 and 16 characters.");
+      return;
+    }
     const result = await updateCalendar(
       userId,
       selectedCalendar.calendar_id,
