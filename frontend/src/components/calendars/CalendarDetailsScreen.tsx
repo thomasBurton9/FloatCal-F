@@ -287,14 +287,33 @@ export function CalendarDetailsScreen({
               </Pressable>
               <Pressable
                 style={styles.deleteButton}
-                onPress={() =>
-                  handleRemoveCalendar(
-                    userId,
-                    selectedCalendar.calendar_id,
-                    setCalendars,
-                    setCurrentView,
-                  )
-                }
+                onPress={() => {
+                  Alert.alert(
+                    "Are you sure you want to delete this calendar",
+                    "This action is irreversible",
+                    [
+                      {
+                        text: "Cancel",
+                        onPress: () => {
+                          return;
+                        },
+                        style: "cancel",
+                      },
+                      {
+                        text: "Delete",
+                        onPress: () => {
+                          handleRemoveCalendar(
+                            userId,
+                            selectedCalendar.calendar_id,
+                            setCalendars,
+                            setCurrentView,
+                          );
+                        },
+                        style: "destructive",
+                      },
+                    ],
+                  );
+                }}
               >
                 <Text>Delete Calendar</Text>
               </Pressable>
