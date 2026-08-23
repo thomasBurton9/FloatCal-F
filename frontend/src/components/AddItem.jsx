@@ -128,6 +128,7 @@ export default function AddItem({
                   }}
                 >
                   <Text
+                    allowFontScaling={false} //As this is an icon it should not be scaled with text scaling
                     // Styles for X button align with those from other screens/modals
                     style={{
                       textAlign: "center",

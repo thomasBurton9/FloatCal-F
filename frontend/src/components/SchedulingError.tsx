@@ -35,7 +35,10 @@ export default function SchedulingError({
               style={styles.closeButton}
               onPress={() => setCurrentModal(null)}
             >
-              <Text style={styles.closeButtonText}>X</Text>
+              <Text allowFontScaling={false} style={styles.closeButtonText}>
+                X
+              </Text>{" "}
+              {/* As this is an icon it should not be scaled with text scaling */}
             </Pressable>
           </View>
           <View style={styles.content}>

@@ -153,7 +153,10 @@ export default function ItemInfoModal({
             ) : (
               <>
                 <Pressable style={styles.closeButton} onPress={closeModal}>
-                  <Text style={styles.closeButtonText}>X</Text>
+                  <Text allowFontScaling={false} style={styles.closeButtonText}>
+                    X
+                  </Text>{" "}
+                  {/* As this is an icon / static it should not be modified with text scaling */}
                 </Pressable>
                 <Pressable style={styles.editButton} onPress={beginEditing}>
                   <Text style={styles.editButtonText}>Edit</Text>

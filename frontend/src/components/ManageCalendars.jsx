@@ -127,7 +127,10 @@ export default function ManageCalendars({
                 style={styles.closeButton}
                 onPress={() => setCurrentModal(null)}
               >
-                <Text style={styles.closeButtonText}>X</Text>
+                <Text allowFontScaling={false} style={styles.closeButtonText}>
+                  X
+                </Text>{" "}
+                {/* As this is an icon it should not be scaled with text scaling */}
               </Pressable>
               <Text style={styles.title}>Manage Calendars</Text>
             </View>

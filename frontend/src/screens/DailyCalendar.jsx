@@ -372,9 +372,14 @@ function BottomLeftNavigation({ setPage, setCurrentModal, onOpenAddItem }) {
   return (
     <View style={style.bottomLeftNavigation}>
       <Pressable style={style.smallButton}>
-        <Text style={style.smallButtonAdd} onPress={onOpenAddItem}>
+        <Text
+          allowFontScaling={false}
+          style={style.smallButtonAdd}
+          onPress={onOpenAddItem}
+        >
           +
-        </Text>
+        </Text>{" "}
+        {/* As this is an icon it should not be scaled with text scaling */}
       </Pressable>
       <Pressable
         style={style.smallButton}

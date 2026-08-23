@@ -46,7 +46,13 @@ export default function SearchModal({
                   setCurrentModal(null);
                 }}
               >
-                <Text style={styles.closeSearchButtonText}>X</Text>
+                <Text
+                  allowFontScaling={false}
+                  style={styles.closeSearchButtonText}
+                >
+                  X
+                </Text>{" "}
+                {/* As this is an icon it should not be scaled with text scaling */}
               </Pressable>
               <Text style={styles.searchTitle}>Search</Text>
             </View>
