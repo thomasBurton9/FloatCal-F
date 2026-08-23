@@ -129,10 +129,12 @@ export default function ManageCalendars({
               >
                 <Text allowFontScaling={false} style={styles.closeButtonText}>
                   X
-                </Text>{" "}
+                </Text>
                 {/* As this is an icon it should not be scaled with text scaling */}
               </Pressable>
-              <Text style={styles.title}>Manage Calendars</Text>
+              <Text style={styles.title} adjustsFontSizeToFit numberOfLines={1}>
+                Manage Calendars
+              </Text>
             </View>
             {renderCurrentView()}
             {/* Moved into nested function to avoid massive return statement as in other screens TODO: Modularise / Refactor largest files such as SettingsScreen*/}

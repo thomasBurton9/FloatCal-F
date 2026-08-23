@@ -46,7 +46,9 @@ export default function ManuallyScheduleTask({
             </Pressable>
           </View>
           <View style={styles.content}>
-            <Text style={styles.title}>Manually Schedule Task</Text>
+            <Text style={styles.title} numberOfLines={1} adjustsFontSizeToFit>
+              Manually Schedule Task
+            </Text>
             <View style={styles.infoBox}>
               <Text style={styles.taskName}>{task.name}</Text>
               <Text>Date: {formatDateUser(task.date)}</Text>
@@ -162,6 +164,7 @@ const styles = StyleSheet.create({
     gap: 15, // space everything out
   },
   title: {
+    paddingHorizontal: 40,
     fontSize: 24,
     textAlign: "center",
   },

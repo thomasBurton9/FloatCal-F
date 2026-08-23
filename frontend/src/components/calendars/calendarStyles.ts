@@ -67,6 +67,7 @@ export const styles = StyleSheet.create({
   },
   // Somehow the styling actually worked
   topBar: {
+    marginTop: 10,
     width: "100%",
     alignSelf: "center",
     position: "relative",
@@ -74,7 +75,10 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
   },
   closeButton: {
-    top: "60%", // Currently aligned using trial and error TODO: Make permament / responsive
+    // top: "60%", // Currently aligned using trial and error TODO: Make permament / responsive
+    position: "absolute",
+    left: 0,
+    top: 10,
 
     width: 34, // This is not responsive either
     height: 34,
@@ -98,6 +102,7 @@ export const styles = StyleSheet.create({
   title: {
     fontSize: 27,
     textAlign: "center",
+    paddingHorizontal: 40,
   },
   calendarList: {
     width: "100%",

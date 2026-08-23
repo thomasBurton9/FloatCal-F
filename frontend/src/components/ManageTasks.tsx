@@ -169,10 +169,18 @@ export default function ManageTasks({
               >
                 <Text allowFontScaling={false} style={styles.closeButtonText}>
                   X
-                </Text>{" "}
+                </Text>
                 {/* As this is an icon it should not be scaled with text scaling */}
               </Pressable>
-              <Text style={styles.title}>Manage Floating Tasks</Text>
+              <Text
+                maxFontSizeMultiplier={1.1}
+                adjustsFontSizeToFit
+                style={styles.title}
+                numberOfLines={1}
+              >
+                Manage Floating Tasks
+              </Text>{" "}
+              {/* Max font size is capped given at larger text sizes it can interfere with the "X" */}
             </View>
             <TaskTypeSwitcher
               taskType={taskType}
@@ -201,7 +209,13 @@ function TaskTypeSwitcher({ taskType, setTaskType }: TaskTypeSwitcherProps) {
           ]}
           onPress={() => setTaskType("Scheduled")}
         >
-          <Text style={styles.taskTypeText}>Scheduled</Text>
+          <Text
+            style={styles.taskTypeText}
+            numberOfLines={1}
+            adjustsFontSizeToFit
+          >
+            Scheduled
+          </Text>
         </Pressable>
         <Pressable
           /* Use blue colouring when selected, white otherwise */
@@ -214,7 +228,13 @@ function TaskTypeSwitcher({ taskType, setTaskType }: TaskTypeSwitcherProps) {
           ]}
           onPress={() => setTaskType("Unscheduled")}
         >
-          <Text style={styles.taskTypeText}>Unscheduled</Text>
+          <Text
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            style={styles.taskTypeText}
+          >
+            Unscheduled
+          </Text>
         </Pressable>
         <Pressable
           /* Use blue colouring when selected, white otherwise */
@@ -227,7 +247,13 @@ function TaskTypeSwitcher({ taskType, setTaskType }: TaskTypeSwitcherProps) {
           ]}
           onPress={() => setTaskType("Completed")}
         >
-          <Text style={styles.taskTypeText}>Completed</Text>
+          <Text
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            style={styles.taskTypeText}
+          >
+            Completed
+          </Text>
         </Pressable>
       </View>
     </>
@@ -265,8 +291,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   closeButton: {
-    top: "60%", // Currently aligned using trial and error TODO: Make permament / responsive
-
+    // top: "60%", // Currently aligned using trial and error TODO: Make permament / responsive
+    position: "absolute",
+    left: 0,
+    top: 10,
     width: 34, // This is not responsive either
     height: 34,
 
@@ -289,6 +317,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 27,
     textAlign: "center",
+    paddingHorizontal: 40,
   },
 
   // TASK TYPE SWITCHER
