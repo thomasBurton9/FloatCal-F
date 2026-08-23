@@ -258,6 +258,9 @@ async function handleRegister(onLogin, fields, setErrorMessage) {
 }
 
 function validateLoginUser(fields) {
+  // Prevent incorrect login messages when user accidentally adds whitespace
+  fields.email = fields.email.trim();
+
   if (fields.email.length < 4) {
     return "Email must be at least 4 characters";
   }
