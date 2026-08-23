@@ -235,9 +235,9 @@ export function CalendarDetailsScreen({
               setReloadMembers={setReloadMembers}
             ></IndividualMember>
           ))}
-          {/* TODO: Add confirmation for deletion in the future*/}
-          {/* Display delete dialog only for user created calendars */}
-          {/* TODO: Add 'leave calendar' dialog instead */}
+          {/* Deletion confirmation is implemented*/}
+          {/* Delete dialog is only included on user created calendars */}
+          {/* For non owned calendars a leave calendar dialog is shown*/}
           {ownCalendar ? (
             <>
               <Text style={styles.inviteMemberTitle}>Invite Member</Text>
