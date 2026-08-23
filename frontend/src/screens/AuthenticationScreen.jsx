@@ -5,6 +5,8 @@ import {
   Pressable,
   StyleSheet,
   Image,
+  ScrollView,
+  KeyboardAvoidingView,
 } from "react-native";
 import { useState } from "react";
 import { API_URL, BLUE_COLOUR, RED_WARNING_COLOUR } from "../constants.js";
@@ -15,6 +17,7 @@ export default function AuthenticationScreen({ onLogin }) {
     name: "",
     email: "",
     password: "",
+    confirmPassword: "",
   });
 
   const [errorMessage, setErrorMessage] = useState("");
@@ -29,41 +32,51 @@ export default function AuthenticationScreen({ onLogin }) {
           mode={authenticationMode}
           setMode={setAuthenticationMode}
         ></AuthenticationModeSwitcher>
-        <AuthenticationFields
-          mode={authenticationMode}
-          fields={authenticationFields}
-          setFields={setAuthenticationFields}
-        ></AuthenticationFields>
-        {errorMessage !== "" ? (
-          <View>
-            <Text style={styles.errorMessage}>{errorMessage}</Text>
-          </View>
-        ) : null}
-        <View>
-          <Pressable
-            style={styles.submitButton}
-            onPress={() => {
-              if (authenticationMode === "Login") {
-                handleLogin(onLogin, authenticationFields, setErrorMessage);
-              } else {
-                handleRegister(onLogin, authenticationFields, setErrorMessage);
-              }
-            }}
+        <KeyboardAvoidingView style={styles.keyboardAvoid} behavior="padding">
+          <ScrollView
+            style={styles.authScrollView}
+            contentContainerStyle={styles.authContainerScroll}
+            showsVerticalScrollIndicator={false}
           >
-            <Text style={styles.submitButtonText}>
-              {authenticationMode === "Login" ? "Login" : "Register"}
-            </Text>
-          </Pressable>
-          {/* Quick button to bypass logic to test application logic quicker*/}
-          {/* TODO: Remove once done with button*/}
-          <Pressable
-            onPress={() => {
-              onLogin(5);
-            }}
-          >
-            <Text>Admin</Text>
-          </Pressable>
-        </View>
+            <AuthenticationFields
+              mode={authenticationMode}
+              fields={authenticationFields}
+              setFields={setAuthenticationFields}
+            ></AuthenticationFields>
+            {errorMessage !== "" ? (
+              <View>
+                <Text style={styles.errorMessage}>{errorMessage}</Text>
+              </View>
+            ) : null}
+            <Pressable
+              style={styles.submitButton}
+              onPress={() => {
+                if (authenticationMode === "Login") {
+                  handleLogin(onLogin, authenticationFields, setErrorMessage);
+                } else {
+                  handleRegister(
+                    onLogin,
+                    authenticationFields,
+                    setErrorMessage,
+                  );
+                }
+              }}
+            >
+              <Text style={styles.submitButtonText}>
+                {authenticationMode === "Login" ? "Login" : "Register"}
+              </Text>
+            </Pressable>
+            {/* Quick button to bypass logic to test application logic quicker*/}
+            {/* TODO: Remove once done with button*/}
+            <Pressable
+              onPress={() => {
+                onLogin(5);
+              }}
+            >
+              <Text>Admin</Text>
+            </Pressable>
+          </ScrollView>
+        </KeyboardAvoidingView>
       </View>
     </>
   );
@@ -170,6 +183,41 @@ function AuthenticationFields({ mode, fields, setFields }) {
           </Pressable>
         </View>
       </View>
+      {mode === "Register" ? (
+        <View style={styles.inputSection}>
+          <Text style={styles.inputFieldSubtitle}>Confirm Password</Text>
+          <View style={styles.inputIconRow}>
+            {/* Password visibility is toggled with the password visibility icon */}
+            <TextInput
+              value={fields.confirmPassword}
+              onChangeText={(confirmPassword) =>
+                setFields({ ...fields, confirmPassword })
+              }
+              autoComplete={"new-password"}
+              autoCorrect={false}
+              maxLength={120}
+              secureTextEntry={passwordHidden}
+              style={styles.inputField}
+              placeholder="*****************"
+            ></TextInput>
+            {/*Eye Password See View SVG by Gokce Curt, licensed under CC BY 4.0,
+                Source: https://www.svgrepo.com/svg/390427/eye-password-see-view, Changes made: converted to png*/}
+            {/* Toggle password visibility via icon */}
+            <Pressable
+              onPress={() =>
+                passwordHidden
+                  ? setPasswordHidden(false)
+                  : setPasswordHidden(true)
+              }
+            >
+              <Image
+                source={require("../../assets/password_visibility_icon64x64.png")}
+                style={styles.inputIcon}
+              ></Image>
+            </Pressable>
+          </View>
+        </View>
+      ) : null}
     </>
   );
 }
@@ -204,7 +252,9 @@ function validateCreateUser(fields) {
   if (fields.password.length > 120) {
     return "Password must be at most 120 characters";
   }
-
+  if (fields.password !== fields.confirmPassword) {
+    return "Passwords do not match";
+  }
   if (fields.name.length < 3) {
     return "Name must be at least 3 characters";
   }
@@ -355,7 +405,20 @@ const styles = StyleSheet.create({
   screen: {
     alignItems: "center", // Center content horizontally
     justifyContent: "center", // Center content vertically
-    gap: 20,
+    gap: 15,
+    flex: 1,
+  },
+  keyboardAvoid: {
+    width: "100%",
+    flex: 1,
+  },
+  authScrollView: {
+    width: "100%",
+  },
+  authContainerScroll: {
+    alignItems: "center",
+    gap: 15,
+    justifyContent: "center",
   },
   currentMode: {
     backgroundColor: BLUE_COLOUR, // In the future move this too a dedicated theme file with chosen themed colours -> And all other colours
@@ -417,7 +480,7 @@ const styles = StyleSheet.create({
   inputSection: {
     flexDirection: "column",
     alignItems: "center",
-    gap: 7,
+    gap: 5,
   },
 
   submitButton: {

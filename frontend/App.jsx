@@ -34,7 +34,7 @@ function PageRouter() {
   const [page, setPage] = useState("");
   if (!user) {
     return (
-      <SafeAreaView>
+      <SafeAreaView style={{ flex: 1 }}>
         <AuthenticationScreen
           onLogin={async (id) => {
             setPage("DailyCalendar");
