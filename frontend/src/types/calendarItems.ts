@@ -39,6 +39,7 @@ export type ItemInfoModalProps = {
   returnModal: string | null;
   setReturnModal: (returnModal: string | null) => void;
   editedPreset?: CalendarItem | null;
+  setEditedPreset: (item: CalendarItem | null) => void;
   onChangedData: () => void;
 };
 

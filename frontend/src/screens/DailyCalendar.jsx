@@ -150,6 +150,7 @@ export default function DailyCalendar({ setPage, userId }) {
           returnModal={returnModal}
           setReturnModal={setReturnModal}
           editedPreset={editedPreset}
+          setEditedPreset={setEditedPreset}
           onChangedData={() => setItemAddedTrigger(!itemAddedTrigger)} // Update the calendar when changing data
         ></ItemInfoModal>
       </View>
@@ -253,7 +254,7 @@ function CalendarView({
           onDragCreateEventEnd={onDragCreateEvent}
           onDragEventEnd={onDragEdit}
           ref={calendarRef}
-          numberOfDays={1}
+          numberOfDays={1} // This can be very easily changed to 7 for weekly views
           scrollByDay={true}
           firstDay={7}
           allowDragToCreate={true}

@@ -40,6 +40,7 @@ export default function ItemInfoModal({
   returnModal,
   setReturnModal,
   editedPreset,
+  setEditedPreset,
   onChangedData,
 }: ItemInfoModalProps) {
   const [editing, setEditing] = useState(false);
@@ -52,11 +53,18 @@ export default function ItemInfoModal({
 
     setDraft(calendarItemToDraft(item));
     setEditing(true);
+    if (!returnModal) {
+      setReturnModal("itemInfo");
+    }
   }
 
   function cancelEditing() {
     setDraft(null);
     setEditing(false);
+
+    if (returnModal === "itemInfo") {
+      setReturnModal(null); // Prevent the set from beginEditing() from interfering with other return modals
+    }
   }
 
   async function saveChanges() {
@@ -101,6 +109,8 @@ export default function ItemInfoModal({
     } else {
       onChangedData();
       setSelectedItem(draft);
+      setEditedPreset(null);
+      setCurrentModal(returnModal);
       // Maybe somehow slow stuff down here -> Given the data does not reload in time
       Alert.alert("Editing Item success");
       cancelEditing();
