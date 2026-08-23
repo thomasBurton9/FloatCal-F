@@ -503,6 +503,7 @@ const style = StyleSheet.create({
     justifyContent: "center",
   },
   dailyDatePicker: {
-    transform: [{ scale: 1.25 }], // Date picker does not accept / use width
+    alignSelf: "center",
+    transform: [{ scale: 1.1 }], // Date picker does not accept / use width
   },
 });
