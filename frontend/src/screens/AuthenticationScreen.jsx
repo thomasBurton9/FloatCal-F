@@ -68,13 +68,13 @@ export default function AuthenticationScreen({ onLogin }) {
             </Pressable>
             {/* Quick button to bypass logic to test application logic quicker*/}
             {/* TODO: Remove once done with button*/}
-            <Pressable
+            {/* <Pressable
               onPress={() => {
                 onLogin(5);
               }}
             >
               <Text>Admin</Text>
-            </Pressable>
+            </Pressable>*/}
           </ScrollView>
         </KeyboardAvoidingView>
       </View>
