@@ -348,6 +348,21 @@ function IndividualMember({
   reloadMembers,
   setReloadMembers,
 }: SharedMemberProps) {
+  async function handleRemoveMember() {
+    const result = await removeCalendarMember(calendarId, member.user_id);
+
+    if (!result.success) {
+      if (result.error) {
+        Alert.alert(result.error);
+      } else {
+        Alert.alert("Error removing user from calendar");
+      }
+    } else {
+      Alert.alert("Member removed successfully");
+      setReloadMembers(!reloadMembers);
+    }
+  }
+
   let buttonText;
   let backgroundColour;
   let onPress;
@@ -360,18 +375,23 @@ function IndividualMember({
     buttonText = "Remove";
     backgroundColour = RED_WARNING_COLOUR;
     onPress = async () => {
-      const result = await removeCalendarMember(calendarId, member.user_id);
-
-      if (!result.success) {
-        if (result.error) {
-          Alert.alert(result.error);
-        } else {
-          Alert.alert("Error removing user from calendar");
-        }
-      } else {
-        Alert.alert("Member removed successfully");
-        setReloadMembers(!reloadMembers);
-      }
+      Alert.alert(
+        "Are you sure you want to remove this member from the calendar?",
+        "",
+        [
+          {
+            text: "Yes",
+            onPress: () => {
+              handleRemoveMember();
+            },
+            style: "destructive",
+          },
+          {
+            text: "No",
+            style: "cancel",
+          },
+        ],
+      );
     };
   } else {
     buttonText = "Member";
