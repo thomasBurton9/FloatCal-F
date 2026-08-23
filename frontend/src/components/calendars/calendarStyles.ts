@@ -206,12 +206,15 @@ export const styles = StyleSheet.create({
   individualMemberInfo: {
     flexDirection: "column",
     gap: 5,
+    flex: 1,
+    marginRight: 8,
   },
   individualMemberName: {
     fontSize: 28,
   },
   individualMemberEmail: {
     fontSize: 20,
+    flexShrink: 1, // Prevent the email from overflowing pushing the Owner / member / remove button from overflowing
   },
   individualMemberButton: {
     backgroundColor: RED_WARNING_COLOUR,
@@ -223,6 +226,7 @@ export const styles = StyleSheet.create({
     alignItems: "center",
     padding: 10,
     width: 100,
+    flexShrink: 0, // Email over flows causing this button to be pushed outside of the parent
   },
   individualMemberButtonText: {
     fontSize: 20,

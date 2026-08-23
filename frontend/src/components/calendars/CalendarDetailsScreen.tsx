@@ -403,8 +403,18 @@ function IndividualMember({
     <>
       <View style={styles.individualMember}>
         <View style={styles.individualMemberInfo}>
-          <Text style={styles.individualMemberName}>{member.display_name}</Text>
-          <Text style={styles.individualMemberEmail}>{member.email}</Text>
+          <Text style={styles.individualMemberName} numberOfLines={1}>
+            {member.display_name}
+          </Text>
+          {/* As name and email can overflow, numberOfLines forces an ellipse... to shorten them preventing them from pushing other 
+           elements outside of the parent */}
+          <Text
+            style={styles.individualMemberEmail}
+            ellipsizeMode="middle"
+            numberOfLines={1}
+          >
+            {member.email}
+          </Text>
         </View>
         <Pressable
           onPress={onPress}
