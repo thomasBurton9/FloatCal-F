@@ -2,7 +2,7 @@ from collections.abc import Sequence
 
 from pwdlib import PasswordHash
 from pwdlib.hashers.argon2 import Argon2Hasher
-from sqlalchemy import delete, select
+from sqlalchemy import delete, or_, select
 
 from db.models.calendars import Calendar, CalendarMember
 from db.models.items import FixedEvent, FloatingTask
@@ -10,7 +10,7 @@ from db.models.settings import Setting
 from db.models.users import User
 from db.queries.calendar_db import create_calendar
 from db.queries.item_db import remove_event_session, remove_task_session
-from db.session import get_db
+from db.session import Invite, get_db
 from schemas.calendar_schemas import CreateCalendar
 from schemas.user_schemas import CreateUser, DeleteUser, UserInfo, UserLogin
 
@@ -121,6 +121,17 @@ def delete_user(user_id: int, data: DeleteUser) -> bool:
             raise ValueError("Invalid password")
 
         # In the future add a hierarchy / inheritance to the sqlalchemy tables to allow for easy automatic cascading deletion
+
+        # Delete any invite records from or to a user
+
+        delete_invites_statement = delete(Invite).where(
+            or_(
+                Invite.invite_to_user_id == user_id,
+                Invite.invite_from_user_id == user_id,
+            )
+        )
+
+        session.execute(delete_invites_statement)
 
         # Delete any membership records of the user
         delete_user_calendar_members_statement = delete(CalendarMember).where(

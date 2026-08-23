@@ -5,6 +5,7 @@ from typing import DefaultDict, Dict, List, Sequence, Tuple
 from sqlalchemy import delete, select
 
 from db.models.calendars import Calendar, CalendarMember
+from db.models.invites import Invite
 from db.models.items import FixedEvent, FloatingTask
 from db.models.reminders import CompletionLog
 from db.models.users import User
@@ -321,8 +322,14 @@ def delete_calendar(user_id: int, calendar_id: int):
             FixedEvent.calendar_id == calendar_id
         )
 
+        delete_invites_statement = delete(Invite).where(
+            Invite.invite_calendar_id == calendar_id
+        )
+
         task_ids: Sequence[int] = session.execute(get_tasks_statement).scalars().all()
         event_ids: Sequence[int] = session.execute(get_events_statement).scalars().all()
+
+        session.execute(delete_invites_statement)
 
         for task_id in task_ids:
             remove_task_session(calendar_id, task_id, session)
