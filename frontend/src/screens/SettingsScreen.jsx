@@ -14,6 +14,7 @@ import SleepWindowEditor from "../components/settings/SleepWindowEditor";
 import { style } from "../components/settings/settingsStyles";
 import { handleDeleteAccount } from "../components/settings/deleteAccount";
 import { GREEN_COLOUR } from "../constants";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function SettingsScreen({ userId, setUserId, setPage }) {
   const [settings, setSettings] = useState(null);
@@ -151,7 +152,10 @@ export default function SettingsScreen({ userId, setUserId, setPage }) {
             <Text style={style.subTitle}>Account</Text>
             <Pressable
               style={style.logoutButton}
-              onPress={() => setUserId(false)}
+              onPress={async () => {
+                setUserId(false);
+                await AsyncStorage.removeItem("floatcal.userId");
+              }}
             >
               <Text>Logout</Text>
             </Pressable>

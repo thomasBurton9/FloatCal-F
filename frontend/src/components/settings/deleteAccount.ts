@@ -1,5 +1,6 @@
 import { Alert } from "react-native";
 import { deleteUser } from "../../api/authenticateApi";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export function handleDeleteAccount(
   userId: number,
@@ -51,6 +52,7 @@ export function handleDeleteAccount(
                     }
                   } else {
                     Alert.alert("Account and data deleted successfully");
+                    await AsyncStorage.removeItem("floatcal.userId");
                     setUserId(null);
                   }
                 },
