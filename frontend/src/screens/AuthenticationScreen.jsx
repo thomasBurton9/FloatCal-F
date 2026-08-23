@@ -182,6 +182,8 @@ function validateCreateUser(fields) {
   // @ -> match the symbol @
   // \. -> match the symbol "."
   // .+ -> match any characters at least once
+  fields.email = fields.email.trim();
+  fields.name = fields.name.trim();
 
   const simple_email_regex = /[a-zA-z0-9._%+-]+@[a-zA-z0-9._%+-]+\..+/;
 
