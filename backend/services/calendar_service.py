@@ -181,15 +181,22 @@ def schedule_floating_task(calendar_id: int, date: dt.date, task_id: int):
 
     if preferred_window is not None:
         for gap in valid_gaps:
-            if is_gap_in_window(gap, preferred_window):
-                preferred_gaps.append(gap)
+            # Logic changes from pseudocode design tools given error encountered in testing
+            # If there is a single large gap such as 0700-2300 and a preferred window like 1800-2300
+            # Previously it would've checked if the gap is within the preferred window
+            # Now it checks if the task could fit inside the preferred window merged with the gap
+            preferred_start = max(gap[0], preferred_window[0])
+            preferred_end = min(gap[1], preferred_window[1])
 
-        if len(preferred_gaps) != 0:
-            selected_gap = preferred_gaps[
-                0
-            ]  # Select earliest possible + valid + preferred gap
-        else:
-            selected_gap = valid_gaps[0]
+            if (
+                preferred_end > preferred_start
+                and calculate_time_difference(preferred_end, preferred_start)
+                >= task.duration_minutes
+            ):
+                preferred_gaps.append((preferred_start, preferred_end))
+
+    if len(preferred_gaps) != 0:  # Select the first gap that is preferred + valid
+        selected_gap = preferred_gaps[0]
     else:
         selected_gap = valid_gaps[0]
 
