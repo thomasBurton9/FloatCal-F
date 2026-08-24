@@ -37,7 +37,9 @@ load_dotenv(
 )  # Gets .env path directly given .env is not loaded automatically on windows
 
 DATABASE_URL = f"sqlite:///{Path(__file__).resolve().parents[1] / 'app.db'}"  # Store database in backend/app.db
-SQLALCHEMY_ECHO = os.getenv("SQLALCHEMY_ECHO", "False").lower() == "true"
+SQLALCHEMY_ECHO = (
+    os.getenv("SQLALCHEMY_ECHO", "False").lower() == "true"
+)  # This allows for extra backend logging if configured, by default it will be less logging
 
 engine = create_engine(
     DATABASE_URL,
@@ -57,6 +59,7 @@ SessionLocal = sessionmaker(
 Base.metadata.create_all(engine)
 
 
+# This outputs a session that can then be used to interact, commit and modify the database
 @contextmanager
 def get_db() -> Iterator[Session]:
     db = SessionLocal()

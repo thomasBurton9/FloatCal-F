@@ -25,6 +25,8 @@ export async function searchItems(
 
     if (!response.ok) {
       console.error("Error searching items: ", data);
+      // Return a nice object to make validation of success easier and more consistent.
+      // Prevents other functions from having to guess
       return { success: false, error: data.detail };
     }
 

@@ -10,6 +10,7 @@ from db.queries.user_db import (
 )
 from schemas.user_schemas import CreateUser, DeleteUser, UserInfo, UserLogin
 
+# Define the router -> This is then imported in main.py
 router = APIRouter(prefix="/api")
 
 

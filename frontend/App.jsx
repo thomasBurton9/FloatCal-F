@@ -14,6 +14,7 @@ LogBox.ignoreAllLogs();
 export default function App() {
   return (
     <>
+      {/* Allow for gestures such as swiping*/}
       <GestureHandlerRootView style={{ flex: 1 }}>
         <PageRouter></PageRouter>
       </GestureHandlerRootView>
@@ -22,8 +23,10 @@ export default function App() {
 }
 
 function PageRouter() {
+  // user is the logged in / out state
   const [user, setUser] = useState(null); // Currently no proper authentication except a variable
 
+  // On load, check if a user session is saved -> if so restore it
   useEffect(() => {
     async function restoreSession() {
       const savedId = await AsyncStorage.getItem("floatcal.userId");
@@ -35,9 +38,13 @@ function PageRouter() {
     restoreSession();
   }, []); // Only run on page load
 
+  // Use state used for basic page routing between the auth screen, settings screen and daily calendar view
   const [page, setPage] = useState("");
+
+  // Send user to authentication screen if they are not logged in
   if (!user) {
     return (
+      // The safe area view prevents anything from colliding with edges / notch / dynamic island
       <SafeAreaView style={{ flex: 1 }}>
         <AuthenticationScreen
           onLogin={async (id) => {

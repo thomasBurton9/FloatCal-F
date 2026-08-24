@@ -10,6 +10,7 @@ from db.queries.settings_db import get_settings
 
 
 # Potentially add more checks for loop arounds and similar
+# Function is a helper that allows for simple addition of time with minutes / duration
 def add_time(time: dt.time, amount: int) -> dt.time:
     time_date: dt.datetime = dt.datetime.combine(dt.datetime.today(), time)
 
@@ -18,6 +19,7 @@ def add_time(time: dt.time, amount: int) -> dt.time:
     return (time_date + amount_delta).time()
 
 
+# You cannot subtract 2 time objects from each other, so we have to convert to datetime before converting back to an integer
 def calculate_time_difference(end_time: dt.time, start_time: dt.time) -> int:
     if not end_time > start_time:
         raise ValueError("End time must be after start time")
@@ -32,6 +34,8 @@ def calculate_time_difference(end_time: dt.time, start_time: dt.time) -> int:
 
 # Uses the settings of the user who created the calendar
 def get_free_gaps(calendar_id: int, date: dt.date) -> list[tuple[dt.time, dt.time]]:
+    # Function to search a users calendar and based on the settings of the owner of that calendar
+    # Output all gaps between scheduled tasks and events that aren't during sleep, and that respect the buffer time between events
     try:
         calendar_info: Calendar = get_calendar_info(calendar_id)
     except ValueError as e:
@@ -78,12 +82,6 @@ def get_free_gaps(calendar_id: int, date: dt.date) -> list[tuple[dt.time, dt.tim
         gaps.append((previous_end, day_end))
 
     return gaps
-
-
-def is_gap_in_window(
-    gap: tuple[dt.time, dt.time], window: tuple[dt.time, dt.time]
-) -> bool:
-    return gap[0] >= window[0] and gap[1] <= window[1]
 
 
 def parse_scheduling_window(window: list[str]) -> tuple[dt.time, dt.time]:

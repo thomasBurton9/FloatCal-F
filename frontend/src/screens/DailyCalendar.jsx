@@ -89,7 +89,6 @@ export default function DailyCalendar({ setPage, userId }) {
       try {
         const itemData = await fetchItems(userId, currentDate);
         if (itemData) {
-          console.log(itemData);
           const formattedItems = await formatItems(itemData, userId);
           setItems(formattedItems);
         }
@@ -268,8 +267,6 @@ function CalendarView({
             onItemPress(event.calendarItem);
           }}
           onDateChanged={(date) => {
-            console.log(date);
-            console.log(typeof date);
             setCurrentDate(new Date(date));
           }}
         >

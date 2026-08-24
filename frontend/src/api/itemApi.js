@@ -23,6 +23,8 @@ export async function automaticallyScheduleTask(task_id, calendar_id, date) {
 
     if (!response.ok) {
       console.error("Error automatically scheduling task", data);
+      // Return a nice object to make validation of success easier and more consistent.
+      // Prevents other functions from having to guess
       return { success: false, error: data.detail }; // For some reason js compact (true, data) into just data??
     }
     return { success: true };

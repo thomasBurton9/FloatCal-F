@@ -65,7 +65,6 @@ export default function ManageTasks({
         formatDate(new Date()),
         formatDate(dateIn30Days),
       );
-      console.log(taskData);
       setTasks(taskData);
     }
 

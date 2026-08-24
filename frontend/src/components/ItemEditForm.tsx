@@ -29,7 +29,6 @@ export default function ItemEditForm({
     setIsScheduled(Boolean(isTask && draft.scheduled_start));
   }, [isTask, draft]);
 
-  console.log("Is scheduled", isScheduled);
   const [recurrenceOn, setRecurrenceOn] = useState(
     Boolean(draft["recurrence_rule"]),
   );
@@ -67,7 +66,6 @@ export default function ItemEditForm({
                 if (!date) {
                   return;
                 }
-                console.log(date);
                 // Format converted to YYYY-MM-DD
                 updateDraft({ date: formatDate(date) });
               }}

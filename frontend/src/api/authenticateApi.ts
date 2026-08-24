@@ -22,6 +22,8 @@ export async function deleteUser(
 
     if (!response.ok) {
       console.error("Error deleting user", data);
+      // Return a nice object to make validation of success easier and more consistent.
+      // Prevents other functions from having to guess
       return { success: false, error: data.detail };
     }
     return { success: true };

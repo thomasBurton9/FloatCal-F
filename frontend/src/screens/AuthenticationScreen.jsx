@@ -20,6 +20,7 @@ export default function AuthenticationScreen({ onLogin }) {
     confirmPassword: "",
   });
 
+  // Using a useState as the red error message (i.e. when it displays something like 'invalid email')
   const [errorMessage, setErrorMessage] = useState("");
 
   return (
@@ -32,6 +33,7 @@ export default function AuthenticationScreen({ onLogin }) {
           mode={authenticationMode}
           setMode={setAuthenticationMode}
         ></AuthenticationModeSwitcher>
+        {/* Use keyboard avoiding view to attempt to prevent the keyboard from covering any registration / login fields hurting the users chances of logging in*/}
         <KeyboardAvoidingView style={styles.keyboardAvoid} behavior="padding">
           <ScrollView
             style={styles.authScrollView}
@@ -66,15 +68,6 @@ export default function AuthenticationScreen({ onLogin }) {
                 {authenticationMode === "Login" ? "Login" : "Register"}
               </Text>
             </Pressable>
-            {/* Quick button to bypass logic to test application logic quicker*/}
-            {/* TODO: Remove once done with button*/}
-            {/* <Pressable
-              onPress={() => {
-                onLogin(5);
-              }}
-            >
-              <Text>Admin</Text>
-            </Pressable>*/}
           </ScrollView>
         </KeyboardAvoidingView>
       </View>

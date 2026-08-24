@@ -28,17 +28,23 @@ def check_calendar_exists(calendar_id: int):
 
 
 def list_tasks_for_calendar_date(calendar_id: int, date: dt.date) -> List[FloatingTask]:
+    # A statement is defined to find all tasks that are in a calendar on a specific date -> used by the frontend for loading tasks in manage floating tasks
     floating_task_statement = (
         select(FloatingTask)
         .where(FloatingTask.calendar_id == calendar_id)
         .where(FloatingTask.date == date)
     )
+
     with get_db() as session:
         floating_task_result: Sequence[FloatingTask] = (
-            session.execute(floating_task_statement).scalars().all()
+            session.execute(floating_task_statement)
+            .scalars()
+            .all()  # Use .scalars().all() to return just the individual values and all of them in a list (or sequence)
         )
 
-        return list(floating_task_result)
+        return list(
+            floating_task_result
+        )  # The sequence is converted to a list for standardisation
 
 
 # Inclusive of start and end dates

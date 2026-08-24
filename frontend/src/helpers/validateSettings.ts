@@ -4,9 +4,8 @@ import type { SettingsUpdate, SleepWindow } from "../types/settings";
 const MIN_BUFFER_MINUTES = 1;
 const MAX_BUFFER_MINUTES = 1440;
 
+// Helper to make sure all settings are valid when submitting the form
 export function validateSettings(updates: SettingsUpdate): boolean {
-  console.log(updates);
-
   if ("sleep_window" in updates) {
     const sleepWindow: SleepWindow | undefined = updates.sleep_window;
     const sleepStart: string | undefined = sleepWindow?.[0]; // Use syntax (?.[]) that allows undefined when the sleep window does not exist for some reason

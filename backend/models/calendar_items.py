@@ -2,6 +2,12 @@ import datetime as dt
 from typing import TypedDict
 
 
+# IMPORTANT NOTE
+# This was initially added as a way to use OOP principles in this project
+# This project is not very well suited to these principles, so these classes remain undefined
+# They provide some evidence of OOP including inheritance and classes
+# There is other evidence of OOP in backend/db/models/
+#
 class CalendarItem:
     def __init__(
         self,

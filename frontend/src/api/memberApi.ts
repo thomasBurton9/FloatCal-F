@@ -14,6 +14,8 @@ export async function fetchCalendarMemberEntryInfo(calendarId: number) {
 
     if (!response.ok) {
       console.error("Error fetching calendar member entry info", data);
+      // Return a nice object to make validation of success easier and more consistent.
+      // Prevents other functions from having to guess
       return { success: false, error: data.detail };
     }
     return { success: true, result: data };

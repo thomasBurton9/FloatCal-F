@@ -239,7 +239,7 @@ export default function AddItem({
                         <DateTimePicker
                           value={itemFields.startTime}
                           mode="time"
-                          is24Hour={true}
+                          is24Hour={true} // This does not work on IOS -> does not really matter
                           onChange={(_, startTime) => {
                             if (!startTime) {
                               return;

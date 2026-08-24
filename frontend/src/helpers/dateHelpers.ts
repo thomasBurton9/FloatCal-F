@@ -1,4 +1,6 @@
 import { weekdayLengthType } from "../types/helpers/dateHelpers";
+// ALL DATE and TIME helpers live here
+// As date and time are often converted between types and formats, a unified place is useful to prevent many duplicate functions
 
 // Formats date object into api receivable YYYY-MM-DD
 export function formatDate(date: Date | string): string {
@@ -37,6 +39,7 @@ export function extractTime(inputDate: Date | string): string {
   return `${hours}:${minutes}`;
 }
 
+// Add minutes to YYYY-MM-DD, HH:MM:SS
 export function addMinutesToDateTime(
   dateString: string,
   timeString: string,

@@ -27,7 +27,6 @@ export default function BufferEditor({
             if (editingKey !== "BufferMinutes") {
               // Make sure that the bufferminutes value is loaded
               setBufferMinutes(settings["buffer_minutes"]);
-              console.log(settings["buffer_minutes"]);
             }
             toggleDropdown("BufferMinutes", editingKey, setEditingKey);
           }}

@@ -52,7 +52,6 @@ export default function SettingsScreen({ userId, setUserId, setPage }) {
     async function loadSettings() {
       const settingsData = await fetchSettings(userId);
       if (settingsData) {
-        console.log("Settings", settingsData);
         setSettings(settingsData);
       }
     }
